@@ -575,14 +575,16 @@ function Primed() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
-      const data = await res.json();
-      if (!res.ok) { setAuthError(data.detail || "Something went wrong"); setAuthLoading(false); return; }
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { detail: text }; }
+      if (!res.ok) { setAuthError(data.detail || "Error: " + res.status); setAuthLoading(false); return; }
       setToken(data.access_token);
       setUserData(data.user);
       setUser(data.user);
       setAuthScreen(null);
     } catch (err) {
-      setAuthError("Connection failed. Please try again.");
+      setAuthError("Connection failed: " + err.message);
     }
     setAuthLoading(false);
   }, [authEmail, authPass, authName]);
