@@ -16,7 +16,12 @@ router = APIRouter()
 
 @router.post("/auth/register", response_model=TokenResponse)
 async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
-    return await register_user(data, db)
+    try:
+        return await register_user(data, db)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration error: {str(e)}")
 
 @router.post("/auth/login", response_model=TokenResponse)
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
