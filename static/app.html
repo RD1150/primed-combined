@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Primed — Know What to Say. Always.</title>
+  <meta name="description" content="AI conversation intelligence for real estate agents.">
+  <meta name="theme-color" content="#08090c">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.2/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+    body { background: #08090c; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const API_URL = "/v1";
+
+// Auth helpers
+function getToken() { return localStorage.getItem("primed_token") || ""; }
+function setToken(t) { localStorage.setItem("primed_token", t); }
+function getUser() { try { return JSON.parse(localStorage.getItem("primed_user")); } catch { return null; } }
+function setUserData(u) { localStorage.setItem("primed_user", JSON.stringify(u)); }
+function clearAuth() { localStorage.removeItem("primed_token"); localStorage.removeItem("primed_user"); }
+
+const SCENARIOS = [
+  {
+    id: "iran-war",
+    title: "US–Iran Military Conflict",
+    icon: "⚔️",
+    category: "Geopolitical",
+    heat: "High",
+    synopsis: `A US military engagement with Iran would ripple through global energy markets, sending oil prices surging and triggering broad economic uncertainty. Historically, Middle East conflicts have caused immediate spikes in commodity prices, shaken consumer confidence, and driven flight-to-safety behavior in financial markets. The Federal Reserve would face pressure to hold or cut rates to stabilize the economy, while defense spending would increase federal deficits. Supply chain disruptions—especially in shipping through the Strait of Hormuz—could stall construction materials and raise costs across industries.`,
+    realEstateImpact: [
+      {
+        area: "Mortgage Rates",
+        direction: "down",
+        detail: "Flight to safety pushes Treasury yields down, potentially lowering mortgage rates in the short term—but inflation from oil prices could reverse this within 6–12 months."
+      },
+      {
+        area: "Housing Demand",
+        direction: "down",
+        detail: "Consumer confidence drops sharply during military conflicts. Buyers pause, listings sit longer, and transaction volume declines 10–20% in the first quarter."
+      },
+      {
+        area: "Construction Costs",
+        direction: "up",
+        detail: "Oil-dependent materials (asphalt, plastics, transport fuel) spike in cost. New construction slows, reducing future inventory and creating a delayed supply crunch."
+      },
+      {
+        area: "Luxury & Investment",
+        direction: "mixed",
+        detail: "Foreign capital may flow into US real estate as a safe haven, boosting luxury markets in gateway cities. Domestic luxury buyers pull back."
+      },
+      {
+        area: "Military-Adjacent Markets",
+        direction: "up",
+        detail: "Markets near military bases and defense contractors (Northern Virginia, San Diego, Colorado Springs) see increased demand and economic activity."
+      },
+      {
+        area: "Rental Markets",
+        direction: "up",
+        detail: "Uncertainty keeps would-be buyers renting longer, increasing rental demand and pushing rents higher in competitive markets."
+      }
+    ],
+    teamTalkingPoints: [
+      "Lead with calm authority—agents who project confidence during uncertainty become trusted advisors",
+      "Historical data shows real estate recovers within 12–18 months of conflict onset; share this context",
+      "Emphasize that real estate remains a tangible, inflation-hedging asset during geopolitical turmoil",
+      "Prepare for a temporary volume dip—focus on nurturing pipeline rather than pushing closings",
+      "Monitor Fed communications weekly; rate changes during conflicts create brief windows of opportunity"
+    ],
+    brokerageTalkingPoints: [
+      "Request a market intelligence briefing from your brokerage's economics team",
+      "Advocate for adjusted commission structures during volume downturns to retain agents",
+      "Push for enhanced marketing around real estate as a safe-haven investment",
+      "Coordinate with lender partners on rate-lock strategies for clients in pipeline",
+      "Establish a weekly 'market pulse' communication to keep all agents informed"
+    ],
+    clientScript: `"I know there's a lot of uncertainty right now with what's happening overseas, and I want you to know I'm watching the market closely so you don't have to.\n\nHere's what I can tell you: historically, real estate has proven to be one of the most resilient assets during periods of geopolitical tension. In fact, during past conflicts, we've often seen mortgage rates dip initially as investors move to safer assets—which can actually create a window of opportunity.\n\nWhat I'd recommend right now is [FOR BUYERS: staying engaged and ready to move quickly if rates drop / FOR SELLERS: pricing strategically since serious buyers are still active, but the casual browsers have stepped back—meaning the leads you get now are more qualified].\n\nI'm not going to sugarcoat it—we may see some short-term slowdown in activity. But the fundamentals of our local market remain strong, and people still need homes. My job is to help you navigate this smartly, and that's exactly what we're going to do.\n\nDo you have any specific concerns I can address?"`
+  },
+  {
+    id: "compass-redfin",
+    title: "Compass & Redfin Merger",
+    icon: "🔄",
+    category: "Industry",
+    heat: "Critical",
+    synopsis: `A Compass-Redfin merger would create a vertically integrated real estate powerhouse combining Compass's luxury brand and agent network with Redfin's consumer technology platform and discount brokerage model. This would represent the most significant consolidation in residential real estate history, potentially controlling 8–10% of US home sales. The combined entity would have end-to-end capabilities: lead generation, agent tools, mortgage origination, title services, and closing—all under one roof. Independent brokerages and traditional models would face existential pressure to adapt.`,
+    realEstateImpact: [
+      {
+        area: "Commission Pressure",
+        direction: "down",
+        detail: "The combined entity could aggressively undercut traditional commission structures, accelerating the post-NAR settlement trend toward negotiable, lower commissions."
+      },
+      {
+        area: "Agent Recruitment",
+        direction: "mixed",
+        detail: "Top producers may be lured by the platform's technology and lead flow. Mid-tier agents face the biggest squeeze—too expensive for discount models, lacking the production to justify premium splits."
+      },
+      {
+        area: "Technology Arms Race",
+        direction: "up",
+        detail: "Every brokerage will need to accelerate tech investment. CRM, AI-powered valuations, virtual tours, and transaction management become table stakes, not differentiators."
+      },
+      {
+        area: "Consumer Expectations",
+        direction: "up",
+        detail: "Consumers will expect seamless digital experiences end-to-end. The gap between tech-forward and traditional brokerages becomes a chasm."
+      },
+      {
+        area: "Independent Brokerages",
+        direction: "down",
+        detail: "Small and mid-size independents face severe competitive pressure. Many will need to join networks, merge, or carve out hyper-local niches to survive."
+      },
+      {
+        area: "Ancillary Services",
+        direction: "up",
+        detail: "Title, mortgage, and insurance bundling becomes a major revenue play. Agents not offering integrated services lose wallet share."
+      }
+    ],
+    teamTalkingPoints: [
+      "This is a 'sharpen the sword' moment—double down on what tech can't replace: relationships, local expertise, and emotional intelligence",
+      "The merger creates uncertainty among THEIR agents—this is a recruitment opportunity for relationship-driven brokerages",
+      "Clients don't buy algorithms; they buy trust. Reinforce your personal brand and community presence",
+      "Study the combined entity's weaknesses: corporate culture clashes, agent churn during integration, and one-size-fits-all approach",
+      "Identify and articulate your unique value proposition—if you can't explain why you're different in 30 seconds, start there"
+    ],
+    brokerageTalkingPoints: [
+      "Demand a clear technology roadmap from leadership—vague promises won't cut it anymore",
+      "Explore strategic partnerships or affiliations that provide scale without losing independence",
+      "Invest in agent training on consultative selling and relationship management—your human edge",
+      "Audit your ancillary service offerings; bundled services are no longer optional",
+      "Consider niche positioning: luxury, first-time buyers, investors, or geographic specialization"
+    ],
+    clientScript: `"You may have heard about the potential Compass-Redfin merger, and I want to give you my perspective on what it means for you.\n\nAt the end of the day, buying or selling a home is one of the most significant financial decisions you'll make—and it's deeply personal. What a mega-merger like this does is create a more transactional, volume-driven model. That works for some people, but most of my clients tell me they want someone who knows THIS neighborhood, who's answered calls at 10pm when inspection results come back concerning, and who will negotiate like it's their own money on the line.\n\nThat's exactly what you get working with me. I have all the technology tools the big platforms offer—[mention specific tools you use]—PLUS the local expertise and personal attention that a corporate model simply can't match.\n\n[FOR SELLERS: When it comes to getting you the best price, my track record in this market speaks for itself—and I'll put that up against any algorithm.]\n[FOR BUYERS: When we're competing for a home you love, you want an agent the listing agent knows and trusts—and that comes from years of local relationships, not a brand name.]\n\nI'm excited about where the industry is heading because it's going to separate the professionals from the amateurs. And I plan to be on the winning side of that. Any questions about how I'm staying ahead of the curve?"`
+  },
+  {
+    id: "rate-crash",
+    title: "Mortgage Rates Drop Below 5%",
+    icon: "📉",
+    category: "Economic",
+    heat: "Medium",
+    synopsis: `A sudden drop in mortgage rates below 5% would unleash pent-up demand from millions of homeowners and buyers who've been sidelined since rates climbed above 6% in 2022. The "lock-in effect"—where homeowners refuse to sell because they'd lose their sub-4% rate—would begin to crack. Refinancing activity would surge, freeing up consumer spending. However, inventory would likely remain tight initially as the demand surge outpaces new listings, creating intense competition in many markets.`,
+    realEstateImpact: [
+      {
+        area: "Buyer Demand",
+        direction: "up",
+        detail: "Massive demand surge as affordability improves. First-time buyers re-enter the market. Expect multiple-offer situations to increase 30–50% in desirable markets."
+      },
+      {
+        area: "Inventory",
+        direction: "mixed",
+        detail: "Initially tight as demand surges faster than supply. Over 3–6 months, the lock-in effect eases and more homeowners list, gradually balancing the market."
+      },
+      {
+        area: "Home Prices",
+        direction: "up",
+        detail: "Short-term price acceleration of 5–10% in supply-constrained markets. Competition drives prices up even as monthly payments become more affordable."
+      },
+      {
+        area: "Refinancing Boom",
+        direction: "up",
+        detail: "Homeowners with 6–8% rates rush to refinance, injecting billions into consumer spending. Adjacent businesses (home improvement, furniture) benefit."
+      },
+      {
+        area: "New Construction",
+        direction: "up",
+        detail: "Builders ramp up production as demand signals strengthen. However, a 12–18 month lag means new supply won't arrive immediately."
+      },
+      {
+        area: "Investor Activity",
+        direction: "up",
+        detail: "Lower rates improve cap rates for investors. Institutional buyers may increase activity, competing with primary residence buyers."
+      }
+    ],
+    teamTalkingPoints: [
+      "Speed wins—have your buyers pre-approved and ready to move BEFORE rates officially drop; the window is narrow",
+      "Coach sellers to list early in the wave; the first movers capture the most competitive bidding",
+      "This is a volume opportunity—prepare your systems, team, and schedule for increased activity",
+      "Don't let excitement override fundamentals; counsel clients against overextending in bidding wars",
+      "Build your pipeline NOW—every contact should know that when rates move, you'll be their first call"
+    ],
+    brokerageTalkingPoints: [
+      "Ensure your lender partnerships can handle volume; slow pre-approvals lose deals",
+      "Invest in marketing NOW to capture top-of-funnel demand before the surge",
+      "Train agents on multiple-offer strategy and escalation clause best practices",
+      "Prepare market reports showing the rate-to-affordability connection for client education",
+      "Staff up transaction coordination—bottlenecks in closing kill momentum"
+    ],
+    clientScript: `"Great news—mortgage rates are moving in a direction that could open up real opportunities for you, and I want to make sure you're positioned to take advantage.\n\nHere's what I'm seeing: rates dropping below 5% is going to bring a LOT of buyers off the sidelines. That means [FOR BUYERS: we need to be ready to move quickly and decisively when the right property comes up—I'm talking pre-approval locked in, wish list refined, and a clear strategy for competing / FOR SELLERS: this is potentially the best selling window we've seen in years—more buyers, more competition for your home, and the ability to command a premium price].\n\n[FOR BUYERS: I don't want you getting caught in a bidding frenzy and overpaying. My approach is strategic—we'll identify opportunities before they hit the open market, and I'll help you make smart, competitive offers without getting emotional.]\n[FOR SELLERS: Timing is everything here. The early listings in a rate-drop environment get the most attention and the best offers. If you've been thinking about selling, we should talk about getting your home market-ready now.]\n\nWhat questions do you have? I'd love to walk you through the specific numbers for your situation."`
+  },
+  {
+    id: "ai-disruption",
+    title: "AI Replaces Traditional Agent Tasks",
+    icon: "🤖",
+    category: "Technology",
+    heat: "High",
+    synopsis: `Artificial intelligence is rapidly transforming every aspect of real estate—from automated valuations and AI-generated listings to virtual staging, chatbot lead qualification, and predictive analytics. As AI tools become more sophisticated, the traditional agent value proposition of information access and transaction facilitation is being commoditized. The agents who thrive will be those who evolve from information gatekeepers to strategic advisors, relationship builders, and negotiation experts. The technology isn't replacing agents—it's replacing agents who don't adapt.`,
+    realEstateImpact: [
+      {
+        area: "Agent Roles",
+        direction: "mixed",
+        detail: "Transactional tasks (listing descriptions, market reports, scheduling) get automated. Advisory and negotiation roles become more valuable. The agent population may shrink 20–30% over 5 years."
+      },
+      {
+        area: "Consumer Behavior",
+        direction: "up",
+        detail: "Buyers arrive more informed than ever—AI tools give them instant valuations, neighborhood data, and market analysis. Agents must add value ABOVE what AI provides."
+      },
+      {
+        area: "Marketing Costs",
+        direction: "down",
+        detail: "AI-generated content, automated social media, and predictive targeting reduce marketing costs while improving effectiveness. Levels the playing field for solo agents."
+      },
+      {
+        area: "Commission Justification",
+        direction: "down",
+        detail: "As AI handles more tasks, justifying traditional commission rates becomes harder. Agents must clearly articulate their human value-add."
+      },
+      {
+        area: "Transaction Speed",
+        direction: "up",
+        detail: "AI-powered document processing, compliance checking, and communication automation can cut transaction timelines by 20–40%."
+      },
+      {
+        area: "Data-Driven Pricing",
+        direction: "up",
+        detail: "AI valuation models become more accurate, reducing the pricing advantage of experienced agents. Hyperlocal knowledge and off-market intelligence become the differentiator."
+      }
+    ],
+    teamTalkingPoints: [
+      "AI is a power tool, not a replacement—the agents who learn to wield it will dominate those who don't",
+      "Invest 30 minutes daily in learning one new AI tool; compound knowledge creates an insurmountable advantage",
+      "Double down on the things AI can't do: read body language, build genuine trust, navigate emotional negotiations, show up at closing",
+      "Use AI to handle the 80% of tasks that are routine so you can focus on the 20% that generate real value",
+      "Position yourself as a 'tech-forward' agent—clients want someone who uses every available tool to get results"
+    ],
+    brokerageTalkingPoints: [
+      "Establish an AI tools committee to evaluate and standardize approved platforms across the brokerage",
+      "Provide AI literacy training—agents who fear the technology will fall behind and leave",
+      "Negotiate enterprise licenses for top AI tools; scale creates cost advantages",
+      "Develop clear guidelines on AI-generated content disclosure and compliance",
+      "Reimagine the agent value proposition around advisory services, not transaction facilitation"
+    ],
+    clientScript: `"I want to share something with you about how I'm using cutting-edge technology to give you an advantage in this market.\n\nYou've probably seen AI tools that can estimate home values or generate property descriptions. I use those tools—and many more—as part of my process. But here's what I've learned: AI is incredible at processing data, but it can't walk through a home and notice the foundation issue the photos don't show. It can't read the seller's body language to know they'll accept $15,000 less. And it definitely can't call a listing agent I've done five deals with and get your offer looked at first.\n\nWhat I do is combine the best of both worlds: the speed and analytical power of AI with the judgment, relationships, and negotiation skills that only come from [X years] of doing this.\n\n[FOR BUYERS: That means you get data-driven insights on every property AND someone who knows when the data doesn't tell the whole story.]\n[FOR SELLERS: That means your home gets maximum exposure through AI-optimized marketing AND a pricing strategy built on real-world market intelligence that algorithms miss.]\n\nThe result? Better decisions, better outcomes, and a smoother process. What aspect of the process would you like to know more about?"`
+  },
+  {
+    id: "climate-regulation",
+    title: "Strict Climate & Energy Regulations",
+    icon: "🌍",
+    category: "Regulatory",
+    heat: "Medium",
+    synopsis: `New federal and state climate regulations are increasingly targeting the built environment—which accounts for roughly 40% of US carbon emissions. Proposed and enacted policies include mandatory energy efficiency retrofits for existing homes at point of sale, stricter building codes for new construction, electrification mandates (banning natural gas in new builds), expanded climate risk disclosure requirements, and changes to flood/fire insurance mapping. These regulations reshape property values, transaction costs, and the information agents must master.`,
+    realEstateImpact: [
+      {
+        area: "Transaction Costs",
+        direction: "up",
+        detail: "Point-of-sale energy efficiency requirements add $5,000–$25,000 in retrofit costs. This affects negotiations, net proceeds for sellers, and closing timelines."
+      },
+      {
+        area: "Property Values",
+        direction: "mixed",
+        detail: "Energy-efficient homes command 3–8% premiums. Older, inefficient homes face discounts. Climate-risk-exposed properties (flood, fire zones) see accelerating depreciation."
+      },
+      {
+        area: "Insurance Costs",
+        direction: "up",
+        detail: "Climate risk repricing is making some properties uninsurable at affordable rates. This directly impacts lending eligibility and buyer affordability."
+      },
+      {
+        area: "New Construction",
+        direction: "mixed",
+        detail: "Higher building standards increase new construction costs 5–15%. However, net-zero homes become selling points with lower operating costs."
+      },
+      {
+        area: "Geographic Shifts",
+        direction: "mixed",
+        detail: "Climate migration accelerates—demand increases in 'climate haven' markets (Great Lakes, Pacific Northwest) while high-risk areas face headwinds."
+      },
+      {
+        area: "Agent Knowledge Requirements",
+        direction: "up",
+        detail: "Agents must understand energy scores, retrofit requirements, insurance markets, and disclosure obligations. Ignorance becomes a liability risk."
+      }
+    ],
+    teamTalkingPoints: [
+      "Get certified in green/energy-efficient home designations—it's a real differentiator and will be essential within 3 years",
+      "Build relationships with energy auditors, retrofit contractors, and green lenders—they're your new power partners",
+      "Learn your local disclosure requirements cold; compliance failures create legal liability for agents",
+      "Educate clients proactively—surprise retrofit costs at inspection kill deals; address them upfront",
+      "Track insurance market changes in your area; an uninsurable home is an unsellable home"
+    ],
+    brokerageTalkingPoints: [
+      "Add climate risk and energy efficiency modules to your training curriculum immediately",
+      "Partner with energy audit companies to offer pre-listing assessments as a service differentiator",
+      "Lobby through your association for reasonable implementation timelines on new regulations",
+      "Develop marketing materials that help agents explain energy/climate impacts to clients",
+      "Track which markets are gaining or losing from climate migration patterns"
+    ],
+    clientScript: `"I want to make sure you're aware of some important regulatory changes that could affect your real estate decisions.\n\nNew climate and energy regulations are changing what it means to buy and own a home. [FOR BUYERS: Some properties now require energy efficiency upgrades before or after sale, and insurance costs in certain areas are rising significantly. The good news is I've done the homework so you don't have to—I can identify which homes are already compliant, which might need work, and what that means for your total cost of ownership.]\n\n[FOR SELLERS: Your home's energy efficiency is becoming a real factor in buyer decisions and even lending. I can help you understand whether any improvements would be required for sale in our area, and more importantly, which upgrades actually pay for themselves in a higher sale price.]\n\nHere's my honest take: climate-smart homes are going to be the ones that hold and grow their value over the next decade. I'd rather help you get ahead of this curve than react to it.\n\nWant me to pull the energy profile for [your home / the properties you're considering] so we can see exactly where things stand?"`
+  },
+  {
+    id: "zillow-pricing",
+    title: "\"Zillow Says My Home Is Worth More\"",
+    icon: "🏷️",
+    category: "Pricing",
+    heat: "High",
+    synopsis: `Your seller pulled up a Zillow Zestimate that's $80K higher than your suggested list price. They're questioning your expertise and considering listing with an agent who "agrees" with the online number. This is one of the most common—and most dangerous—conversations in real estate. Handle it wrong and you lose the listing. Handle it right and you cement yourself as the trusted expert. The Zestimate uses public data and algorithmic modeling that can't account for property condition, recent upgrades, neighborhood micro-trends, or actual buyer behavior in the local market.`,
+    realEstateImpact: [
+      { area: "Days on Market", direction: "up", detail: "Overpriced homes sit 3–5x longer than correctly priced ones, then typically sell below market value after price reductions signal desperation to buyers." },
+      { area: "Agent Credibility", direction: "mixed", detail: "Agents who cave to inflated prices lose twice—the listing sits and their reputation suffers. Agents who hold firm with data earn long-term trust." },
+      { area: "Seller Net Proceeds", direction: "down", detail: "Price reductions after extended market time net sellers less than pricing correctly from the start. The first two weeks generate the most buyer activity." },
+      { area: "Buyer Perception", direction: "down", detail: "Buyers and their agents track price reductions. Multiple cuts make a property look distressed, even if the home is excellent." }
+    ],
+    teamTalkingPoints: [
+      "Never attack the Zestimate directly—it makes the seller defensive and positions you as adversarial",
+      "Acknowledge the tool, then redirect to what it can't account for: condition, updates, neighborhood micro-trends, and actual buyer behavior",
+      "Bring three comparable sales within a half-mile, closed in the last 60 days—data wins this conversation",
+      "Frame it as protecting the seller's money, not disagreeing with their opinion",
+      "Ask: 'Would you rather start high and chase the market down, or start right and create competition?'"
+    ],
+    brokerageTalkingPoints: [
+      "Create a standard 'Zestimate vs. Reality' comparison sheet agents can customize for their market",
+      "Train agents on the CMA presentation—most lose this conversation because their data presentation is weak",
+      "Role-play this scenario in team meetings; it's the single most common objection in listing appointments",
+      "Track your brokerage's average sale-to-list ratio as proof of pricing accuracy",
+      "Document cases where correct pricing led to multiple offers and above-list sales"
+    ],
+    clientScript: `"I'm glad you looked that up—it shows you're doing your homework, and that's exactly the kind of seller I love working with.\n\nHere's what I've found about those online estimates: they're based on public data and algorithms that can't see inside your home. They don't know about your new kitchen, your neighbor's barking dog, or that three similar homes just closed below that number.\n\n[FOR SELLERS: Let me show you what actual buyers in this market are paying right now—because that's what determines your price, not an algorithm. I've pulled three comparable sales within a half-mile that closed in the last 60 days. When we look at these together, I think you'll see exactly where we should be positioned to attract the most competitive offers.]\n\nMy goal is to get you the highest possible price in the shortest time. And in my experience, the best way to do that is to price it where buyers get excited, not where they scroll past."`
+  },
+  {
+    id: "commission-objection",
+    title: "\"Another Agent Charges Less\"",
+    icon: "💰",
+    category: "Pricing",
+    heat: "Critical",
+    synopsis: `A seller tells you they've spoken with another agent who offered a lower commission. This conversation has become even more common post-NAR settlement, as commission structures are increasingly negotiable and transparent. The wrong response—immediately discounting your rate—destroys your value proposition and sets a precedent that your services are commoditized. The right response reframes the conversation from cost to return on investment, turning the objection into your strongest differentiator. This is ultimately a conversation about confidence in your own value.`,
+    realEstateImpact: [
+      { area: "Commission Rates", direction: "down", detail: "Industry-wide trend toward negotiable, unbundled commissions is accelerating post-NAR settlement. Agents must articulate specific value to justify rates." },
+      { area: "Agent Value Perception", direction: "mixed", detail: "Agents who compete on price erode the profession. Agents who articulate measurable outcomes thrive and actually earn more per transaction." },
+      { area: "Sale Price Outcomes", direction: "mixed", detail: "Research consistently shows discount agents net sellers less overall. Lower marketing budgets, fewer showings, and less aggressive negotiation cost more than the commission savings." },
+      { area: "Market Positioning", direction: "mixed", detail: "The commission conversation is now a branding moment. How you handle it signals whether you're a premium advisor or a commodity service." }
+    ],
+    teamTalkingPoints: [
+      "Never lead with defending your rate—start by acknowledging the seller's right to compare",
+      "Shift the conversation from cost to ROI: 'The question isn't what you pay—it's what you net'",
+      "Prepare your specific numbers: average sale-to-list ratio, average days on market, total marketing investment per listing",
+      "Use the analogy: 'You wouldn't choose a surgeon based on who charges the least'",
+      "If you must negotiate, unbundle services rather than discounting—remove staging, professional photography, or marketing tiers"
+    ],
+    brokerageTalkingPoints: [
+      "Equip agents with a printed value comparison sheet showing what their commission includes vs. discount alternatives",
+      "Track and publicize brokerage-wide performance metrics that justify premium positioning",
+      "Role-play commission objection handling monthly—this is the conversation agents lose most often",
+      "Develop a clear commission policy that gives agents confidence to hold firm",
+      "Create case studies showing the net difference between full-service and discount outcomes"
+    ],
+    clientScript: `"That's a completely fair question, and I'd be surprised if you weren't comparing—that tells me you're being smart about this.\n\nHere's how I think about it: my commission isn't a cost—it's an investment in the outcome. The question I'd ask is: will that agent's marketing, negotiation skills, and network get you the same sale price I will?\n\n[FOR SELLERS: In my last ten transactions, my average sale-to-list ratio was 99.2%. I invest $[X] in marketing every listing—professional photography, drone video, targeted digital ads, broker events. That investment generates more showings, more offers, and ultimately a higher sale price. I'd rather earn my full fee and net you $30,000 more than discount my rate and cost you the difference.]\n\nI'm not the cheapest agent in this market, and I never will be. But I am the one who will work hardest to get you the best result. Can I show you exactly what my marketing plan looks like for your home?"`
+  },
+  {
+    id: "market-crash",
+    title: "\"Is the Market Going to Crash?\"",
+    icon: "📊",
+    category: "Market",
+    heat: "High",
+    synopsis: `Your buyer or seller has been watching the news, scrolling social media, and listening to friends who "know someone in real estate." They're convinced a crash is coming and want to either pull out of their purchase or delay listing. Fear-based inaction is the most expensive decision your client can make—and the hardest to overcome conversationally. Your job isn't to predict the future. It's to separate signal from noise, provide context the headlines don't, and help your client make a confident decision based on their personal timeline and goals—not fear.`,
+    realEstateImpact: [
+      { area: "Buyer Confidence", direction: "down", detail: "Fear-driven buyers miss opportunities while waiting for a crash that may never come. Every month of waiting at current appreciation rates costs them money." },
+      { area: "Seller Urgency", direction: "down", detail: "Sellers who delay often list into worse conditions than they avoided. 'Waiting for spring' or 'waiting for the market to recover' frequently backfires." },
+      { area: "Transaction Volume", direction: "down", detail: "Market fear is contagious—one hesitant client can stall a whole pipeline. Agents who can address fear effectively maintain volume." },
+      { area: "Agent Authority", direction: "up", detail: "This is a trust-building moment. Agents who provide calm, data-driven perspective during fear cycles become the go-to advisor for years." }
+    ],
+    teamTalkingPoints: [
+      "Don't dismiss the fear—validate it, then redirect with data",
+      "The 2008 crash was caused by specific lending conditions (no-doc loans, CDOs, 0% down) that don't exist today",
+      "Current fundamentals: lending standards are tight, inventory is historically low, demographic demand from millennials is sustaining activity",
+      "Reframe the question: 'The question isn't what will the market do—it's what's the cost of waiting vs. acting on YOUR timeline'",
+      "Never predict the market—instead, present scenarios and let the client make an informed choice"
+    ],
+    brokerageTalkingPoints: [
+      "Prepare a monthly 'Market Reality Check' one-pager comparing current fundamentals to 2008",
+      "Train agents to lead with empathy before data—acknowledging fear is step one",
+      "Create social media content that addresses crash fears with facts—position your agents as the calm voice",
+      "Share local data: months of supply, absorption rate, lending standards in your market specifically",
+      "Document every time a client waited and it cost them money—anonymized case studies are powerful"
+    ],
+    clientScript: `"I completely understand that concern—you're hearing a lot of noise right now and it's smart to ask. That tells me you're thinking carefully about this decision, which is exactly what you should be doing.\n\nHere's what I can tell you based on the actual data: today's market is fundamentally different from 2008. Lending standards are significantly tighter, inventory is still historically low, and demographic demand from millennials is sustaining buyer activity. Could prices soften in some markets? Possibly. But a 2008-style crash requires conditions that simply don't exist right now.\n\n[FOR BUYERS: The question isn't 'what will the market do?'—it's 'what's the cost of waiting versus acting on your timeline?' If you're planning to be in this home for 5+ years, even a modest short-term dip becomes irrelevant. Meanwhile, rents keep rising, rates could change, and the home you love might not be available next month.]\n\n[FOR SELLERS: Every month you wait is a month of mortgage payments, maintenance, and opportunity cost. If your life circumstances say it's time to sell, the market data supports making that move now rather than gambling on what might happen later.]\n\nLet me show you the specific numbers for your situation so we can make this decision based on data, not headlines."`
+  },
+  {
+    id: "low-offer",
+    title: "\"That Offer Is Insulting\"",
+    icon: "😤",
+    category: "Negotiation",
+    heat: "Critical",
+    synopsis: `Your seller just received an offer $50K below asking price and they're furious. They want to reject it outright without countering. This is a pure emotional response—and one of the highest-stakes moments in any transaction. Sellers personalize low offers; they hear "your home isn't worth what you think." Your job is to de-escalate, reframe the offer as a starting point for negotiation, and keep the deal alive—without dismissing the seller's legitimate frustration. The difference between a rejected offer and a successful counter-offer can be tens of thousands of dollars.`,
+    realEstateImpact: [
+      { area: "Deal Survival", direction: "down", detail: "Outright rejections kill deals that counteroffers could have saved. Studies show 70%+ of countered offers eventually close." },
+      { area: "Seller Emotions", direction: "up", detail: "Sellers personalize offers—they hear 'your home isn't worth it.' Managing this emotional response is the agent's most critical skill." },
+      { area: "Negotiation Leverage", direction: "mixed", detail: "A low offer still reveals a motivated buyer—that's valuable information. They wrote the offer, got pre-approved, and put earnest money down." },
+      { area: "Time on Market", direction: "up", detail: "Rejecting without countering means waiting for the next offer, which may not come for weeks—or at all. Every day on market costs the seller." }
+    ],
+    teamTalkingPoints: [
+      "Never agree that an offer is 'insulting'—and never dismiss the seller's emotional reaction",
+      "Validate the emotion first, then shift to strategy: 'I understand your frustration. Let me show you why this is actually good news'",
+      "Reframe: 'A low offer means a motivated buyer. That's someone we can work with.'",
+      "Walk through counter-offer math: show the seller what they net at different counter prices",
+      "Remind them: the goal is the best possible outcome, not winning an emotional argument"
+    ],
+    brokerageTalkingPoints: [
+      "Train agents on emotional de-escalation—this is the #1 moment where agents lose control of the transaction",
+      "Create a standard 'counter-offer strategy' template that walks sellers through the numbers",
+      "Role-play low-offer scenarios with increasingly emotional sellers—practice builds confidence",
+      "Track conversion rates: offers countered vs. offers rejected outright. Share the data with agents.",
+      "Establish a policy: never let a seller reject without at least presenting the option to counter"
+    ],
+    clientScript: `"I hear you—that number isn't what we expected, and I completely understand your frustration. Let me take a breath with you and then share how I see this.\n\nHere's the thing: this buyer took the time to write an offer, get pre-approved, and put earnest money on the table. That tells me they want YOUR home. A low starting offer is a negotiation tactic, not a reflection of your home's value.\n\n[FOR SELLERS: Here's what I'd recommend: let's counter at [X] with [terms]. If they come up—and in my experience, they almost always do—we're in a much stronger position than if we reject and start from zero with the next buyer. The cost of waiting for another offer could be weeks of mortgage payments and market exposure.]\n\nI've been in this situation many times, and some of my best final sale prices started with offers that made my sellers angry. Let me negotiate this for you—that's exactly what you hired me to do. Can I put together a counter-offer strategy for us to review?"`
+  },
+  {
+    id: "listing-appointment",
+    title: "Listing Appointment Preparation",
+    icon: "📋",
+    category: "Conversation",
+    heat: "High",
+    synopsis: `The listing appointment is where deals begin—or die. You have 60–90 minutes to establish yourself as the expert, build trust, and secure the listing. Most agents lose listing appointments not because of their pricing strategy or marketing plan, but because they fail to listen, they talk too much about themselves, and they don't address the seller's actual concerns. The CLEAR Method approach prioritizes connection and empathy before presenting data and strategy. The agent who wins the listing is the one who makes the seller feel heard first and impressed second.`,
+    realEstateImpact: [
+      { area: "Listing Conversion", direction: "up", detail: "A structured, empathy-first approach converts 15–25% more listing appointments than a feature-dump presentation." },
+      { area: "Pricing Alignment", direction: "up", detail: "Sellers who feel heard during the listing appointment are 3x more likely to accept your pricing recommendation." },
+      { area: "Commission Negotiation", direction: "up", detail: "Agents who establish value through process and preparation face far fewer commission objections." },
+      { area: "Referral Potential", direction: "up", detail: "Even sellers who don't list with you will refer you if the experience was professional and respectful." }
+    ],
+    teamTalkingPoints: [
+      "The first 10 minutes determine the outcome—lead with questions, not your bio",
+      "Ask: 'What's most important to you about this sale?' before presenting anything",
+      "Tour the home WITH the seller—let them show you what they love. This builds emotional connection.",
+      "Present your CMA after you've listened, not before. Context makes data more persuasive.",
+      "Close with a clear next step, not a generic 'what do you think?'"
+    ],
+    brokerageTalkingPoints: [
+      "Create a standardized pre-listing packet that agents customize for each appointment",
+      "Practice listing presentations in team meetings—film and review them",
+      "Develop a 'listing appointment checklist' that ensures agents never forget key steps",
+      "Share win/loss data: what separates successful listing appointments from failed ones",
+      "Pair new agents with experienced listing agents for shadow opportunities"
+    ],
+    clientScript: `"Thank you for inviting me into your home. Before I walk you through my marketing plan and pricing strategy, I'd love to hear from you first.\n\nWhat's driving the decision to sell right now? And what's most important to you about this process—is it maximizing the price, selling quickly, having minimal disruption, or something else entirely?\n\n[LISTEN ACTIVELY—TAKE NOTES]\n\nThat's really helpful context. Let me show you how everything I do is designed to address exactly what you just described.\n\n[PRESENT CMA AND MARKETING PLAN TAILORED TO THEIR STATED PRIORITIES]\n\nHere's what I want you to know: I don't just put a sign in the yard and wait. I invest $[X] in marketing each listing, I communicate proactively so you're never wondering what's happening, and I negotiate as if it's my own money on the line. My average seller nets [X]% of list price, and my average time to contract is [X] days.\n\nBased on everything you've shared with me today, I'm confident I can [address their specific priority]. Shall we talk about timing and next steps?"`
+  },
+  {
+    id: "price-reduction",
+    title: "The Price Reduction Conversation",
+    icon: "📉",
+    category: "Pricing",
+    heat: "Critical",
+    synopsis: `Your listing has been on the market for 21 days with minimal showings and no offers. The data is clear: the home is overpriced. But the seller doesn't want to hear it. They're emotionally attached to the number, they remember what the neighbor's house sold for, and they think "the right buyer just hasn't seen it yet." This is one of the most dreaded conversations in real estate—and one of the most important. Every week an overpriced home sits costs the seller money, credibility, and negotiating leverage. Your job is to have this conversation with honesty, empathy, and data.`,
+    realEstateImpact: [
+      { area: "Days on Market", direction: "up", detail: "Homes overpriced by 10%+ sit 3–5x longer. After 30 days, buyer interest drops dramatically and the listing becomes 'stale.'" },
+      { area: "Seller Net Proceeds", direction: "down", detail: "Overpriced homes that eventually sell after price reductions typically net less than homes priced correctly from the start." },
+      { area: "Agent Reputation", direction: "mixed", detail: "Agents who avoid this conversation enable bad outcomes. Agents who have it honestly—even when it's uncomfortable—build long-term trust." },
+      { area: "Market Perception", direction: "down", detail: "Multiple price reductions signal desperation to buyers and their agents, weakening the seller's negotiating position." }
+    ],
+    teamTalkingPoints: [
+      "Don't wait until day 30 to have this conversation—set expectations at listing that you'll reassess at day 14",
+      "Lead with the market data, not your opinion: 'Here's what the market is telling us'",
+      "Compare to active competition: show what buyers can get at the current price point from other listings",
+      "Frame the reduction as a strategic move, not a failure: 'We're repositioning to capture the buyer pool that's actively shopping'",
+      "Give a specific number, not a range—sellers need clarity, not options that delay the decision"
+    ],
+    brokerageTalkingPoints: [
+      "Establish a brokerage-wide policy of proactive pricing reviews at day 7, 14, and 21",
+      "Create data visualization templates that make the case visually—charts are more persuasive than words",
+      "Train agents to set price reduction expectations during the listing appointment, before the home goes live",
+      "Track and share the correlation between time-to-first-reduction and final sale price in your market",
+      "Support agents in having honest conversations—the short-term discomfort prevents long-term problems"
+    ],
+    clientScript: `"I want to have an honest conversation with you because that's what you hired me to do—tell you the truth, even when it's not what you want to hear.\n\nWe've been on the market for [X] days. In that time, we've had [X] showings and [X] offers. In our market, homes priced correctly typically receive strong interest within the first 14 days. The data is telling us something, and I think we need to listen.\n\n[FOR SELLERS: Here's what I'm seeing: there are [X] comparable homes currently active in our price range, and buyers have more options than when we listed. The homes that are selling are priced at [X]. I'm recommending we adjust to [$X]—not because your home isn't worth what we listed it at, but because the market has spoken and we need to meet buyers where they are.]\n\nI know this isn't easy to hear. But here's the reality: every week we wait at the current price, we lose leverage. A strategic price adjustment now, while interest is still recoverable, will position us to attract serious offers and potentially negotiate up from a stronger position.\n\nI'd rather have this honest conversation today than watch your home sit for another month. What are your thoughts?"`
+  },
+  {
+    id: "buyer-hesitation",
+    title: "Buyer Hesitation & Cold Feet",
+    icon: "🥶",
+    category: "Conversation",
+    heat: "Medium",
+    synopsis: `Your buyer found a home they love. They were excited at the showing, their offer was accepted, and everything was moving forward. Now, three days before closing, they're panicking. "What if we're making a mistake?" "What if rates drop next month?" "What if there's something wrong we didn't catch?" Buyer's remorse is one of the most natural emotional responses in any major purchase—and in real estate, where the numbers are life-changing, it's nearly universal. Your job is not to dismiss the fear or pressure them to close. It's to validate the emotion, ground them in their original reasons, and help them distinguish between healthy caution and fear-based paralysis.`,
+    realEstateImpact: [
+      { area: "Transaction Completion", direction: "down", detail: "5–10% of accepted offers fall through due to buyer cold feet. This costs everyone time, money, and emotional energy." },
+      { area: "Buyer Confidence", direction: "down", detail: "Buyers who feel pressured to close despite concerns often become resentful clients who never refer." },
+      { area: "Agent Trust", direction: "up", detail: "Agents who handle this moment with empathy—even if it means slowing down—build lifetime clients." },
+      { area: "Market Timing", direction: "mixed", detail: "Buyers who walk away rarely find a better option. But forcing the close on an unwilling buyer is worse than losing the deal." }
+    ],
+    teamTalkingPoints: [
+      "Buyer's remorse is normal—normalize it before it becomes a crisis by mentioning it early in the process",
+      "Ask: 'What specifically are you worried about?' Most fears dissolve when spoken aloud and addressed individually",
+      "Reconnect them to their WHY: 'Remember when you told me [their original motivation]? That hasn't changed.'",
+      "Never pressure—your job is to inform and support, not to close at all costs",
+      "If their concerns are legitimate (inspection issues, financial strain), support their decision to pause or withdraw"
+    ],
+    brokerageTalkingPoints: [
+      "Train agents to set expectations about buyer's remorse during the initial buyer consultation",
+      "Create a 'milestone email' sequence that reassures buyers at each stage of the process",
+      "Develop talking points for the specific fears: rates, inspection, overpaying, timing",
+      "Track fall-through rates and identify common triggers—address them proactively",
+      "Emphasize: a buyer who walks away feeling supported will come back. A buyer who felt pressured never will."
+    ],
+    clientScript: `"First of all, what you're feeling is completely normal. I've worked with hundreds of buyers, and almost every single one has a moment exactly like this before closing. It's a huge decision, and the fact that you're taking it seriously is a good thing.\n\nLet me ask you this: what specifically is worrying you right now? Let's talk through each concern one by one.\n\n[LISTEN—ADDRESS EACH CONCERN SPECIFICALLY]\n\n[FOR BUYERS: Remember what you told me when we started this search? You said [their original motivation—growing family, leaving rent, investment goal, school district]. That hasn't changed. What's changed is that the decision is now real instead of theoretical, and that's scary.\n\nHere's what I can tell you: the inspection came back [clean/with minor items we addressed]. Your financing is locked at [rate]. The appraisal supported the price. From a factual standpoint, everything checks out.]\n\nBut I want you to know something: if you genuinely feel this isn't right, I will support that decision 100%. I would rather you walk away from this home confident than close on it with doubt. My job is to help you make the best decision for YOUR life, whatever that decision is.\n\nWhat are you feeling right now?"`
+  }
+];
+
+const TABS = [
+  { id: "synopsis", label: "Synopsis", icon: "◈" },
+  { id: "impact", label: "Market Impact", icon: "◆" },
+  { id: "team", label: "Talk Tracks", icon: "◇" },
+  { id: "script", label: "Client Script", icon: "◉" }
+];
+
+const DirectionBadge = ({ direction }) => {
+  const config = {
+    up: { label: "Trending Up", bg: "rgba(16,185,129,0.12)", color: "#10b981", icon: "↑" },
+    down: { label: "Trending Down", bg: "rgba(239,68,68,0.12)", color: "#ef4444", icon: "↓" },
+    mixed: { label: "Mixed Signal", bg: "rgba(245,158,11,0.12)", color: "#f59e0b", icon: "↕" }
+  };
+  const c = config[direction];
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: "2px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+      background: c.bg, color: c.color, letterSpacing: "0.03em"
+    }}>
+      {c.icon} {c.label}
+    </span>
+  );
+};
+
+const HeatBadge = ({ heat }) => {
+  const colors = {
+    Critical: { bg: "#dc2626", text: "#fff" },
+    High: { bg: "#f59e0b", text: "#000" },
+    Medium: { bg: "#3b82f6", text: "#fff" }
+  };
+  const c = colors[heat];
+  return (
+    <span style={{
+      padding: "2px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700,
+      background: c.bg, color: c.text, letterSpacing: "0.08em", textTransform: "uppercase"
+    }}>
+      {heat}
+    </span>
+  );
+};
+
+function Primed() {
+  // Auth state
+  const [authScreen, setAuthScreen] = useState(getToken() ? null : "login"); // null = logged in, "login", "signup"
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPass, setAuthPass] = useState("");
+  const [authName, setAuthName] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [user, setUser] = useState(getUser());
+
+  const handleAuth = useCallback(async (isSignup) => {
+    setAuthLoading(true);
+    setAuthError("");
+    try {
+      const endpoint = isSignup ? "/auth/register" : "/auth/login";
+      const body = isSignup
+        ? { email: authEmail, password: authPass, name: authName }
+        : { email: authEmail, password: authPass };
+      const res = await fetch(API_URL + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) { setAuthError(data.detail || "Something went wrong"); setAuthLoading(false); return; }
+      setToken(data.access_token);
+      setUserData(data.user);
+      setUser(data.user);
+      setAuthScreen(null);
+    } catch (err) {
+      setAuthError("Connection failed. Please try again.");
+    }
+    setAuthLoading(false);
+  }, [authEmail, authPass, authName]);
+
+  const handleLogout = () => { clearAuth(); setUser(null); setAuthScreen("login"); };
+
+  // App state
+  const [selectedScenario, setSelectedScenario] = useState(null);
+  const [activeTab, setActiveTab] = useState("synopsis");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [animateIn, setAnimateIn] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedScenario, setGeneratedScenario] = useState(null);
+  const [showCustom, setShowCustom] = useState(false);
+  const [copiedSection, setCopiedSection] = useState(null);
+  const contentRef = useRef(null);
+  const chatEndRef = useRef(null);
+
+  // Practice mode state
+  const [appMode, setAppMode] = useState("intelligence");
+  const [practiceState, setPracticeState] = useState("setup"); // setup | context | active | feedback
+  const [practiceScenario, setPracticeScenario] = useState(null);
+  const [practicePersona, setPracticePersona] = useState(null);
+  const [practiceDifficulty, setPracticeDifficulty] = useState("medium");
+  const [practiceContext, setPracticeContext] = useState("");
+  const [practiceMessages, setPracticeMessages] = useState([]);
+  const [practiceInput, setPracticeInput] = useState("");
+  const [practiceLoading, setPracticeLoading] = useState(false);
+  const [practiceFeedback, setPracticeFeedback] = useState(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
+  // Value Script Builder state
+  const [vsStep, setVsStep] = useState(1);
+  const [vsIdealClient, setVsIdealClient] = useState("");
+  const [vsFavoriteTransaction, setVsFavoriteTransaction] = useState("");
+  const [vsProblem, setVsProblem] = useState("");
+  const [vsResult, setVsResult] = useState("");
+  const [vsTimeframe, setVsTimeframe] = useState("");
+  const [vsMarket, setVsMarket] = useState("");
+  const [vsGeneratedScript, setVsGeneratedScript] = useState(null);
+  const [vsGenerating, setVsGenerating] = useState(false);
+  const [vsCopied, setVsCopied] = useState(null);
+
+  const generateValueScript = useCallback(async () => {
+    setVsGenerating(true);
+    try {
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a real estate positioning expert. Create a powerful personal value script for a real estate agent based on these inputs:
+
+IDEAL CLIENT: ${vsIdealClient}
+FAVORITE TYPE OF TRANSACTION: ${vsFavoriteTransaction}
+BIGGEST PROBLEM THEY SOLVE: ${vsProblem}
+MEASURABLE RESULT: ${vsResult}
+TIMEFRAME: ${vsTimeframe}
+MARKET/AREA: ${vsMarket}
+
+Return ONLY valid JSON (no markdown, no backticks):
+{
+  "elevatorPitch": "A compelling 2-3 sentence value proposition the agent can use anywhere. Should feel natural and confident, not salesy.",
+  "listingOpener": "A 3-4 sentence opening for a listing appointment that weaves in their value proposition naturally.",
+  "socialBio": "A punchy 1-2 sentence bio for Instagram/LinkedIn that communicates their unique value.",
+  "coldCallHook": "A 2 sentence phone opener that leads with the problem they solve and the result they deliver.",
+  "objectionAnchor": "A 2-3 sentence response to 'why should I work with you?' that anchors on their specific results.",
+  "coachingNotes": "2-3 specific suggestions on how to make this script stronger — data to add, stories to prepare, ways to personalize."
+}`
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content.map(i => i.text || "").join("");
+      const clean = text.replace(/```json|```/g, "").trim();
+      setVsGeneratedScript(JSON.parse(clean));
+      setVsStep(4);
+      
+      // Save to backend
+      try {
+        await fetch(API_URL + "/value-scripts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+          body: JSON.stringify({
+            ideal_client: vsIdealClient,
+            favorite_transaction: vsFavoriteTransaction,
+            problem: vsProblem,
+            result: vsResult,
+            timeframe: vsTimeframe,
+            market: vsMarket,
+            generated_scripts: JSON.parse(clean)
+          })
+        });
+      } catch (saveErr) { console.error("Value script save error:", saveErr); }
+    } catch (err) {
+      console.error("Value script generation error:", err);
+    }
+    setVsGenerating(false);
+  }, [vsIdealClient, vsFavoriteTransaction, vsProblem, vsResult, vsTimeframe, vsMarket]);
+
+  const PERSONAS = [
+    { id: "analytical", name: "The Analytical Seller", icon: "📊", traits: "Data-driven, asks detailed questions, compares agents on metrics, wants spreadsheets and proof", difficulty: "Medium", color: "#3b82f6" },
+    { id: "emotional", name: "The Emotional Seller", icon: "💔", traits: "Deeply attached to property, reacts emotionally to pricing, takes feedback personally", difficulty: "Hard", color: "#ef4444" },
+    { id: "distrustful", name: "The Distrustful Buyer", icon: "🤨", traits: "Skeptical of agents, questions every recommendation, has been burned before", difficulty: "Hard", color: "#f59e0b" },
+    { id: "firsttimer", name: "The Nervous First-Timer", icon: "😰", traits: "Overwhelmed by the process, needs reassurance at every step, asks basic questions repeatedly", difficulty: "Medium", color: "#10b981" },
+    { id: "investor", name: "The Impatient Investor", icon: "💼", traits: "Numbers-driven, time-sensitive, challenges ROI projections, has done deals before", difficulty: "Hard", color: "#8b5cf6" }
+  ];
+
+  const PRACTICE_SCENARIOS = [
+    { id: "p-listing", title: "Listing Appointment", icon: "📋", desc: "Convince a homeowner to list with you over the competition" },
+    { id: "p-pricing", title: "Pricing Discussion", icon: "🏷️", desc: "Align a seller with market-based pricing when they expect more" },
+    { id: "p-reduction", title: "Price Reduction", icon: "📉", desc: "Recommend a price reduction after the home has sat on market" },
+    { id: "p-expired", title: "Expired Listing Call", icon: "📞", desc: "Re-engage a homeowner whose listing expired with another agent" },
+    { id: "p-fsbo", title: "FSBO Conversation", icon: "🏠", desc: "Approach a For Sale By Owner and demonstrate your value" },
+    { id: "p-hesitation", title: "Buyer Hesitation", icon: "🥶", desc: "Help a buyer overcome cold feet before closing" },
+    { id: "p-offer", title: "Offer Negotiation", icon: "🤝", desc: "Navigate a difficult offer/counter-offer situation" },
+    { id: "p-inspection", title: "Inspection Negotiation", icon: "🔍", desc: "Handle repair requests and inspection findings" },
+    { id: "p-commission", title: "Commission Objection", icon: "💰", desc: "Defend your commission when challenged by a seller" },
+    { id: "p-crash", title: "Market Crash Fears", icon: "📊", desc: "Address a client who thinks the market is about to crash" },
+    { id: "p-zillow", title: "Zillow Price Challenge", icon: "🏷️", desc: "Handle a seller who cites a higher Zestimate" },
+    { id: "p-lowoffer", title: "Insulting Offer Response", icon: "😤", desc: "De-escalate a seller who wants to reject a low offer" },
+  ];
+
+  const buildPracticePrompt = () => {
+    const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
+    const persona = PERSONAS.find(p => p.id === practicePersona);
+    const diffMap = { easy: "Agree relatively quickly. Be pleasant. Push back mildly once or twice.", medium: "Push back on some points. Ask follow-up questions. Don't agree too quickly.", hard: "Challenge everything. Be skeptical. Create tension. Require the agent to earn every inch of progress." };
+    
+    return `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times.
+
+PERSONA: ${persona.name}
+TRAITS: ${persona.traits}
+DIFFICULTY: ${practiceDifficulty} — ${diffMap[practiceDifficulty]}
+
+SCENARIO: ${scenario.title} — ${scenario.desc}
+${practiceContext ? `ADDITIONAL CONTEXT: ${practiceContext}` : ""}
+
+RULES:
+- Respond as a real client would — natural, conversational, 1-3 paragraphs max
+- Ask follow-up questions naturally
+- Push back realistically when appropriate based on your persona and difficulty
+- Never reveal you are an AI
+- Never coach the agent during the conversation
+- React emotionally when it fits your persona
+- Keep responses concise like a real conversation`;
+  };
+
+  const sendPracticeMessage = useCallback(async () => {
+    if (!practiceInput.trim() || practiceLoading) return;
+    const userMsg = { role: "agent", content: practiceInput.trim() };
+    const newMessages = [...practiceMessages, userMsg];
+    setPracticeMessages(newMessages);
+    setPracticeInput("");
+    setPracticeLoading(true);
+
+    try {
+      const transcript = newMessages.map(m => 
+        m.role === "agent" ? { role: "user", content: m.content } : { role: "assistant", content: m.content }
+      );
+
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          max_tokens: 1000,
+          system: buildPracticePrompt(),
+          messages: transcript
+        })
+      });
+      const data = await response.json();
+      const reply = data.content.map(i => i.text || "").join("");
+      setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
+    } catch (err) {
+      console.error("Practice simulation error:", err);
+      setPracticeMessages(prev => [...prev, { role: "client", content: "I'm sorry, can you repeat that? I got distracted for a moment." }]);
+    }
+    setPracticeLoading(false);
+  }, [practiceInput, practiceMessages, practiceLoading]);
+
+  const endPracticeSession = useCallback(async () => {
+    if (practiceMessages.length < 2) return;
+    setFeedbackLoading(true);
+    setPracticeState("feedback");
+
+    const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
+    const persona = PERSONAS.find(p => p.id === practicePersona);
+    const transcript = practiceMessages.map(m => `${m.role === "agent" ? "AGENT" : "CLIENT"}: ${m.content}`).join("\n\n");
+
+    try {
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a real estate conversation coach evaluating an agent's practice session. Be specific, constructive, and encouraging.
+
+SCENARIO: ${scenario.title}
+PERSONA: ${persona.name} (${persona.traits})
+DIFFICULTY: ${practiceDifficulty}
+
+TRANSCRIPT:
+${transcript}
+
+Return ONLY valid JSON (no markdown, no backticks):
+{
+  "clarity": 0-100,
+  "empathy": 0-100,
+  "persuasion": 0-100,
+  "confidence": 0-100,
+  "overall": 0-100,
+  "strengths": ["strength 1", "strength 2"],
+  "improvements": ["improvement 1", "improvement 2"],
+  "suggestedPhrasing": "One specific alternative phrase the agent could have used at a key moment",
+  "nextFocus": "What to practice next time"
+}`
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content.map(i => i.text || "").join("");
+      const clean = text.replace(/```json|```/g, "").trim();
+      setPracticeFeedback(JSON.parse(clean));
+      
+      // Save session + feedback to backend
+      const fb = JSON.parse(clean);
+      try {
+        const sessionRes = await fetch(API_URL + "/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+          body: JSON.stringify({
+            scenario_id: practiceScenario,
+            scenario_title: scenario.title,
+            persona_id: practicePersona,
+            persona_name: persona.name,
+            difficulty: practiceDifficulty,
+            context: practiceContext || null
+          })
+        });
+        const sessionData = await sessionRes.json();
+        if (sessionRes.ok) {
+          // Add all turns
+          for (const msg of practiceMessages) {
+            await fetch(API_URL + "/sessions/" + sessionData.id + "/turns", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+              body: JSON.stringify({ role: msg.role, content: msg.content })
+            });
+          }
+          // End session with feedback
+          await fetch(API_URL + "/sessions/" + sessionData.id + "/end", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+            body: JSON.stringify({
+              clarity: fb.clarity, empathy: fb.empathy,
+              persuasion: fb.persuasion, confidence: fb.confidence,
+              overall: fb.overall, strengths: fb.strengths,
+              improvements: fb.improvements,
+              suggested_phrasing: fb.suggestedPhrasing,
+              next_focus: fb.nextFocus
+            })
+          });
+        }
+      } catch (saveErr) { console.error("Session save error:", saveErr); }
+    } catch (err) {
+      console.error("Feedback generation error:", err);
+      setPracticeFeedback({ clarity: 75, empathy: 70, persuasion: 72, confidence: 68, overall: 71, strengths: ["Good engagement with the client"], improvements: ["Try leading with more empathy"], suggestedPhrasing: "Practice again for a detailed evaluation", nextFocus: "Empathy-first responses" });
+    }
+    setFeedbackLoading(false);
+  }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty]);
+
+  useEffect(() => {
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [practiceMessages, practiceLoading]);
+
+  const categories = ["All", ...new Set(SCENARIOS.map(s => s.category))];
+
+  const filteredScenarios = SCENARIOS.filter(s => {
+    const matchSearch = s.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCategory = filterCategory === "All" || s.category === filterCategory;
+    return matchSearch && matchCategory;
+  });
+
+  const allScenarios = generatedScenario
+    ? [...SCENARIOS, generatedScenario]
+    : SCENARIOS;
+
+  const currentScenario = selectedScenario
+    ? allScenarios.find(s => s.id === selectedScenario)
+    : null;
+
+  const selectScenario = useCallback((id) => {
+    setAnimateIn(false);
+    setTimeout(() => {
+      setSelectedScenario(id);
+      setActiveTab("synopsis");
+      setAnimateIn(true);
+    }, 100);
+  }, []);
+
+  const handleCopy = useCallback((text, section) => {
+    navigator.clipboard.writeText(text);
+    setCopiedSection(section);
+    setTimeout(() => setCopiedSection(null), 2000);
+  }, []);
+
+  const generateScenario = useCallback(async () => {
+    if (!customPrompt.trim()) return;
+    setIsGenerating(true);
+    try {
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a real estate scenario analyst for Primed, an intelligence tool for real estate agents. Given this scenario: "${customPrompt}"
+
+Return ONLY valid JSON (no markdown, no backticks) with this exact structure:
+{
+  "title": "Short title",
+  "category": "One of: Geopolitical, Industry, Economic, Technology, Regulatory",
+  "heat": "One of: Critical, High, Medium",
+  "synopsis": "2-3 paragraph analysis of the scenario",
+  "realEstateImpact": [
+    {"area": "Impact Area Name", "direction": "up/down/mixed", "detail": "Detailed explanation"}
+  ],
+  "teamTalkingPoints": ["point 1", "point 2", "point 3"],
+  "brokerageTalkingPoints": ["point 1", "point 2", "point 3"],
+  "clientScript": "A professional script for client conversations about this topic"
+}
+
+Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a detailed client script.`
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content.map(i => i.text || "").join("");
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      const newScenario = {
+        ...parsed,
+        id: "custom-" + Date.now(),
+        icon: "⚡"
+      };
+      setGeneratedScenario(newScenario);
+      selectScenario(newScenario.id);
+      setShowCustom(false);
+      setCustomPrompt("");
+      
+      // Save to backend
+      try {
+        await fetch(API_URL + "/custom-scenarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+          body: JSON.stringify({ input_topic: customPrompt, generated_data: parsed })
+        });
+      } catch (saveErr) { console.error("Custom scenario save error:", saveErr); }
+    } catch (err) {
+      console.error("Generation failed:", err);
+      alert("Failed to generate scenario. Please try again.");
+    }
+    setIsGenerating(false);
+  }, [customPrompt, selectScenario]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
+
+  // ── STYLES ──
+  const S = {
+    app: {
+      fontFamily: "'Outfit', 'Helvetica Neue', sans-serif",
+      minHeight: "100vh",
+      background: "#08090c",
+      color: "#f0eeea",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      height: "100vh"
+    },
+    header: {
+      padding: "18px 28px 14px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      background: "linear-gradient(180deg, #0d0e12 0%, #08090c 100%)",
+      flexShrink: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between"
+    },
+    logoArea: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 10
+    },
+    logoMark: {
+      width: 8, height: 8, borderRadius: "50%",
+      background: "#e05a33",
+      boxShadow: "0 0 12px rgba(224,90,51,0.5)",
+      display: "inline-block",
+      marginRight: 4,
+      position: "relative",
+      top: -1
+    },
+    logoText: {
+      fontSize: 24,
+      fontWeight: 700,
+      letterSpacing: "-0.02em",
+      color: "#f5f3ee",
+      margin: 0,
+      fontFamily: "'Outfit', sans-serif"
+    },
+    tagline: {
+      fontSize: 11,
+      color: "rgba(240,238,234,0.35)",
+      letterSpacing: "0.14em",
+      textTransform: "uppercase",
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 400
+    },
+    headerRight: {
+      fontSize: 11,
+      color: "rgba(224,90,51,0.7)",
+      fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: "0.06em"
+    },
+    main: {
+      display: "flex",
+      flex: 1,
+      overflow: "hidden"
+    },
+    sidebar: {
+      width: 340,
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+      display: "flex",
+      flexDirection: "column",
+      background: "rgba(10,11,15,0.9)",
+      flexShrink: 0
+    },
+    sidebarControls: {
+      padding: "16px 16px 12px",
+      borderBottom: "1px solid rgba(255,255,255,0.04)",
+      flexShrink: 0
+    },
+    searchInput: {
+      width: "100%",
+      padding: "10px 14px",
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: 8,
+      color: "#f0eeea",
+      fontSize: 13,
+      fontFamily: "inherit",
+      outline: "none",
+      boxSizing: "border-box",
+      transition: "border-color 0.2s"
+    },
+    filterRow: {
+      display: "flex",
+      gap: 6,
+      marginTop: 10,
+      flexWrap: "wrap"
+    },
+    filterBtn: (active) => ({
+      padding: "4px 12px",
+      borderRadius: 20,
+      fontSize: 11,
+      fontWeight: 500,
+      border: "1px solid",
+      borderColor: active ? "rgba(224,90,51,0.5)" : "rgba(255,255,255,0.08)",
+      background: active ? "rgba(224,90,51,0.1)" : "transparent",
+      color: active ? "#e05a33" : "rgba(240,238,234,0.5)",
+      cursor: "pointer",
+      transition: "all 0.2s",
+      fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: "0.02em"
+    }),
+    scenarioList: {
+      flex: 1,
+      overflowY: "auto",
+      padding: "8px"
+    },
+    scenarioCard: (active) => ({
+      padding: "14px 16px",
+      borderRadius: 10,
+      marginBottom: 4,
+      cursor: "pointer",
+      background: active ? "rgba(224,90,51,0.07)" : "transparent",
+      border: "1px solid",
+      borderColor: active ? "rgba(224,90,51,0.2)" : "transparent",
+      transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
+    }),
+    cardTitle: {
+      fontSize: 14,
+      fontWeight: 600,
+      color: "#f5f3ee",
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    },
+    cardMeta: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginTop: 6
+    },
+    categoryTag: {
+      fontSize: 10,
+      color: "rgba(240,238,234,0.45)",
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      fontFamily: "'IBM Plex Mono', monospace"
+    },
+    generateBtn: {
+      margin: "8px 8px 12px",
+      padding: "12px 16px",
+      borderRadius: 10,
+      border: "1px dashed rgba(224,90,51,0.3)",
+      background: "rgba(224,90,51,0.04)",
+      color: "#e05a33",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      textAlign: "center",
+      transition: "all 0.2s",
+      fontFamily: "inherit",
+      flexShrink: 0,
+      letterSpacing: "0.01em"
+    },
+    content: {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden"
+    },
+    tabBar: {
+      display: "flex",
+      gap: 0,
+      padding: "0 24px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      flexShrink: 0,
+      background: "rgba(12,13,17,0.6)"
+    },
+    tab: (active) => ({
+      padding: "14px 20px",
+      fontSize: 11,
+      fontWeight: 600,
+      color: active ? "#e05a33" : "rgba(226,224,219,0.35)",
+      cursor: "pointer",
+      transition: "all 0.2s",
+      background: active ? "rgba(224,90,51,0.06)" : "transparent",
+      border: "none",
+      borderBottom: `2px solid ${active ? "#e05a33" : "transparent"}`,
+      fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: "0.06em",
+      textTransform: "uppercase",
+      display: "flex",
+      alignItems: "center",
+      gap: 7
+    }),
+    contentBody: {
+      flex: 1,
+      overflowY: "auto",
+      padding: "28px 32px",
+      lineHeight: 1.7
+    },
+    sectionTitle: {
+      fontSize: 11,
+      letterSpacing: "0.16em",
+      textTransform: "uppercase",
+      color: "rgba(224,90,51,0.85)",
+      fontFamily: "'IBM Plex Mono', monospace",
+      marginBottom: 16,
+      fontWeight: 600
+    },
+    impactCard: {
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,255,255,0.06)",
+      borderRadius: 12,
+      padding: "18px 20px",
+      marginBottom: 12,
+      borderLeft: "3px solid rgba(224,90,51,0.2)"
+    },
+    impactTitle: {
+      fontSize: 15,
+      fontWeight: 600,
+      color: "#f5f3ee",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8
+    },
+    impactDetail: {
+      fontSize: 14,
+      color: "rgba(240,238,234,0.72)",
+      lineHeight: 1.65
+    },
+    talkingPoint: {
+      display: "flex",
+      gap: 12,
+      marginBottom: 14,
+      alignItems: "flex-start"
+    },
+    talkingPointNum: {
+      width: 26, height: 26, borderRadius: 6,
+      background: "rgba(224,90,51,0.1)",
+      color: "#e05a33",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 11,
+      fontWeight: 700,
+      flexShrink: 0,
+      fontFamily: "'IBM Plex Mono', monospace"
+    },
+    talkingPointText: {
+      fontSize: 14,
+      color: "rgba(240,238,234,0.8)",
+      lineHeight: 1.6,
+      paddingTop: 3
+    },
+    scriptBox: {
+      background: "rgba(224,90,51,0.03)",
+      border: "1px solid rgba(224,90,51,0.12)",
+      borderRadius: 14,
+      padding: "24px 28px",
+      fontSize: 14.5,
+      lineHeight: 1.75,
+      color: "rgba(240,238,234,0.82)",
+      whiteSpace: "pre-wrap",
+      position: "relative"
+    },
+    copyBtn: (copied) => ({
+      position: "absolute",
+      top: 12,
+      right: 12,
+      padding: "6px 14px",
+      borderRadius: 6,
+      border: "1px solid",
+      borderColor: copied ? "rgba(16,185,129,0.3)" : "rgba(224,90,51,0.2)",
+      background: copied ? "rgba(16,185,129,0.1)" : "rgba(224,90,51,0.06)",
+      color: copied ? "#10b981" : "#e05a33",
+      fontSize: 11,
+      fontWeight: 600,
+      cursor: "pointer",
+      transition: "all 0.2s",
+      fontFamily: "'DM Mono', monospace"
+    }),
+    emptyState: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      textAlign: "center",
+      padding: 40
+    },
+    emptyIcon: {
+      width: 64, height: 64, borderRadius: "50%",
+      background: "rgba(224,90,51,0.06)",
+      border: "1px solid rgba(224,90,51,0.12)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 28,
+      marginBottom: 20
+    },
+    emptyTitle: {
+      fontSize: 22,
+      fontWeight: 600,
+      color: "rgba(226,224,219,0.25)",
+      marginBottom: 8,
+      letterSpacing: "-0.01em"
+    },
+    emptyText: {
+      fontSize: 13,
+      color: "rgba(226,224,219,0.18)",
+      maxWidth: 320,
+      lineHeight: 1.6
+    },
+    modal: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.8)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 100,
+      backdropFilter: "blur(12px)"
+    },
+    modalContent: {
+      background: "#12131a",
+      borderRadius: 16,
+      padding: "32px",
+      width: "90%",
+      maxWidth: 560,
+      border: "1px solid rgba(255,255,255,0.08)",
+      boxShadow: "0 24px 80px rgba(0,0,0,0.6)"
+    },
+    textarea: {
+      width: "100%",
+      minHeight: 120,
+      padding: "14px 16px",
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.1)",
+      borderRadius: 10,
+      color: "#f0eeea",
+      fontSize: 14,
+      fontFamily: "inherit",
+      lineHeight: 1.6,
+      outline: "none",
+      resize: "vertical",
+      boxSizing: "border-box",
+      marginTop: 16
+    },
+    modalBtns: {
+      display: "flex",
+      gap: 10,
+      marginTop: 20,
+      justifyContent: "flex-end"
+    }
+  };
+
+  const renderSynopsis = () => (
+    <div style={{ opacity: animateIn ? 1 : 0, transform: animateIn ? "translateY(0)" : "translateY(12px)", transition: "all 0.4s cubic-bezier(0.4,0,0.2,1)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 12,
+          background: "rgba(224,90,51,0.08)",
+          border: "1px solid rgba(224,90,51,0.15)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 26
+        }}>
+          {currentScenario.icon}
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 400, color: "#f5f3ee", letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
+            {currentScenario.title}
+          </h2>
+          <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center" }}>
+            <span style={S.categoryTag}>{currentScenario.category}</span>
+            <HeatBadge heat={currentScenario.heat} />
+          </div>
+        </div>
+      </div>
+      <div style={S.sectionTitle}>Scenario Briefing</div>
+      <p style={{ fontSize: 15, color: "rgba(240,238,234,0.75)", lineHeight: 1.8, margin: 0 }}>
+        {currentScenario.synopsis}
+      </p>
+      <div style={{
+        marginTop: 28, padding: "14px 18px", borderRadius: 10,
+        background: "rgba(224,90,51,0.04)",
+        border: "1px solid rgba(224,90,51,0.1)",
+        fontSize: 12, color: "rgba(224,90,51,0.7)",
+        fontFamily: "'IBM Plex Mono', monospace",
+        display: "flex", alignItems: "center", gap: 8
+      }}>
+        <span style={{ fontSize: 14 }}>→</span>
+        Navigate tabs above for market impact, talk tracks, and client scripts
+      </div>
+    </div>
+  );
+
+  const renderImpact = () => (
+    <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
+      <div style={S.sectionTitle}>Market Impact Assessment</div>
+      {currentScenario.realEstateImpact.map((impact, i) => (
+        <div key={i} style={{
+          ...S.impactCard,
+          opacity: animateIn ? 1 : 0,
+          transform: animateIn ? "translateY(0)" : "translateY(16px)",
+          transition: `all 0.4s cubic-bezier(0.4,0,0.2,1) ${i * 0.08}s`
+        }}>
+          <div style={S.impactTitle}>
+            <span>{impact.area}</span>
+            <DirectionBadge direction={impact.direction} />
+          </div>
+          <div style={S.impactDetail}>{impact.detail}</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderTeam = () => (
+    <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
+      <div style={{ marginBottom: 36 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={S.sectionTitle}>Team Talk Track</div>
+          <button
+            onClick={() => handleCopy(currentScenario.teamTalkingPoints.join("\n\n"), "team")}
+            style={{ ...S.copyBtn(copiedSection === "team"), position: "static" }}
+          >
+            {copiedSection === "team" ? "✓ Copied" : "Copy All"}
+          </button>
+        </div>
+        {currentScenario.teamTalkingPoints.map((point, i) => (
+          <div key={i} style={{
+            ...S.talkingPoint,
+            opacity: animateIn ? 1 : 0,
+            transform: animateIn ? "translateX(0)" : "translateX(-12px)",
+            transition: `all 0.35s cubic-bezier(0.4,0,0.2,1) ${i * 0.06}s`
+          }}>
+            <div style={S.talkingPointNum}>{i + 1}</div>
+            <div style={S.talkingPointText}>{point}</div>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={S.sectionTitle}>Brokerage Talk Track</div>
+          <button
+            onClick={() => handleCopy(currentScenario.brokerageTalkingPoints.join("\n\n"), "brokerage")}
+            style={{ ...S.copyBtn(copiedSection === "brokerage"), position: "static" }}
+          >
+            {copiedSection === "brokerage" ? "✓ Copied" : "Copy All"}
+          </button>
+        </div>
+        {currentScenario.brokerageTalkingPoints.map((point, i) => (
+          <div key={i} style={{
+            ...S.talkingPoint,
+            opacity: animateIn ? 1 : 0,
+            transform: animateIn ? "translateX(0)" : "translateX(-12px)",
+            transition: `all 0.35s cubic-bezier(0.4,0,0.2,1) ${(i + 5) * 0.06}s`
+          }}>
+            <div style={{ ...S.talkingPointNum, background: "rgba(59,130,246,0.1)", color: "#3b82f6", borderRadius: 6 }}>{i + 1}</div>
+            <div style={S.talkingPointText}>{point}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderScript = () => (
+    <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
+      <div style={S.sectionTitle}>Client Interaction Script</div>
+      <p style={{ fontSize: 13, color: "rgba(226,224,219,0.35)", marginBottom: 20, lineHeight: 1.6 }}>
+        Customize for your voice. Bracketed sections show buyer/seller variations.
+      </p>
+      <div style={S.scriptBox}>
+        <button
+          onClick={() => handleCopy(currentScenario.clientScript, "script")}
+          style={S.copyBtn(copiedSection === "script")}
+        >
+          {copiedSection === "script" ? "✓ Copied" : "Copy Script"}
+        </button>
+        {currentScenario.clientScript}
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+      {/* ═══ AUTH SCREEN ═══ */}
+      {authScreen && (
+        <div style={{
+          ...S.app, alignItems: "center", justifyContent: "center",
+          background: "#08090c"
+        }}>
+          <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 40, justifyContent: "center" }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e05a33", boxShadow: "0 0 14px rgba(224,90,51,0.5)" }} />
+              <span style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", fontFamily: "'Outfit', sans-serif" }}>primed</span>
+            </div>
+            <h2 style={{ fontSize: 22, fontWeight: 400, color: "#f5f3ee", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
+              {authScreen === "login" ? "Welcome back." : "Get started."}
+            </h2>
+            <p style={{ fontSize: 13, color: "rgba(240,238,234,0.45)", textAlign: "center", marginBottom: 32 }}>
+              {authScreen === "login" ? "Log in to your account" : "Create your free account"}
+            </p>
+            {authError && (
+              <div style={{ padding: "10px 16px", borderRadius: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 13, marginBottom: 16, textAlign: "center" }}>{authError}</div>
+            )}
+            {authScreen === "signup" && (
+              <input type="text" placeholder="Your name" value={authName} onChange={e => setAuthName(e.target.value)}
+                style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+            )}
+            <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
+              style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+            <input type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
+              style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
+            <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading || !authEmail || !authPass}
+              style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail || !authPass) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail || !authPass) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
+            </button>
+            <p style={{ fontSize: 13, color: "rgba(240,238,234,0.4)", textAlign: "center", marginTop: 20 }}>
+              {authScreen === "login" ? "Don't have an account? " : "Already have an account? "}
+              <span onClick={() => { setAuthScreen(authScreen === "login" ? "signup" : "login"); setAuthError(""); }}
+                style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
+                {authScreen === "login" ? "Sign up" : "Log in"}
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MAIN APP (when logged in) ═══ */}
+      {!authScreen && (
+      <div style={S.app}>
+        <header style={S.header}>
+          <div style={S.logoArea}>
+            <h1 style={S.logoText}>
+              <span style={S.logoMark} />
+              primed
+            </h1>
+            <span style={S.tagline}>Know what to say. Always.</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {user && <span style={{ fontSize: 12, color: "rgba(240,238,234,0.4)", fontFamily: "'IBM Plex Mono', monospace" }}>{user.email}</span>}
+            <button onClick={handleLogout} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "rgba(240,238,234,0.35)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Log out</button>
+          </div>
+        </header>
+
+        {/* ── MODE SWITCHER ── */}
+        <div style={{
+          display: "flex", borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(10,11,15,0.95)", flexShrink: 0
+        }}>
+          {[
+            { id: "intelligence", label: "Intelligence", icon: "◈" },
+            { id: "practice", label: "Practice", icon: "◎" },
+            { id: "myscript", label: "My Script", icon: "◆" }
+          ].map(m => (
+            <button key={m.id} onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); }} style={{
+              flex: 1, padding: "12px 0", textAlign: "center",
+              fontSize: 12, fontWeight: 600, fontFamily: "'DM Mono', monospace",
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              background: appMode === m.id ? "rgba(224,90,51,0.06)" : "transparent",
+              color: appMode === m.id ? "#e05a33" : "rgba(226,224,219,0.3)",
+              border: "none", borderBottom: `2px solid ${appMode === m.id ? "#e05a33" : "transparent"}`,
+              cursor: "pointer", transition: "all 0.2s",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+            }}>
+              <span style={{ fontSize: 10 }}>{m.icon}</span> {m.label}
+            </button>
+          ))}
+        </div>
+
+        {appMode === "intelligence" && (
+        <div style={S.main}>
+          <aside style={S.sidebar}>
+            <div style={S.sidebarControls}>
+              <input
+                type="text"
+                placeholder="Search scenarios..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={S.searchInput}
+              />
+              <div style={S.filterRow}>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setFilterCategory(cat)}
+                    style={S.filterBtn(filterCategory === cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={S.scenarioList}>
+              {filteredScenarios.map(scenario => (
+                <div
+                  key={scenario.id}
+                  onClick={() => selectScenario(scenario.id)}
+                  style={S.scenarioCard(selectedScenario === scenario.id)}
+                  onMouseEnter={e => {
+                    if (selectedScenario !== scenario.id) e.currentTarget.style.background = "rgba(255,255,255,0.025)";
+                  }}
+                  onMouseLeave={e => {
+                    if (selectedScenario !== scenario.id) e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <div style={S.cardTitle}>
+                    <span>{scenario.icon}</span>
+                    <span>{scenario.title}</span>
+                  </div>
+                  <div style={S.cardMeta}>
+                    <span style={S.categoryTag}>{scenario.category}</span>
+                    <HeatBadge heat={scenario.heat} />
+                  </div>
+                </div>
+              ))}
+              {generatedScenario && (
+                <div
+                  onClick={() => selectScenario(generatedScenario.id)}
+                  style={S.scenarioCard(selectedScenario === generatedScenario.id)}
+                >
+                  <div style={S.cardTitle}>
+                    <span>{generatedScenario.icon}</span>
+                    <span>{generatedScenario.title}</span>
+                  </div>
+                  <div style={S.cardMeta}>
+                    <span style={S.categoryTag}>{generatedScenario.category}</span>
+                    <HeatBadge heat={generatedScenario.heat} />
+                    <span style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace" }}>AI GENERATED</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button
+              style={S.generateBtn}
+              onClick={() => setShowCustom(true)}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(224,90,51,0.1)"}
+              onMouseLeave={e => e.currentTarget.style.background = "rgba(224,90,51,0.04)"}
+            >
+              ⚡ Generate Custom Scenario
+            </button>
+          </aside>
+
+          <div style={S.content}>
+            {currentScenario ? (
+              <>
+                <div style={S.tabBar}>
+                  {TABS.map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      style={S.tab(activeTab === tab.id)}
+                    >
+                      <span style={{ fontSize: 9 }}>{tab.icon}</span>
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                <div ref={contentRef} style={S.contentBody}>
+                  {activeTab === "synopsis" && renderSynopsis()}
+                  {activeTab === "impact" && renderImpact()}
+                  {activeTab === "team" && renderTeam()}
+                  {activeTab === "script" && renderScript()}
+                </div>
+              </>
+            ) : (
+              <div style={S.emptyState}>
+                <div style={S.emptyIcon}>⚡</div>
+                <div style={S.emptyTitle}>Get Primed</div>
+                <div style={S.emptyText}>
+                  Select a scenario from the sidebar or generate a custom one. Know exactly what to say before the phone rings.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        )}
+
+        {appMode === "practice" && (
+        <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+
+          {practiceState === "setup" && (
+            <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+              <div style={{ maxWidth: 900, margin: "0 auto" }}>
+                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Practice Mode</div>
+                <h2 style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", marginBottom: 8, fontFamily: "'Space Grotesk', sans-serif" }}>Choose Your Scenario</h2>
+                <p style={{ fontSize: 14, color: "rgba(226,224,219,0.5)", marginBottom: 28 }}>Select a conversation to practice, then choose who you're talking to.</p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10, marginBottom: 40 }}>
+                  {PRACTICE_SCENARIOS.map(s => (
+                    <div key={s.id} onClick={() => setPracticeScenario(s.id)} style={{
+                      padding: "14px 18px", borderRadius: 12, cursor: "pointer",
+                      border: `1px solid ${practiceScenario === s.id ? "rgba(224,90,51,0.3)" : "rgba(255,255,255,0.06)"}`,
+                      background: practiceScenario === s.id ? "rgba(224,90,51,0.07)" : "rgba(255,255,255,0.02)",
+                      transition: "all 0.2s"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <span style={{ fontSize: 18 }}>{s.icon}</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: practiceScenario === s.id ? "#f5f3ee" : "rgba(226,224,219,0.7)" }}>{s.title}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", lineHeight: 1.5 }}>{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {practiceScenario && (
+                  <>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Your Client</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10, marginBottom: 28 }}>
+                      {PERSONAS.map(p => (
+                        <div key={p.id} onClick={() => setPracticePersona(p.id)} style={{
+                          padding: "16px 18px", borderRadius: 12, cursor: "pointer",
+                          border: `1px solid ${practicePersona === p.id ? p.color + "44" : "rgba(255,255,255,0.06)"}`,
+                          background: practicePersona === p.id ? p.color + "11" : "rgba(255,255,255,0.02)",
+                          transition: "all 0.2s"
+                        }}>
+                          <div style={{ fontSize: 24, marginBottom: 8 }}>{p.icon}</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f3ee", marginBottom: 4 }}>{p.name}</div>
+                          <div style={{ fontSize: 11.5, color: "rgba(226,224,219,0.45)", lineHeight: 1.5, marginBottom: 8 }}>{p.traits}</div>
+                          <span style={{
+                            padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700,
+                            fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
+                            background: p.difficulty === "Hard" ? "rgba(239,68,68,0.1)" : "rgba(245,158,11,0.1)",
+                            color: p.difficulty === "Hard" ? "#ef4444" : "#f59e0b"
+                          }}>{p.difficulty}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {practiceScenario && practicePersona && (
+                  <>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Difficulty</div>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
+                      {["easy", "medium", "hard"].map(d => (
+                        <button key={d} onClick={() => setPracticeDifficulty(d)} style={{
+                          padding: "8px 20px", borderRadius: 8, fontSize: 12, fontWeight: 600,
+                          fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase",
+                          border: `1px solid ${practiceDifficulty === d ? "rgba(224,90,51,0.3)" : "rgba(255,255,255,0.08)"}`,
+                          background: practiceDifficulty === d ? "rgba(224,90,51,0.1)" : "transparent",
+                          color: practiceDifficulty === d ? "#e05a33" : "rgba(226,224,219,0.4)",
+                          cursor: "pointer", transition: "all 0.2s"
+                        }}>{d}</button>
+                      ))}
+                    </div>
+
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Context (Optional)</div>
+                    <textarea
+                      value={practiceContext}
+                      onChange={e => setPracticeContext(e.target.value)}
+                      placeholder="e.g., The home is priced at $850K, seller expects $920K based on Zillow, 3BR/2BA in a competitive suburban market..."
+                      style={{
+                        width: "100%", minHeight: 80, padding: "12px 16px",
+                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 10, color: "#e2e0db", fontSize: 13, fontFamily: "inherit",
+                        lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box"
+                      }}
+                    />
+
+                    <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); }} style={{
+                      marginTop: 24, padding: "14px 36px", borderRadius: 10, border: "none",
+                      background: "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700,
+                      fontFamily: "'DM Mono', monospace", letterSpacing: "0.03em",
+                      cursor: "pointer", transition: "all 0.2s", display: "block"
+                    }}>
+                      Start Practice →
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ACTIVE: Chat simulation */}
+          {practiceState === "active" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              {/* Practice header */}
+              <div style={{
+                padding: "12px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(12,13,18,0.9)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 20 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f3ee" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</div>
+                    <div style={{ fontSize: 11, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace" }}>
+                      {PRACTICE_SCENARIOS.find(s => s.id === practiceScenario)?.title} • {practiceDifficulty}
+                    </div>
+                  </div>
+                </div>
+                <button onClick={endPracticeSession} style={{
+                  padding: "8px 18px", borderRadius: 8,
+                  border: "1px solid rgba(212,160,62,0.3)",
+                  background: "rgba(212,160,62,0.08)",
+                  color: "#d4a03e", fontSize: 11, fontWeight: 600,
+                  fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em",
+                  cursor: "pointer", transition: "all 0.2s"
+                }}>
+                  End & Get Feedback
+                </button>
+              </div>
+
+              {/* Chat messages */}
+              <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
+                {practiceMessages.length === 0 && (
+                  <div style={{ textAlign: "center", padding: "40px 20px" }}>
+                    <div style={{ fontSize: 40, marginBottom: 16 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</div>
+                    <div style={{ fontSize: 15, color: "rgba(226,224,219,0.5)", marginBottom: 8 }}>
+                      You're speaking with <strong style={{ color: "#f5f3ee" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</strong>
+                    </div>
+                    <div style={{ fontSize: 13, color: "rgba(226,224,219,0.3)", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+                      Start the conversation. Open the way you'd open a real call. The client will respond in character.
+                    </div>
+                  </div>
+                )}
+
+                {practiceMessages.map((msg, i) => (
+                  <div key={i} style={{
+                    display: "flex", justifyContent: msg.role === "agent" ? "flex-end" : "flex-start",
+                    marginBottom: 12
+                  }}>
+                    <div style={{
+                      maxWidth: "75%", padding: "12px 16px", borderRadius: 14,
+                      background: msg.role === "agent" ? "rgba(224,90,51,0.12)" : "rgba(255,255,255,0.05)",
+                      border: `1px solid ${msg.role === "agent" ? "rgba(224,90,51,0.2)" : "rgba(255,255,255,0.06)"}`,
+                      borderBottomRightRadius: msg.role === "agent" ? 4 : 14,
+                      borderBottomLeftRadius: msg.role === "client" ? 4 : 14,
+                    }}>
+                      <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: msg.role === "agent" ? "#e05a33" : "rgba(226,224,219,0.35)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>
+                        {msg.role === "agent" ? "You" : PERSONAS.find(p => p.id === practicePersona)?.name}
+                      </div>
+                      <div style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(226,224,219,0.8)", whiteSpace: "pre-wrap" }}>{msg.content}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {practiceLoading && (
+                  <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
+                    <div style={{ padding: "12px 16px", borderRadius: 14, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", borderBottomLeftRadius: 4 }}>
+                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.4)" }}>typing...</div>
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Input */}
+              <div style={{
+                padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(10,11,15,0.95)", flexShrink: 0,
+                display: "flex", gap: 10
+              }}>
+                <input
+                  type="text"
+                  value={practiceInput}
+                  onChange={e => setPracticeInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendPracticeMessage(); } }}
+                  placeholder="Type your response..."
+                  disabled={practiceLoading}
+                  style={{
+                    flex: 1, padding: "12px 16px",
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit",
+                    outline: "none"
+                  }}
+                />
+                <button onClick={sendPracticeMessage} disabled={practiceLoading || !practiceInput.trim()} style={{
+                  padding: "12px 24px", borderRadius: 10, border: "none",
+                  background: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.2)" : "#e05a33",
+                  color: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.5)" : "#fff",
+                  fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace",
+                  cursor: practiceLoading || !practiceInput.trim() ? "not-allowed" : "pointer",
+                  transition: "all 0.2s"
+                }}>
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* FEEDBACK: Coaching results */}
+          {practiceState === "feedback" && (
+            <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+              <div style={{ maxWidth: 640, margin: "0 auto" }}>
+                {feedbackLoading ? (
+                  <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                    <div style={{ fontSize: 40, marginBottom: 20 }}>🎯</div>
+                    <div style={{ fontSize: 18, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>Analyzing your conversation...</div>
+                    <div style={{ fontSize: 13, color: "rgba(226,224,219,0.4)" }}>Scoring Clarity, Empathy, Persuasion, and Confidence</div>
+                  </div>
+                ) : practiceFeedback && (
+                  <>
+                    <div style={{ textAlign: "center", marginBottom: 36 }}>
+                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16 }}>Session Complete</div>
+                      <div style={{ fontSize: 64, fontWeight: 700, color: "#e05a33", fontFamily: "'DM Mono', monospace", lineHeight: 1 }}>{practiceFeedback.overall}</div>
+                      <div style={{ fontSize: 12, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 8 }}>Overall Score</div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
+                      {[
+                        { label: "Clarity", score: practiceFeedback.clarity, color: "#10b981" },
+                        { label: "Empathy", score: practiceFeedback.empathy, color: "#d4a03e" },
+                        { label: "Persuasion", score: practiceFeedback.persuasion, color: "#e05a33" },
+                        { label: "Confidence", score: practiceFeedback.confidence, color: "#3b82f6" }
+                      ].map((dim, i) => (
+                        <div key={i} style={{
+                          padding: "20px", borderRadius: 14, textAlign: "center",
+                          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)"
+                        }}>
+                          <div style={{ fontSize: 32, fontWeight: 700, color: dim.color, fontFamily: "'DM Mono', monospace" }}>{dim.score}</div>
+                          <div style={{ fontSize: 10, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 4 }}>{dim.label}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                      <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Strengths</div>
+                      {practiceFeedback.strengths.map((s, i) => (
+                        <div key={i} style={{ fontSize: 14, color: "rgba(226,224,219,0.7)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.3)", lineHeight: 1.6 }}>{s}</div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginBottom: 24 }}>
+                      <div style={{ fontSize: 10, color: "#f59e0b", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Areas to Improve</div>
+                      {practiceFeedback.improvements.map((s, i) => (
+                        <div key={i} style={{ fontSize: 14, color: "rgba(226,224,219,0.7)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(245,158,11,0.3)", lineHeight: 1.6 }}>{s}</div>
+                      ))}
+                    </div>
+
+                    <div style={{
+                      padding: "16px 20px", borderRadius: 12,
+                      background: "rgba(224,90,51,0.04)", border: "1px solid rgba(224,90,51,0.1)",
+                      marginBottom: 24
+                    }}>
+                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Try This Phrasing</div>
+                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.65)", lineHeight: 1.65, fontStyle: "italic" }}>{practiceFeedback.suggestedPhrasing}</div>
+                    </div>
+
+                    <div style={{
+                      padding: "16px 20px", borderRadius: 12,
+                      background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.1)",
+                      marginBottom: 32
+                    }}>
+                      <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Next Practice Focus</div>
+                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.65)", lineHeight: 1.65 }}>{practiceFeedback.nextFocus}</div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: 12 }}>
+                      <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); }} style={{
+                        padding: "12px 28px", borderRadius: 10, border: "none",
+                        background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700,
+                        fontFamily: "'DM Mono', monospace", cursor: "pointer"
+                      }}>
+                        Practice Again
+                      </button>
+                      <button onClick={() => { setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); }} style={{
+                        padding: "12px 28px", borderRadius: 10,
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        background: "transparent", color: "rgba(226,224,219,0.5)",
+                        fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
+                      }}>
+                        New Scenario
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        )}
+
+        {appMode === "myscript" && (
+        <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+          <div style={{ maxWidth: 700, margin: "0 auto" }}>
+            <div style={{ marginBottom: 36 }}>
+              <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", marginBottom: 8, fontFamily: "'Space Grotesk', sans-serif" }}>
+                {vsStep < 4 ? "Build Your Script" : "Your Value Script"}
+              </h2>
+              <p style={{ fontSize: 14, color: "rgba(226,224,219,0.5)" }}>
+                {vsStep < 4 ? "Answer three questions. Get a script that sounds like you — not a template." : "Use these everywhere — listing appointments, networking, social media, cold calls."}
+              </p>
+            </div>
+
+            {vsStep < 4 && (
+              <div style={{ display: "flex", gap: 8, marginBottom: 36 }}>
+                {[1, 2, 3].map(s => (
+                  <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= vsStep ? "#d4a03e" : "rgba(255,255,255,0.06)", transition: "background 0.3s" }} />
+                ))}
+              </div>
+            )}
+
+            {vsStep === 1 && (
+              <div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 1 — Who You Serve</div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What's your favorite type of transaction?</label>
+                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Think about the deal that made you proudest. First-time buyers? Luxury listings? Relocations?</p>
+                  <input type="text" value={vsFavoriteTransaction} onChange={e => setVsFavoriteTransaction(e.target.value)} placeholder="e.g., Helping first-time buyers find their first home" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>Who is your ideal client?</label>
+                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Describe who you love working with. The more specific, the sharper your script.</p>
+                  <input type="text" value={vsIdealClient} onChange={e => setVsIdealClient(e.target.value)} placeholder="e.g., Young families moving from the city to suburbs for better schools" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ marginBottom: 28 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What market or area do you work in?</label>
+                  <input type="text" value={vsMarket} onChange={e => setVsMarket(e.target.value)} placeholder="e.g., North Dallas suburbs, Frisco, McKinney" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer" }}>Next →</button>
+              </div>
+            )}
+
+            {vsStep === 2 && (
+              <div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 2 — The Problem You Solve</div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What's the biggest problem your clients face before they find you?</label>
+                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>What keeps them up at night? The fear, the frustration, the thing they can't figure out alone.</p>
+                  <textarea value={vsProblem} onChange={e => setVsProblem(e.target.value)} placeholder="e.g., They're overwhelmed, don't know what they can afford, and terrified of making a mistake on the biggest purchase of their life" style={{ width: "100%", minHeight: 100, padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={() => setVsStep(1)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
+                  <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(212,160,62,0.2)" : "#d4a03e", color: !vsProblem.trim() ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer" }}>Next →</button>
+                </div>
+              </div>
+            )}
+
+            {vsStep === 3 && (
+              <div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 3 — Your Results</div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What measurable result do you deliver?</label>
+                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Numbers are powerful. Sale-to-list ratio, days on market, homes sold — whatever proves your value.</p>
+                  <input type="text" value={vsResult} onChange={e => setVsResult(e.target.value)} placeholder="e.g., My sellers average 99.3% of list price" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ marginBottom: 28 }}>
+                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>In what timeframe?</label>
+                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>How quickly do you get results? This creates urgency and credibility.</p>
+                  <input type="text" value={vsTimeframe} onChange={e => setVsTimeframe(e.target.value)} placeholder="e.g., Average 11 days on market, 40% faster than area average" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={() => setVsStep(2)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
+                  <button onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsResult.trim() || vsGenerating) ? "not-allowed" : "pointer" }}>{vsGenerating ? "Generating..." : "Build My Script →"}</button>
+                </div>
+              </div>
+            )}
+
+            {vsStep === 4 && vsGeneratedScript && (
+              <div>
+                {[
+                  { key: "elevatorPitch", label: "Elevator Pitch", desc: "Networking, open houses, social events", color: "#d4a03e" },
+                  { key: "listingOpener", label: "Listing Appointment Opener", desc: "Start your next listing appointment with this", color: "#e05a33" },
+                  { key: "socialBio", label: "Social Media Bio", desc: "Instagram, LinkedIn, your website", color: "#10b981" },
+                  { key: "coldCallHook", label: "Cold Call Hook", desc: "First 10 seconds of any prospecting call", color: "#3b82f6" },
+                  { key: "objectionAnchor", label: "\"Why Should I Work With You?\"", desc: "Your anchor for the most important question", color: "#8b5cf6" }
+                ].map(({ key, label, desc, color }) => (
+                  <div key={key} style={{ marginBottom: 20, padding: "20px 24px", borderRadius: 14, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderLeft: `3px solid ${color}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: "#f5f3ee" }}>{label}</div>
+                        <div style={{ fontSize: 11, color: "rgba(226,224,219,0.35)", marginTop: 2 }}>{desc}</div>
+                      </div>
+                      <button onClick={() => { navigator.clipboard.writeText(vsGeneratedScript[key]); setVsCopied(key); setTimeout(() => setVsCopied(null), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${vsCopied === key ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"}`, background: vsCopied === key ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.03)", color: vsCopied === key ? "#10b981" : "rgba(226,224,219,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'DM Mono', monospace", cursor: "pointer", flexShrink: 0 }}>{vsCopied === key ? "✓ Copied" : "Copy"}</button>
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(226,224,219,0.7)", whiteSpace: "pre-wrap" }}>{vsGeneratedScript[key]}</div>
+                  </div>
+                ))}
+                <div style={{ marginBottom: 28, padding: "20px 24px", borderRadius: 14, background: "rgba(212,160,62,0.04)", border: "1px solid rgba(212,160,62,0.12)" }}>
+                  <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Coaching Notes</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(226,224,219,0.65)" }}>{vsGeneratedScript.coachingNotes}</div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button onClick={() => { setVsStep(1); setVsGeneratedScript(null); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Start Over</button>
+                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice Delivering It →</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        )}
+
+        {showCustom && (
+          <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowCustom(false)}>
+            <div style={S.modalContent}>
+              <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#f5f3ee", letterSpacing: "-0.01em" }}>
+                Get Primed on Any Scenario
+              </h3>
+              <p style={{ fontSize: 13, color: "rgba(226,224,219,0.4)", marginTop: 8, lineHeight: 1.5 }}>
+                Describe what's happening and we'll generate your full briefing — impact analysis, talk tracks, and client scripts.
+              </p>
+              <textarea
+                value={customPrompt}
+                onChange={e => setCustomPrompt(e.target.value)}
+                placeholder="e.g., What if Amazon announces a new HQ in Austin, TX?"
+                style={S.textarea}
+                disabled={isGenerating}
+              />
+              <div style={S.modalBtns}>
+                <button
+                  style={{
+                    padding: "10px 24px", borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "transparent", color: "rgba(226,224,219,0.4)",
+                    fontSize: 13, cursor: "pointer", fontFamily: "inherit"
+                  }}
+                  onClick={() => { setShowCustom(false); setCustomPrompt(""); }}
+                  disabled={isGenerating}
+                >
+                  Cancel
+                </button>
+                <button
+                  style={{
+                    padding: "10px 24px", borderRadius: 8, border: "none",
+                    background: isGenerating ? "rgba(224,90,51,0.2)" : "#e05a33",
+                    color: isGenerating ? "#e05a33" : "#fff",
+                    fontSize: 13, fontWeight: 700, cursor: isGenerating ? "wait" : "pointer",
+                    fontFamily: "'DM Mono', monospace", letterSpacing: "0.02em",
+                    transition: "all 0.2s"
+                  }}
+                  onClick={generateScenario}
+                  disabled={isGenerating || !customPrompt.trim()}
+                >
+                  {isGenerating ? "Analyzing..." : "Get Primed"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      )}
+    </>
+  );
+}
+
+    ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Primed));
+  </script>
+</body>
+</html>
