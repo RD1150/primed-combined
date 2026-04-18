@@ -12,7 +12,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { background: #08090c; }
+    body { background: #f8f7f4; }
   </style>
 </head>
 <body>
@@ -507,7 +507,344 @@ const SCENARIOS = [
       "Emphasize: a buyer who walks away feeling supported will come back. A buyer who felt pressured never will."
     ],
     clientScript: `"First of all, what you're feeling is completely normal. I've worked with hundreds of buyers, and almost every single one has a moment exactly like this before closing. It's a huge decision, and the fact that you're taking it seriously is a good thing.\n\nLet me ask you this: what specifically is worrying you right now? Let's talk through each concern one by one.\n\n[LISTEN—ADDRESS EACH CONCERN SPECIFICALLY]\n\n[FOR BUYERS: Remember what you told me when we started this search? You said [their original motivation—growing family, leaving rent, investment goal, school district]. That hasn't changed. What's changed is that the decision is now real instead of theoretical, and that's scary.\n\nHere's what I can tell you: the inspection came back [clean/with minor items we addressed]. Your financing is locked at [rate]. The appraisal supported the price. From a factual standpoint, everything checks out.]\n\nBut I want you to know something: if you genuinely feel this isn't right, I will support that decision 100%. I would rather you walk away from this home confident than close on it with doubt. My job is to help you make the best decision for YOUR life, whatever that decision is.\n\nWhat are you feeling right now?"`
+  },
+  {
+    id: "fsbo-conversion",
+    title: "\"I'm Selling It Myself\"",
+    icon: "🏠",
+    category: "Prospecting",
+    heat: "High",
+    synopsis: `A homeowner has decided to sell their property without an agent—For Sale By Owner. They believe they can save on commission and handle the process themselves. FSBOs account for roughly 7% of home sales, but data consistently shows they sell for 10-20% less than agent-assisted sales. The key to converting a FSBO isn't arguing—it's demonstrating value they can't replicate alone: exposure, negotiation, legal protection, and time savings. Most FSBOs list because they underestimate the complexity. Your job is to be the professional they didn't know they needed.`,
+    realEstateImpact: [
+      { area: "Sale Price", direction: "down", detail: "NAR data shows FSBO homes sell for a median of $310K vs $405K for agent-assisted sales. Even adjusting for property type, FSBOs consistently net less." },
+      { area: "Days on Market", direction: "up", detail: "FSBOs average 3 weeks longer on market due to limited exposure, poor pricing strategy, and weaker negotiation." },
+      { area: "Legal Exposure", direction: "up", detail: "Without agent guidance, FSBOs face higher risk of disclosure violations, contract errors, and post-sale litigation." },
+      { area: "Buyer Pool", direction: "down", detail: "Most buyer agents avoid FSBOs due to commission uncertainty and transaction complexity, reducing the seller's buyer pool by 80%+." }
+    ],
+    teamTalkingPoints: [
+      "Never criticize the FSBO decision—respect it, then offer to add value",
+      "Lead with a free CMA: 'I put this together for your neighborhood and thought you'd find it useful'",
+      "Ask about their timeline and process—most FSBOs haven't thought beyond putting up a sign",
+      "Mention buyer agent cooperation: 'Are you offering a buyer's agent commission? Without it, 87% of buyers' agents won't show your home'",
+      "Offer a limited-service option as a bridge: 'What if I just handled the paperwork and negotiations?'"
+    ],
+    brokerageTalkingPoints: [
+      "Track FSBOs in your market weekly—they're the warmest prospecting leads available",
+      "Create a FSBO conversion packet with market data, legal checklists, and case studies",
+      "Role-play the FSBO conversation monthly—it requires finesse, not a hard sell",
+      "Train agents to offer value first: CMAs, staging advice, legal checklists—before asking for the listing"
+    ],
+    clientScript: `"I respect that decision—honestly, I think every homeowner should at least consider it. You clearly know your home better than anyone.\n\nI put together a market analysis for your neighborhood and wanted to share it—no strings attached. I do this for all the homes in my farm area.\n\n[PRESENT CMA]\n\nCan I ask you a couple of questions? How are you planning to handle the showings and screening? And have you set up a system for buyer agent cooperation on the MLS?\n\nHere's what I've found: most FSBOs do great on the marketing side, but the negotiation and paperwork is where things get complicated fast. What if I could help with just that part—the contracts, disclosures, and negotiation—while you handle everything else? That way you stay in control but have professional protection where it matters most.\n\nNo pressure at all. I just want to make sure you have all the information to make the best decision for your family."`
+  },
+  {
+    id: "expired-listing",
+    title: "\"My Last Agent Couldn't Sell It\"",
+    icon: "⏰",
+    category: "Prospecting",
+    heat: "High",
+    synopsis: `A homeowner's listing has expired without a sale. They're frustrated, possibly distrustful of agents, and may be considering either relisting with a different agent or giving up entirely. This is one of the highest-value prospecting conversations in real estate—these sellers are motivated, pre-qualified, and ready to act. The key is diagnosing what went wrong without bashing the previous agent, then presenting a clear plan that addresses the specific failure points.`,
+    realEstateImpact: [
+      { area: "Seller Motivation", direction: "up", detail: "Expired sellers are highly motivated—they already made the decision to sell. Their urgency increases with every month the property sits." },
+      { area: "Pricing Reality", direction: "mixed", detail: "Most expireds were overpriced. The seller may now be more receptive to a realistic price, or they may be even more entrenched." },
+      { area: "Agent Trust", direction: "down", detail: "The seller has been burned. Trust must be rebuilt from scratch through data, transparency, and a clearly different approach." },
+      { area: "Market Perception", direction: "down", detail: "A previously listed and expired property carries stigma. Buyers assume something is wrong with it, requiring strategic repositioning." }
+    ],
+    teamTalkingPoints: [
+      "Never badmouth the previous agent—it signals that you might be badmouthed next",
+      "Ask diagnostic questions: 'What did you feel worked well? What would you want done differently?'",
+      "Come prepared with a specific analysis of why the home didn't sell—pricing, photos, marketing, access",
+      "Present your marketing plan side-by-side with what was done before—show the gap visually",
+      "Address the stigma head-on: 'We'll relaunch this as if it's brand new to the market'"
+    ],
+    brokerageTalkingPoints: [
+      "Pull expired listings daily—the first agent to call with a thoughtful approach wins",
+      "Create an expired listing analysis template agents can customize in 10 minutes",
+      "Train agents to lead with empathy and diagnosis, not a sales pitch",
+      "Develop a 'relaunch strategy' playbook for repositioning stale listings"
+    ],
+    clientScript: `"I know this has been a frustrating experience, and I want you to know—I'm not here to criticize what happened before. I'm here to figure out what comes next.\n\nCan you tell me what you felt worked well, and what you wish had been done differently?\n\n[LISTEN CAREFULLY—TAKE NOTES]\n\nThat's really helpful. Here's what I did before coming today: I analyzed your listing history—the pricing, the marketing, the showing activity, and the feedback. I want to share what I found.\n\n[PRESENT ANALYSIS]\n\nHere's what I'd do differently: [SPECIFIC PLAN addressing their pain points]. My approach is to relaunch your home as if it's hitting the market for the first time—new photos, new positioning, new pricing strategy based on what the market is actually telling us.\n\nI can't promise a timeline, but I can promise you'll always know exactly what's happening and why. Can I walk you through the full plan?"`
+  },
+  {
+    id: "divorce-seller",
+    title: "Navigating a Divorce Sale",
+    icon: "💔",
+    category: "Life Transition",
+    heat: "High",
+    synopsis: `One or both parties in a divorce need to sell the marital home. This is one of the most emotionally charged transactions in real estate. The agent must navigate competing interests, potential hostility between parties, legal requirements, and extreme emotional sensitivity—while still executing a professional sale. Success requires equal parts empathy, neutrality, and firm process management. The agent who handles this well earns lifetime referrals from attorneys, mediators, and both parties.`,
+    realEstateImpact: [
+      { area: "Decision Timeline", direction: "mixed", detail: "Court orders may impose deadlines. Some divorces create urgency; others create paralysis from disagreement." },
+      { area: "Pricing Agreement", direction: "down", detail: "Both parties must agree on price, repairs, and terms. Disagreement can stall or kill the transaction." },
+      { area: "Emotional Interference", direction: "up", detail: "Attachment to the home, spite, grief, and financial anxiety all influence decisions. The agent must manage emotions while maintaining objectivity." },
+      { area: "Legal Complexity", direction: "up", detail: "Court orders, title issues, power of attorney situations, and distribution of proceeds add layers of complexity." }
+    ],
+    teamTalkingPoints: [
+      "Maintain absolute neutrality—you represent the property, not either party",
+      "Get clear written authorization from both parties (or their attorneys) before taking any action",
+      "Communicate identically to both parties—same information, same timeline, same access",
+      "Build relationships with family law attorneys—they refer these transactions consistently",
+      "Set expectations early: 'My job is to get you both the best possible outcome from this sale'"
+    ],
+    brokerageTalkingPoints: [
+      "Develop a divorce sale protocol: communication templates, dual-authorization forms, attorney coordination process",
+      "Partner with local family law firms for referral relationships",
+      "Train agents on the legal and emotional complexity of divorce transactions",
+      "Create a resource guide for divorcing homeowners—positions the brokerage as a trusted advisor"
+    ],
+    clientScript: `"I understand this is a difficult time, and I want you to know that my only goal is to make this process as smooth and fair as possible for everyone involved.\n\nHere's how I approach this: I represent the property and the transaction—not one party over the other. Both of you will get the same information, the same updates, and the same access to me at all times.\n\nThe first thing I'd like to do is understand any legal requirements—is there a court order or mediation agreement that outlines the sale terms? That helps me create a plan that keeps everyone aligned.\n\nI've handled several of these transitions, and what I've found works best is a clear process with agreed-upon milestones. That removes ambiguity and keeps the focus on getting you both the best financial outcome.\n\nCan we sit down—together or separately, whichever is more comfortable—and walk through the timeline and next steps?"`
+  },
+  {
+    id: "downsizer",
+    title: "\"We Don't Need This Much Space\"",
+    icon: "🏡",
+    category: "Life Transition",
+    heat: "Medium",
+    synopsis: `Empty nesters or retirees are considering selling their family home to downsize. This is an emotionally complex decision wrapped in practical logistics. They're not just selling a house—they're closing a chapter. The memories, the neighborhood relationships, the identity tied to the home all factor in. The agent's role is to honor the emotion while helping them see the opportunity: financial freedom, reduced maintenance, a lifestyle upgrade, and a chance to build the next chapter intentionally.`,
+    realEstateImpact: [
+      { area: "Equity Position", direction: "up", detail: "Long-term homeowners typically have significant equity. Downsizing often frees $200K+ in cash for retirement, travel, or investment." },
+      { area: "Emotional Attachment", direction: "up", detail: "This home raised their children. Every room has a story. The decision timeline is governed by emotion, not market conditions." },
+      { area: "Maintenance Burden", direction: "up", detail: "Aging homeowners increasingly struggle with yard work, repairs, stairs, and the sheer size of the property. This is often the real motivator." },
+      { area: "Market Timing", direction: "mixed", detail: "Downsizers often have flexibility on timing but overthink market conditions. They need guidance on when 'good enough' is the right call." }
+    ],
+    teamTalkingPoints: [
+      "Lead with lifestyle, not logistics—ask about their dream next chapter before talking about the house",
+      "Never rush this conversation—downsizers need to process the emotional weight before making decisions",
+      "Help them visualize what comes next: travel, grandkids, a simpler life, financial freedom",
+      "Offer a 'no-pressure home valuation' to help them understand their options without committing",
+      "Address the stuff problem: 'We can connect you with organizers who specialize in this transition'"
+    ],
+    brokerageTalkingPoints: [
+      "Partner with senior move managers, estate sale companies, and retirement communities for referrals",
+      "Create a 'Downsizing Guide' resource that positions your brokerage as the expert in life transitions",
+      "Host seminars: 'Is It Time to Downsize?' events generate warm leads from this demographic",
+      "Train agents to slow down—this demographic values relationship and trust over speed and technology"
+    ],
+    clientScript: `"Before we talk about your home at all, I'd love to hear what you're excited about for this next chapter. What does the ideal setup look like for you?\n\n[LISTEN—LET THEM PAINT THE PICTURE]\n\nThat sounds wonderful. Now let me help connect the dots between where you are and where you want to be.\n\nYour home has been incredible for your family. And the equity you've built over [X] years is going to give you real options. Based on current market conditions, you're likely looking at [range]—which means you could [buy the condo outright / invest / travel / help the kids / all of the above].\n\nI know the idea of leaving this home is bittersweet. Here's what I've seen with other families in your situation: once they're settled in their new place—less yard work, less maintenance, more freedom—they wonder why they didn't do it sooner.\n\nThere's no rush on this. What I'd suggest is letting me put together a market analysis so you know exactly where you stand. Then we can talk timeline whenever you're ready. Sound good?"`
+  },
+  {
+    id: "relocation-buyer",
+    title: "\"We're Moving From Out of State\"",
+    icon: "✈️",
+    category: "Buyer",
+    heat: "Medium",
+    synopsis: `A buyer is relocating from another state—often for work, family, or lifestyle reasons. They're making one of the biggest decisions of their life about a place they may barely know. They need an agent who can be their local expert, guide, and trusted advisor from a distance. The unique challenges: virtual showings, tight timelines, unfamiliarity with neighborhoods, school districts, commute patterns, and the emotional stress of uprooting their life. The agent who nails this earns a client for life and a referral source in their origin city.`,
+    realEstateImpact: [
+      { area: "Decision Speed", direction: "up", detail: "Relocation buyers often have employer deadlines or lease expirations creating urgency. They need to move fast with limited local knowledge." },
+      { area: "Information Gap", direction: "up", detail: "They don't know neighborhoods, school ratings, traffic patterns, flood zones, or local market dynamics. The agent fills this gap entirely." },
+      { area: "Virtual Touring", direction: "up", detail: "Most of the search happens remotely. Video tours, neighborhood videos, and detailed market reports become critical tools." },
+      { area: "Transaction Complexity", direction: "up", detail: "Coordinating across time zones, managing remote inspections, and sometimes buying sight-unseen adds complexity to every step." }
+    ],
+    teamTalkingPoints: [
+      "Become their local encyclopedia—schools, commutes, restaurants, vibe of each neighborhood",
+      "Create neighborhood video tours they can watch on their timeline—this is your biggest differentiator",
+      "Set up automated searches immediately and narrate why you're including each area",
+      "Offer a 'relocation consultation call' to map their priorities before showing a single home",
+      "Connect them with local resources: schools, pediatricians, gyms, restaurants—be their welcome committee"
+    ],
+    brokerageTalkingPoints: [
+      "Join relocation networks (SIRVA, Cartus, BGC Advantage) for corporate referrals",
+      "Create a relocation guide for your market—digital, professional, branded",
+      "Train agents on virtual showing best practices and remote closing processes",
+      "Build relationships with HR departments and relocation companies in major employers"
+    ],
+    clientScript: `"Welcome! Moving to a new city is a big deal, and I want to make sure this feels exciting, not overwhelming.\n\nBefore we look at a single home, I'd love to spend 20 minutes understanding what matters most to you: commute, schools, neighborhood vibe, outdoor access, dining—whatever shapes your daily life. That way every home I send you is already filtered through your real priorities.\n\nHere's how I work with relocation buyers: I'll create video tours of the neighborhoods that match what you're looking for so you can get a feel for the area before you visit. When you're ready to come out, we'll have a focused list rather than running around looking at everything.\n\nI'll also connect you with the local resources that make a move smoother—movers, school contacts, the best coffee shop in each neighborhood. My goal is that by the time you get here, it already feels like home.\n\nWhen's a good time for us to have that first consultation call?"`
+  },
+  {
+    id: "just-looking",
+    title: "\"We're Just Looking\"",
+    icon: "👀",
+    category: "Prospecting",
+    heat: "Medium",
+    synopsis: `At an open house or initial contact, a potential buyer says they're "just looking" or "not ready yet." This is the most common brush-off in real estate—and it's almost never true. People don't spend their Saturday afternoon at an open house for fun. Something is driving their interest. The agent's job is to gently uncover the real motivation without being pushy, create value in the moment, and build a relationship that converts when the timing is right.`,
+    realEstateImpact: [
+      { area: "Lead Pipeline", direction: "up", detail: "Most 'just looking' prospects buy within 6-12 months. Building the relationship now means capturing the transaction later." },
+      { area: "Conversion Rate", direction: "mixed", detail: "Agents who push too hard lose these leads. Agents who add value and follow up strategically convert 15-25% of 'just lookers' into clients." },
+      { area: "Market Intelligence", direction: "up", detail: "Casual browsers share honest market feedback—what they like, what they'd pay, what's missing. This intelligence is valuable." },
+      { area: "Referral Potential", direction: "up", detail: "Even if they don't buy, a positive interaction leads to referrals. Everyone knows someone who's buying or selling." }
+    ],
+    teamTalkingPoints: [
+      "Never pressure a 'just looking' prospect—validate their timeline and add value",
+      "Ask one great question: 'What brought you out today?' or 'What would your dream home look like?'",
+      "Offer something free: a market report, a neighborhood guide, a 'just listed' alert signup",
+      "Get permission to follow up: 'Can I send you a quick note if something comes up that matches what you described?'",
+      "Play the long game—these conversations are seeds, not sales"
+    ],
+    brokerageTalkingPoints: [
+      "Create open house follow-up sequences that nurture over 6-12 months",
+      "Train agents to capture contact info without being pushy—offer value in exchange",
+      "Track conversion rates from open house leads to demonstrate the long-game ROI",
+      "Develop market reports and neighborhood guides that give agents something to offer in the moment"
+    ],
+    clientScript: `"Totally get it—there's no pressure at all. I'm glad you stopped by.\n\nI'm curious though—what caught your eye about this home? Was it the location, the style, or just the nice weather today?\n\n[LISTEN—MIRROR THEIR ENERGY]\n\nThat makes sense. You know, a lot of my best clients started exactly where you are—just getting a feel for what's out there. That's actually the smartest way to do it.\n\nHere's what I'd offer: I put together a monthly market snapshot for this area—what's selling, what's sitting, and where I think opportunities are. It's zero commitment, but it'll help you build a picture of the market so when you ARE ready, you'll be way ahead. Can I grab your email and add you?\n\nAnd if you ever see something online that catches your eye, text me. I can usually get the backstory on a property in about five minutes. That's what I'm here for.\n\nEnjoy the open house—let me know if any questions come up!"`
+  },
+  {
+    id: "multiple-offers",
+    title: "\"There Are Multiple Offers\"",
+    icon: "🔥",
+    category: "Negotiation",
+    heat: "Critical",
+    synopsis: `Your buyer client wants a home that has received multiple offers. The listing agent has announced a multiple-offer situation and set a deadline. Your buyer is anxious, emotional, and ready to either overbid irrationally or walk away in frustration. Your job is to coach them through the competitive process strategically—helping them put their best foot forward without overpaying. This is where great buyer agents earn their commission through strategy, market knowledge, and calm leadership under pressure.`,
+    realEstateImpact: [
+      { area: "Sale Price", direction: "up", detail: "Multiple offers typically push final price 3-8% above list. The key is knowing where the ceiling is for the specific property and market." },
+      { area: "Buyer Emotion", direction: "up", detail: "Competition triggers fear of missing out and emotional overbidding. The agent must be the rational voice." },
+      { area: "Term Negotiation", direction: "mixed", detail: "In multiple offers, terms often matter as much as price—closing timeline, contingencies, earnest money, and personal letters all play a role." },
+      { area: "Appraisal Risk", direction: "up", detail: "Offering above list increases the risk of a low appraisal. The buyer needs to understand the gap coverage commitment upfront." }
+    ],
+    teamTalkingPoints: [
+      "Call the listing agent before submitting—ask what matters most to the seller beyond price",
+      "Present the buyer's financial strength clearly: pre-approval, proof of funds, lender reputation",
+      "Coach your buyer on escalation clauses—powerful tool when used correctly",
+      "Discuss appraisal gap coverage upfront so there are no surprises",
+      "Remind your buyer: losing a bidding war is better than winning at the wrong price"
+    ],
+    brokerageTalkingPoints: [
+      "Create a multiple-offer strategy template agents can walk buyers through",
+      "Train agents on escalation clauses, appraisal gap coverage, and creative term negotiation",
+      "Build relationships with listing agents so you get early intel on offer situations",
+      "Role-play the 'coaching a buyer through competition' conversation—it's high-stakes and high-skill"
+    ],
+    clientScript: `"OK, here's the situation: there are multiple offers on this home. I know that's stressful, but this is exactly the scenario where having the right strategy makes all the difference.\n\nHere's what I've already done: I called the listing agent to understand what matters most to the seller. [SHARE WHAT YOU LEARNED—timeline, terms, etc.]\n\nNow let's build your offer strategically. I want to talk through three things:\n\nFirst, price. Based on the comps and the competition, I think our sweet spot is [range]. I'd recommend [specific strategy—escalation clause, round number psychology, etc.].\n\nSecond, terms. We can make our offer more attractive without just throwing money at it—[flexible closing date, larger earnest money, waiving minor contingencies if appropriate].\n\nThird, appraisal. If we offer above list, we need to decide now how much appraisal gap you're comfortable covering.\n\nHere's my honest advice: put your best offer forward so you have no regrets either way. If we win, great. If we don't, I promise you—the right home is out there and we'll find it. What matters is that we make a smart decision, not an emotional one.\n\nWhat are you thinking?"`
+  },
+  {
+    id: "low-appraisal",
+    title: "\"The Appraisal Came In Low\"",
+    icon: "📉",
+    category: "Negotiation",
+    heat: "Critical",
+    synopsis: `The appraisal has come in below the contract price, putting the deal at risk. The buyer's lender won't fund the full amount, creating a gap that must be resolved. Someone has to give—the seller reduces the price, the buyer covers the gap, or both meet in the middle. This is a high-stress moment where deals die if the agent doesn't manage expectations, present options clearly, and negotiate skillfully. The agent who saves this deal demonstrates their value more than any other moment in the transaction.`,
+    realEstateImpact: [
+      { area: "Deal Survival", direction: "down", detail: "Low appraisals kill 15-20% of deals where they occur. Agents who can navigate this save transactions and earn referrals." },
+      { area: "Negotiation Leverage", direction: "mixed", detail: "A low appraisal gives the buyer leverage to renegotiate. Sellers must decide if they'd rather reduce price or start over." },
+      { area: "Market Reality Check", direction: "mixed", detail: "Appraisals reflect recent sales data. A low appraisal might signal the market is shifting or the original offer was above market." },
+      { area: "Financing Impact", direction: "down", detail: "The lender will only loan based on the appraised value. The gap must be covered by cash, price reduction, or a combination." }
+    ],
+    teamTalkingPoints: [
+      "Don't panic—low appraisals are common and usually solvable",
+      "Present all options clearly: seller reduces price, buyer covers gap, split the difference, dispute the appraisal",
+      "If representing the buyer: the appraisal gives you leverage—use it diplomatically",
+      "If representing the seller: focus on the cost of starting over vs. the cost of the price adjustment",
+      "Always explore the appraisal dispute process if the appraiser missed relevant comps"
+    ],
+    brokerageTalkingPoints: [
+      "Train agents on the appraisal dispute process—many low appraisals can be successfully challenged",
+      "Create a 'Low Appraisal Playbook' with scripts for both sides of the transaction",
+      "Build relationships with local appraisers—understanding their process helps agents prepare",
+      "Track appraisal challenge success rates to give agents confidence in the dispute process"
+    ],
+    clientScript: `"I want to walk you through this calmly because I've navigated this situation many times, and there's almost always a path forward.\n\nThe appraisal came in at [amount], which is [gap] below our contract price. Here's what that means practically, and here are your options:\n\n[FOR BUYERS: This actually gives us some negotiating room. The lender is telling us the market data supports a lower value. We can ask the seller to reduce to the appraised value, propose splitting the difference, or if you love this home enough, cover some or all of the gap with additional cash. My recommendation is [specific recommendation based on situation].]\n\n[FOR SELLERS: I know this isn't what you want to hear. Here's the reality: if we reject this and start over, the next buyer's appraisal will likely come in at the same place because the comps haven't changed. Meanwhile, you've lost this buyer, you're back on market with the stigma of a failed deal, and you're looking at another 30-60 days minimum. The cost of a price adjustment now is almost certainly less than the cost of starting over.]\n\nLet me also look at whether we have grounds to dispute the appraisal—sometimes the appraiser misses a relevant comp that could change the number.\n\nWhat questions do you have?"`
+  },
+  {
+    id: "want-to-wait",
+    title: "\"We Want to Wait\"",
+    icon: "⏳",
+    category: "Objection",
+    heat: "High",
+    synopsis: `A buyer or seller tells you they want to wait—for better rates, a better market, after the election, until spring, or just "until things settle down." This is the most common stall tactic in real estate, and it's often rooted in fear rather than strategy. The agent's job isn't to pressure them into acting, but to help them see the real cost of waiting vs. the perceived benefit. Data almost always favors action over inaction for motivated buyers and sellers.`,
+    realEstateImpact: [
+      { area: "Opportunity Cost", direction: "up", detail: "Waiting 6 months at current appreciation rates can cost buyers $15-30K in a typical market. Sellers lose months of mortgage payments and market positioning." },
+      { area: "Rate Uncertainty", direction: "mixed", detail: "Waiting for rates to drop is a gamble. When rates drop, demand surges, prices rise, and the net cost is often the same or higher." },
+      { area: "Inventory Shifts", direction: "mixed", detail: "Waiting until spring means competing with every other buyer who had the same idea. Less competition now can mean better deals." },
+      { area: "Life Timeline", direction: "up", detail: "Real estate decisions should align with life decisions—job changes, school enrollment, lease expirations—not market timing." }
+    ],
+    teamTalkingPoints: [
+      "Don't argue—ask: 'What specifically are you waiting for?' to understand the real concern",
+      "Present the math: cost of waiting (rent, appreciation, rate changes) vs. perceived benefit of waiting",
+      "Use the phrase: 'You don't time the market—you time your life'",
+      "If they're waiting for rates: 'Marry the house, date the rate—you can always refinance'",
+      "Respect their timeline but ensure they're making an informed choice, not an emotional one"
+    ],
+    brokerageTalkingPoints: [
+      "Create a 'Cost of Waiting' calculator agents can use with clients in real-time",
+      "Produce monthly market updates that agents can share to keep waiters engaged",
+      "Train agents to nurture 'waiters' with value—not pressure—so they convert when ready",
+      "Track how many 'waiters' eventually buy and at what price point vs. when they first engaged"
+    ],
+    clientScript: `"I completely understand wanting to wait, and I'd never push you into a decision you're not comfortable with. Can I ask—what specifically would need to change for you to feel ready?\n\n[LISTEN—IDENTIFY THE REAL CONCERN]\n\nThat makes sense. Let me share something that might help you think through this:\n\n[FOR BUYERS: Right now, you're competing with fewer buyers than you will in [spring/when rates drop]. That gives you negotiating power. If rates drop later, you can refinance—but you can't go back and buy at today's prices. I ran the numbers: waiting 6 months at current trends could cost you roughly [$X] in appreciation alone, plus [$X] in rent you'd be paying in the meantime.]\n\n[FOR SELLERS: Every month you wait is a month of mortgage payments, maintenance, and opportunity cost. The market isn't going to dramatically shift in [timeframe they mentioned]. What IS certain is that your home is worth [current value] today, and I can get you to the closing table in [timeframe]. What's uncertain is where things stand in six months.]\n\nI'm not trying to create urgency that doesn't exist. I just want to make sure you're weighing the real costs of waiting against the perceived benefits. What if we just looked at the numbers together?"`
+  },
+  {
+    id: "inherited-property",
+    title: "\"We Inherited This Property\"",
+    icon: "🏚️",
+    category: "Life Transition",
+    heat: "Medium",
+    synopsis: `A family has inherited a property following a death. They're navigating grief, family dynamics, probate requirements, and a property they may have never visited or haven't seen in years. The emotional weight is significant—this was someone's home, someone's life. The practical challenges are also real: the home may need significant work, title may be complicated by probate, and multiple heirs may have conflicting opinions. The agent who handles this with sensitivity and expertise earns deep trust and referrals from estate attorneys.`,
+    realEstateImpact: [
+      { area: "Property Condition", direction: "down", detail: "Inherited properties often need updates—deferred maintenance, dated finishes, personal property removal. Agents must assess honestly." },
+      { area: "Title Complexity", direction: "up", detail: "Probate, multiple heirs, unclear wills, and estate tax considerations add legal complexity that requires coordination with attorneys." },
+      { area: "Emotional Decision-Making", direction: "up", detail: "Family members may disagree on price, timing, or whether to sell at all. The agent must facilitate without taking sides." },
+      { area: "Tax Implications", direction: "mixed", detail: "Stepped-up basis can significantly reduce capital gains. Heirs need to understand this—it often makes selling sooner more advantageous." }
+    ],
+    teamTalkingPoints: [
+      "Lead with compassion—acknowledge the loss before discussing the property",
+      "Ask about the probate status early: 'Has the estate been through probate? Do you have authority to sell?'",
+      "Help them understand stepped-up basis—many heirs don't realize the tax advantage of selling sooner",
+      "Offer to coordinate with their estate attorney to streamline the process",
+      "Be honest about condition and price—inherited properties often need a reality check on value"
+    ],
+    brokerageTalkingPoints: [
+      "Build relationships with estate planning and probate attorneys—they're the #1 referral source for inherited properties",
+      "Create a 'Selling an Inherited Home' guide that walks families through the process",
+      "Train agents on probate basics, stepped-up basis, and multi-party decision coordination",
+      "Partner with estate sale companies, junk removal services, and handymen for turnkey estate services"
+    ],
+    clientScript: `"First, I'm sorry for your loss. I know this is a lot to navigate, and I want to make this part as easy as possible for you and your family.\n\nLet me start by understanding where things stand. Has the estate gone through probate? And is there one person who has authority to make decisions about the property, or are there multiple family members involved?\n\n[LISTEN—UNDERSTAND THE DYNAMICS]\n\nHere's what I'd suggest as a starting point: let me visit the property and put together an honest assessment—what it's worth as-is, what it could be worth with some updates, and what the timeline looks like for each approach. That gives your family real numbers to make decisions with.\n\nOne thing I want to make sure you're aware of: because you inherited this property, you likely received a stepped-up cost basis, which means the capital gains situation is much more favorable than you might think. Your attorney or CPA can confirm the specifics.\n\nMy role is to coordinate everything—the legal requirements, the property prep, the marketing, and the sale—so your family can focus on what matters. I've worked with estate attorneys on several of these transactions and I know the process well.\n\nWould it help if I put together that assessment this week?"`
+  },
+  {
+    id: "investment-pitch",
+    title: "\"Should I Buy a Rental Property?\"",
+    icon: "💼",
+    category: "Buyer",
+    heat: "Medium",
+    synopsis: `A client is considering purchasing an investment or rental property. They may be a first-time investor or someone looking to expand their portfolio. They need an agent who understands the numbers—cap rates, cash-on-cash return, vacancy rates, property management costs—not just the emotional appeal of "building wealth through real estate." The agent's value here is in financial literacy, market-specific investment data, and connecting the client with the right financing and property management resources.`,
+    realEstateImpact: [
+      { area: "ROI Analysis", direction: "mixed", detail: "Not every property is a good investment. Agents must help clients run the actual numbers—purchase price, rental income, expenses, vacancy, management fees." },
+      { area: "Financing Requirements", direction: "up", detail: "Investment properties require 20-25% down, higher interest rates, and stricter qualification. Buyers need to understand the capital requirements." },
+      { area: "Market Selection", direction: "mixed", detail: "The best rental markets aren't always the hottest residential markets. Agents must know local rental demand, vacancy rates, and rent-to-price ratios." },
+      { area: "Management Reality", direction: "up", detail: "Most first-time investors underestimate the work of being a landlord. Property management options and costs should be discussed upfront." }
+    ],
+    teamTalkingPoints: [
+      "Always run the numbers before recommending a property—use cap rate, cash-on-cash return, and monthly cash flow analysis",
+      "Ask about their investment goals: cash flow vs. appreciation vs. tax benefits—the strategy shapes the property type",
+      "Discuss the 1% rule as a quick filter: monthly rent should be ~1% of purchase price for cash flow to work",
+      "Connect them with investor-friendly lenders who understand DSCR loans and portfolio lending",
+      "Be honest: 'This property won't cash flow' is the most valuable thing an agent can say to an investor"
+    ],
+    brokerageTalkingPoints: [
+      "Build an investor buyer database—these clients buy repeatedly and refer other investors",
+      "Create investment analysis templates agents can use to evaluate rental properties quickly",
+      "Partner with property management companies for referrals in both directions",
+      "Host investor meetups or workshops to attract and nurture this high-value client segment"
+    ],
+    clientScript: `"Great question—real estate can be an incredible wealth builder, but only when the numbers work. Let me help you think through this strategically.\n\nFirst, what's your primary goal: monthly cash flow, long-term appreciation, tax benefits, or some combination? That shapes everything.\n\n[LISTEN—UNDERSTAND THEIR INVESTMENT THESIS]\n\nHere's how I approach investment properties differently than a primary home: it's 100% about the math. I'll run a full analysis on any property—purchase price, expected rent, vacancy rate, maintenance reserves, property management costs, insurance, taxes—so you see the real cash-on-cash return, not the optimistic version.\n\nIn our market right now, the areas where the numbers actually work for rentals are [specific areas]. I've seen investors make the mistake of buying in the 'hottest' neighborhood only to find out the rent doesn't cover the mortgage.\n\nI'll also connect you with a lender who specializes in investment properties—the financing is different and you want someone who knows the programs available.\n\nWant me to pull a few properties that fit your criteria and run the numbers? That'll tell us real fast whether this makes sense for you right now."`
+  },
+  {
+    id: "neighbor-sold-more",
+    title: "\"My Neighbor Sold for More\"",
+    icon: "🏘️",
+    category: "Pricing",
+    heat: "High",
+    synopsis: `A seller insists their home should be priced higher because a nearby home sold for more. This is one of the most common pricing objections and one of the hardest to handle diplomatically. The seller isn't wrong to use nearby sales as a reference—but they're almost always comparing incompletely. Different lot sizes, updates, condition, timing, and terms all create price differences between seemingly similar homes. The agent must validate the comparison while educating on the factors that drive the gap.`,
+    realEstateImpact: [
+      { area: "Pricing Accuracy", direction: "mixed", detail: "Nearby sales are relevant data points but rarely apples-to-apples. Agents must deconstruct the comparison professionally." },
+      { area: "Seller Expectations", direction: "up", detail: "Inflated expectations from neighbor sales are the #1 cause of overpricing, which leads to longer days on market and lower net proceeds." },
+      { area: "Agent Credibility", direction: "mixed", detail: "Agents who cave to emotional pricing lose credibility. Agents who educate with data build trust and earn better outcomes." },
+      { area: "Market Positioning", direction: "down", detail: "Overpricing based on outlier comps positions the home as overvalued from day one, reducing showing activity and buyer interest." }
+    ],
+    teamTalkingPoints: [
+      "Never dismiss the comparison—say 'That's a great sale, let's look at why they got that price'",
+      "Pull the actual listing for the neighbor's home and walk through the differences: updates, square footage, lot size, timing",
+      "Use the phrase: 'Every home tells a different story to buyers—let me show you what story yours tells'",
+      "Show them the absorption rate: how many homes at the higher price point have sold vs. sat",
+      "If they won't budge, offer a 2-week market test with a mandatory price review—let the market prove the point"
+    ],
+    brokerageTalkingPoints: [
+      "Create comparison sheets agents can fill in quickly to show property-by-property differences",
+      "Train agents on the 'show don't tell' approach—visual side-by-side comparisons win this argument",
+      "Track price reduction data to demonstrate the cost of overpricing to reluctant sellers",
+      "Develop a standard CMA presentation that addresses neighbor comparisons proactively"
+    ],
+    clientScript: `"You're absolutely right to look at that sale—it's great market data and I actually pulled that listing before coming today. Let me show you what I found.\n\n[PRESENT SIDE-BY-SIDE COMPARISON]\n\nThat home sold for [price] because [specific reasons: they had a renovated kitchen, larger lot, finished basement, sold in peak season, etc.]. Those are real value drivers that buyers pay more for.\n\nYour home has its own strengths: [highlight their home's best features]. And that's what we're going to market aggressively.\n\nHere's what I want you to think about: if we price at [their suggested higher price], we'd be competing against homes that have [features theirs doesn't]. Buyers at that price point will see those homes side-by-side with yours and choose the one that delivers more value. But at [recommended price], your home becomes the best option in its range—and that's when we get multiple offers.\n\nWould you rather be the most expensive home buyers pass over, or the best-priced home they fight for? In my experience, the second approach actually gets sellers MORE money, not less.\n\nLet me show you the data on that."`
   }
+
 ];
 
 const TABS = [
@@ -602,6 +939,7 @@ function Primed() {
   const [generatedScenario, setGeneratedScenario] = useState(null);
   const [showCustom, setShowCustom] = useState(false);
   const [copiedSection, setCopiedSection] = useState(null);
+  const [scriptFormat, setScriptFormat] = useState("conversation"); // quick | conversation | highConviction
   const contentRef = useRef(null);
   const chatEndRef = useRef(null);
 
@@ -962,13 +1300,13 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     }
   }, [activeTab]);
 
-  // ── STYLES ──
+  // ── STYLES (Light Theme) ──
   const S = {
     app: {
       fontFamily: "'Outfit', 'Helvetica Neue', sans-serif",
       minHeight: "100vh",
-      background: "#08090c",
-      color: "#f0eeea",
+      background: "#f8f7f4",
+      color: "#1a1a1a",
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
@@ -976,344 +1314,156 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     header: {
       padding: "18px 28px 14px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      background: "linear-gradient(180deg, #0d0e12 0%, #08090c 100%)",
+      borderBottom: "1px solid rgba(0,0,0,0.08)",
+      background: "#fff",
       flexShrink: 0,
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between"
     },
-    logoArea: {
-      display: "flex",
-      alignItems: "baseline",
-      gap: 10
-    },
+    logoArea: { display: "flex", alignItems: "baseline", gap: 10 },
     logoMark: {
       width: 8, height: 8, borderRadius: "50%",
       background: "#e05a33",
-      boxShadow: "0 0 12px rgba(224,90,51,0.5)",
-      display: "inline-block",
-      marginRight: 4,
-      position: "relative",
-      top: -1
+      boxShadow: "0 0 8px rgba(224,90,51,0.3)",
+      display: "inline-block", marginRight: 4, position: "relative", top: -1
     },
     logoText: {
-      fontSize: 24,
-      fontWeight: 700,
-      letterSpacing: "-0.02em",
-      color: "#f5f3ee",
-      margin: 0,
-      fontFamily: "'Outfit', sans-serif"
+      fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em",
+      color: "#1a1a1a", margin: 0, fontFamily: "'Outfit', sans-serif"
     },
     tagline: {
-      fontSize: 11,
-      color: "rgba(240,238,234,0.35)",
-      letterSpacing: "0.14em",
-      textTransform: "uppercase",
-      fontFamily: "'IBM Plex Mono', monospace",
-      fontWeight: 400
+      fontSize: 11, color: "rgba(0,0,0,0.35)", letterSpacing: "0.14em",
+      textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400
     },
     headerRight: {
-      fontSize: 11,
-      color: "rgba(224,90,51,0.7)",
-      fontFamily: "'IBM Plex Mono', monospace",
-      letterSpacing: "0.06em"
+      fontSize: 11, color: "rgba(224,90,51,0.8)",
+      fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em"
     },
-    main: {
-      display: "flex",
-      flex: 1,
-      overflow: "hidden"
-    },
+    main: { display: "flex", flex: 1, overflow: "hidden" },
     sidebar: {
-      width: 340,
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-      display: "flex",
-      flexDirection: "column",
-      background: "rgba(10,11,15,0.9)",
-      flexShrink: 0
+      width: 340, borderRight: "1px solid rgba(0,0,0,0.08)",
+      display: "flex", flexDirection: "column", background: "#fff", flexShrink: 0
     },
     sidebarControls: {
-      padding: "16px 16px 12px",
-      borderBottom: "1px solid rgba(255,255,255,0.04)",
-      flexShrink: 0
+      padding: "16px 16px 12px", borderBottom: "1px solid rgba(0,0,0,0.06)", flexShrink: 0
     },
     searchInput: {
-      width: "100%",
-      padding: "10px 14px",
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: 8,
-      color: "#f0eeea",
-      fontSize: 13,
-      fontFamily: "inherit",
-      outline: "none",
-      boxSizing: "border-box",
-      transition: "border-color 0.2s"
+      width: "100%", padding: "10px 14px", background: "#f4f3f0",
+      border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8,
+      color: "#1a1a1a", fontSize: 13, fontFamily: "inherit",
+      outline: "none", boxSizing: "border-box", transition: "border-color 0.2s"
     },
-    filterRow: {
-      display: "flex",
-      gap: 6,
-      marginTop: 10,
-      flexWrap: "wrap"
-    },
+    filterRow: { display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" },
     filterBtn: (active) => ({
-      padding: "4px 12px",
-      borderRadius: 20,
-      fontSize: 11,
-      fontWeight: 500,
-      border: "1px solid",
-      borderColor: active ? "rgba(224,90,51,0.5)" : "rgba(255,255,255,0.08)",
-      background: active ? "rgba(224,90,51,0.1)" : "transparent",
-      color: active ? "#e05a33" : "rgba(240,238,234,0.5)",
-      cursor: "pointer",
-      transition: "all 0.2s",
-      fontFamily: "'IBM Plex Mono', monospace",
-      letterSpacing: "0.02em"
+      padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 500,
+      border: "1px solid", borderColor: active ? "rgba(224,90,51,0.5)" : "rgba(0,0,0,0.1)",
+      background: active ? "rgba(224,90,51,0.08)" : "transparent",
+      color: active ? "#e05a33" : "rgba(0,0,0,0.45)",
+      cursor: "pointer", transition: "all 0.2s",
+      fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.02em"
     }),
-    scenarioList: {
-      flex: 1,
-      overflowY: "auto",
-      padding: "8px"
-    },
+    scenarioList: { flex: 1, overflowY: "auto", padding: "8px" },
     scenarioCard: (active) => ({
-      padding: "14px 16px",
-      borderRadius: 10,
-      marginBottom: 4,
-      cursor: "pointer",
-      background: active ? "rgba(224,90,51,0.07)" : "transparent",
-      border: "1px solid",
-      borderColor: active ? "rgba(224,90,51,0.2)" : "transparent",
+      padding: "14px 16px", borderRadius: 10, marginBottom: 4, cursor: "pointer",
+      background: active ? "rgba(224,90,51,0.06)" : "transparent",
+      border: "1px solid", borderColor: active ? "rgba(224,90,51,0.2)" : "transparent",
       transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
     }),
     cardTitle: {
-      fontSize: 14,
-      fontWeight: 600,
-      color: "#f5f3ee",
-      display: "flex",
-      alignItems: "center",
-      gap: 8
+      fontSize: 14, fontWeight: 600, color: "#1a1a1a",
+      display: "flex", alignItems: "center", gap: 8
     },
-    cardMeta: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginTop: 6
-    },
+    cardMeta: { display: "flex", alignItems: "center", gap: 8, marginTop: 6 },
     categoryTag: {
-      fontSize: 10,
-      color: "rgba(240,238,234,0.45)",
-      letterSpacing: "0.08em",
-      textTransform: "uppercase",
-      fontFamily: "'IBM Plex Mono', monospace"
+      fontSize: 10, color: "rgba(0,0,0,0.4)", letterSpacing: "0.08em",
+      textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace"
     },
     generateBtn: {
-      margin: "8px 8px 12px",
-      padding: "12px 16px",
-      borderRadius: 10,
-      border: "1px dashed rgba(224,90,51,0.3)",
-      background: "rgba(224,90,51,0.04)",
-      color: "#e05a33",
-      fontSize: 13,
-      fontWeight: 600,
-      cursor: "pointer",
-      textAlign: "center",
-      transition: "all 0.2s",
-      fontFamily: "inherit",
-      flexShrink: 0,
-      letterSpacing: "0.01em"
+      margin: "8px 8px 12px", padding: "12px 16px", borderRadius: 10,
+      border: "1px dashed rgba(224,90,51,0.3)", background: "rgba(224,90,51,0.04)",
+      color: "#e05a33", fontSize: 13, fontWeight: 600, cursor: "pointer",
+      textAlign: "center", transition: "all 0.2s", fontFamily: "inherit",
+      flexShrink: 0, letterSpacing: "0.01em"
     },
-    content: {
-      flex: 1,
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden"
-    },
+    content: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" },
     tabBar: {
-      display: "flex",
-      gap: 0,
-      padding: "0 24px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      flexShrink: 0,
-      background: "rgba(12,13,17,0.6)"
+      display: "flex", gap: 0, padding: "0 24px",
+      borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0, background: "#fff"
     },
     tab: (active) => ({
-      padding: "14px 20px",
-      fontSize: 11,
-      fontWeight: 600,
-      color: active ? "#e05a33" : "rgba(226,224,219,0.35)",
-      cursor: "pointer",
-      transition: "all 0.2s",
-      background: active ? "rgba(224,90,51,0.06)" : "transparent",
-      border: "none",
-      borderBottom: `2px solid ${active ? "#e05a33" : "transparent"}`,
-      fontFamily: "'IBM Plex Mono', monospace",
-      letterSpacing: "0.06em",
-      textTransform: "uppercase",
-      display: "flex",
-      alignItems: "center",
-      gap: 7
+      padding: "14px 20px", fontSize: 11, fontWeight: 600,
+      color: active ? "#e05a33" : "rgba(0,0,0,0.35)", cursor: "pointer",
+      transition: "all 0.2s", background: active ? "rgba(224,90,51,0.04)" : "transparent",
+      border: "none", borderBottom: `2px solid ${active ? "#e05a33" : "transparent"}`,
+      fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em",
+      textTransform: "uppercase", display: "flex", alignItems: "center", gap: 7
     }),
-    contentBody: {
-      flex: 1,
-      overflowY: "auto",
-      padding: "28px 32px",
-      lineHeight: 1.7
-    },
+    contentBody: { flex: 1, overflowY: "auto", padding: "28px 32px", lineHeight: 1.7 },
     sectionTitle: {
-      fontSize: 11,
-      letterSpacing: "0.16em",
-      textTransform: "uppercase",
-      color: "rgba(224,90,51,0.85)",
-      fontFamily: "'IBM Plex Mono', monospace",
-      marginBottom: 16,
-      fontWeight: 600
+      fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase",
+      color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace",
+      marginBottom: 16, fontWeight: 600
     },
     impactCard: {
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      borderRadius: 12,
-      padding: "18px 20px",
-      marginBottom: 12,
-      borderLeft: "3px solid rgba(224,90,51,0.2)"
+      background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
+      padding: "18px 20px", marginBottom: 12, borderLeft: "3px solid rgba(224,90,51,0.3)"
     },
     impactTitle: {
-      fontSize: 15,
-      fontWeight: 600,
-      color: "#f5f3ee",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 8
+      fontSize: 15, fontWeight: 600, color: "#1a1a1a",
+      display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8
     },
-    impactDetail: {
-      fontSize: 14,
-      color: "rgba(240,238,234,0.72)",
-      lineHeight: 1.65
-    },
-    talkingPoint: {
-      display: "flex",
-      gap: 12,
-      marginBottom: 14,
-      alignItems: "flex-start"
-    },
+    impactDetail: { fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 },
+    talkingPoint: { display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" },
     talkingPointNum: {
-      width: 26, height: 26, borderRadius: 6,
-      background: "rgba(224,90,51,0.1)",
-      color: "#e05a33",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 11,
-      fontWeight: 700,
-      flexShrink: 0,
-      fontFamily: "'IBM Plex Mono', monospace"
+      width: 26, height: 26, borderRadius: 6, background: "rgba(224,90,51,0.06)",
+      color: "#e05a33", display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 11, fontWeight: 700, flexShrink: 0, fontFamily: "'IBM Plex Mono', monospace"
     },
-    talkingPointText: {
-      fontSize: 14,
-      color: "rgba(240,238,234,0.8)",
-      lineHeight: 1.6,
-      paddingTop: 3
-    },
+    talkingPointText: { fontSize: 14, color: "rgba(0,0,0,0.7)", lineHeight: 1.6, paddingTop: 3 },
     scriptBox: {
-      background: "rgba(224,90,51,0.03)",
-      border: "1px solid rgba(224,90,51,0.12)",
-      borderRadius: 14,
-      padding: "24px 28px",
-      fontSize: 14.5,
-      lineHeight: 1.75,
-      color: "rgba(240,238,234,0.82)",
-      whiteSpace: "pre-wrap",
-      position: "relative"
+      background: "#fff", border: "1px solid rgba(224,90,51,0.15)", borderRadius: 14,
+      padding: "24px 28px", fontSize: 14.5, lineHeight: 1.75,
+      color: "rgba(0,0,0,0.75)", whiteSpace: "pre-wrap", position: "relative"
     },
     copyBtn: (copied) => ({
-      position: "absolute",
-      top: 12,
-      right: 12,
-      padding: "6px 14px",
-      borderRadius: 6,
-      border: "1px solid",
-      borderColor: copied ? "rgba(16,185,129,0.3)" : "rgba(224,90,51,0.2)",
-      background: copied ? "rgba(16,185,129,0.1)" : "rgba(224,90,51,0.06)",
-      color: copied ? "#10b981" : "#e05a33",
-      fontSize: 11,
-      fontWeight: 600,
-      cursor: "pointer",
-      transition: "all 0.2s",
-      fontFamily: "'DM Mono', monospace"
+      position: "absolute", top: 12, right: 12, padding: "6px 14px", borderRadius: 6,
+      border: "1px solid", borderColor: copied ? "rgba(16,185,129,0.3)" : "rgba(224,90,51,0.2)",
+      background: copied ? "rgba(16,185,129,0.06)" : "rgba(224,90,51,0.04)",
+      color: copied ? "#10b981" : "#e05a33", fontSize: 11, fontWeight: 600,
+      cursor: "pointer", transition: "all 0.2s", fontFamily: "'IBM Plex Mono', monospace"
     }),
     emptyState: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
-      textAlign: "center",
-      padding: 40
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", height: "100%", textAlign: "center", padding: 40
     },
     emptyIcon: {
-      width: 64, height: 64, borderRadius: "50%",
-      background: "rgba(224,90,51,0.06)",
-      border: "1px solid rgba(224,90,51,0.12)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 28,
-      marginBottom: 20
+      width: 64, height: 64, borderRadius: "50%", background: "rgba(224,90,51,0.06)",
+      border: "1px solid rgba(224,90,51,0.12)", display: "flex",
+      alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 20
     },
     emptyTitle: {
-      fontSize: 22,
-      fontWeight: 600,
-      color: "rgba(226,224,219,0.25)",
-      marginBottom: 8,
-      letterSpacing: "-0.01em"
+      fontSize: 22, fontWeight: 600, color: "rgba(0,0,0,0.2)",
+      marginBottom: 8, letterSpacing: "-0.01em"
     },
-    emptyText: {
-      fontSize: 13,
-      color: "rgba(226,224,219,0.18)",
-      maxWidth: 320,
-      lineHeight: 1.6
-    },
+    emptyText: { fontSize: 13, color: "rgba(0,0,0,0.15)", maxWidth: 320, lineHeight: 1.6 },
     modal: {
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.8)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 100,
-      backdropFilter: "blur(12px)"
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      zIndex: 100, backdropFilter: "blur(8px)"
     },
     modalContent: {
-      background: "#12131a",
-      borderRadius: 16,
-      padding: "32px",
-      width: "90%",
-      maxWidth: 560,
-      border: "1px solid rgba(255,255,255,0.08)",
-      boxShadow: "0 24px 80px rgba(0,0,0,0.6)"
+      background: "#fff", borderRadius: 16, padding: "32px", width: "90%",
+      maxWidth: 560, border: "1px solid rgba(0,0,0,0.1)",
+      boxShadow: "0 24px 80px rgba(0,0,0,0.15)"
     },
     textarea: {
-      width: "100%",
-      minHeight: 120,
-      padding: "14px 16px",
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: 10,
-      color: "#f0eeea",
-      fontSize: 14,
-      fontFamily: "inherit",
-      lineHeight: 1.6,
-      outline: "none",
-      resize: "vertical",
-      boxSizing: "border-box",
-      marginTop: 16
+      width: "100%", minHeight: 120, padding: "14px 16px", background: "#f4f3f0",
+      border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a",
+      fontSize: 14, fontFamily: "inherit", lineHeight: 1.6, outline: "none",
+      resize: "vertical", boxSizing: "border-box", marginTop: 16
     },
-    modalBtns: {
-      display: "flex",
-      gap: 10,
-      marginTop: 20,
-      justifyContent: "flex-end"
-    }
+    modalBtns: { display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }
   };
 
   const renderSynopsis = () => (
@@ -1321,7 +1471,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
         <div style={{
           width: 52, height: 52, borderRadius: 12,
-          background: "rgba(224,90,51,0.08)",
+          background: "rgba(224,90,51,0.06)",
           border: "1px solid rgba(224,90,51,0.15)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 26
@@ -1329,7 +1479,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           {currentScenario.icon}
         </div>
         <div>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 400, color: "#f5f3ee", letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
+          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 400, color: "#1a1a1a", letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
             {currentScenario.title}
           </h2>
           <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center" }}>
@@ -1339,14 +1489,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         </div>
       </div>
       <div style={S.sectionTitle}>Scenario Briefing</div>
-      <p style={{ fontSize: 15, color: "rgba(240,238,234,0.75)", lineHeight: 1.8, margin: 0 }}>
+      <p style={{ fontSize: 15, color: "rgba(0,0,0,0.65)", lineHeight: 1.8, margin: 0 }}>
         {currentScenario.synopsis}
       </p>
       <div style={{
         marginTop: 28, padding: "14px 18px", borderRadius: 10,
         background: "rgba(224,90,51,0.04)",
         border: "1px solid rgba(224,90,51,0.1)",
-        fontSize: 12, color: "rgba(224,90,51,0.7)",
+        fontSize: 12, color: "rgba(224,90,51,0.8)",
         fontFamily: "'IBM Plex Mono', monospace",
         display: "flex", alignItems: "center", gap: 8
       }}>
@@ -1429,7 +1579,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
   const renderScript = () => (
     <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
       <div style={S.sectionTitle}>Client Interaction Script</div>
-      <p style={{ fontSize: 13, color: "rgba(226,224,219,0.35)", marginBottom: 20, lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13, color: "rgba(0,0,0,0.35)", marginBottom: 20, lineHeight: 1.6 }}>
         Customize for your voice. Bracketed sections show buyer/seller variations.
       </p>
       <div style={S.scriptBox}>
@@ -1452,17 +1602,17 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       {authScreen && (
         <div style={{
           ...S.app, alignItems: "center", justifyContent: "center",
-          background: "#08090c"
+          background: "#f8f7f4"
         }}>
           <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 40, justifyContent: "center" }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e05a33", boxShadow: "0 0 14px rgba(224,90,51,0.5)" }} />
-              <span style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", fontFamily: "'Outfit', sans-serif" }}>primed</span>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e05a33", boxShadow: "0 0 8px rgba(224,90,51,0.3)" }} />
+              <span style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", fontFamily: "'Outfit', sans-serif" }}>primed</span>
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 400, color: "#f5f3ee", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 400, color: "#1a1a1a", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
               {authScreen === "login" ? "Welcome back." : "Get started."}
             </h2>
-            <p style={{ fontSize: 13, color: "rgba(240,238,234,0.45)", textAlign: "center", marginBottom: 32 }}>
+            <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginBottom: 32 }}>
               {authScreen === "login" ? "Log in to your account" : "Create your free account"}
             </p>
             {authError && (
@@ -1470,19 +1620,19 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             )}
             {authScreen === "signup" && (
               <input type="text" placeholder="Your name" value={authName} onChange={e => setAuthName(e.target.value)}
-                style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
             <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
-              style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             <input type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
-              style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#f0eeea", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
             <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading || !authEmail || !authPass}
               style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail || !authPass) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail || !authPass) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
               {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
             </button>
-            <p style={{ fontSize: 13, color: "rgba(240,238,234,0.4)", textAlign: "center", marginTop: 20 }}>
+            <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginTop: 20 }}>
               {authScreen === "login" ? "Don't have an account? " : "Already have an account? "}
               <span onClick={() => { setAuthScreen(authScreen === "login" ? "signup" : "login"); setAuthError(""); }}
                 style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
@@ -1505,15 +1655,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             <span style={S.tagline}>Know what to say. Always.</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            {user && <span style={{ fontSize: 12, color: "rgba(240,238,234,0.4)", fontFamily: "'IBM Plex Mono', monospace" }}>{user.email}</span>}
-            <button onClick={handleLogout} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "rgba(240,238,234,0.35)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Log out</button>
+            {user && <span style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", fontFamily: "'IBM Plex Mono', monospace" }}>{user.email}</span>}
+            <button onClick={handleLogout} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: "transparent", color: "rgba(0,0,0,0.4)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Log out</button>
           </div>
         </header>
 
         {/* ── MODE SWITCHER ── */}
         <div style={{
-          display: "flex", borderBottom: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(10,11,15,0.95)", flexShrink: 0
+          display: "flex", borderBottom: "1px solid rgba(0,0,0,0.08)",
+          background: "#fff", flexShrink: 0
         }}>
           {[
             { id: "intelligence", label: "Intelligence", icon: "◈" },
@@ -1525,7 +1675,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               fontSize: 12, fontWeight: 600, fontFamily: "'DM Mono', monospace",
               letterSpacing: "0.08em", textTransform: "uppercase",
               background: appMode === m.id ? "rgba(224,90,51,0.06)" : "transparent",
-              color: appMode === m.id ? "#e05a33" : "rgba(226,224,219,0.3)",
+              color: appMode === m.id ? "#e05a33" : "rgba(0,0,0,0.3)",
               border: "none", borderBottom: `2px solid ${appMode === m.id ? "#e05a33" : "transparent"}`,
               cursor: "pointer", transition: "all 0.2s",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8
@@ -1652,8 +1802,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
               <div style={{ maxWidth: 900, margin: "0 auto" }}>
                 <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Practice Mode</div>
-                <h2 style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", marginBottom: 8, fontFamily: "'Space Grotesk', sans-serif" }}>Choose Your Scenario</h2>
-                <p style={{ fontSize: 14, color: "rgba(226,224,219,0.5)", marginBottom: 28 }}>Select a conversation to practice, then choose who you're talking to.</p>
+                <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>Choose Your Scenario</h2>
+                <p style={{ fontSize: 14, color: "rgba(0,0,0,0.45)", marginBottom: 28 }}>Select a conversation to practice, then choose who you're talking to.</p>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10, marginBottom: 40 }}>
                   {PRACTICE_SCENARIOS.map(s => (
@@ -1667,7 +1817,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
                         <span style={{ fontSize: 14, fontWeight: 600, color: practiceScenario === s.id ? "#f5f3ee" : "rgba(226,224,219,0.7)" }}>{s.title}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", lineHeight: 1.5 }}>{s.desc}</div>
+                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
                   ))}
                 </div>
@@ -1684,7 +1834,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                           transition: "all 0.2s"
                         }}>
                           <div style={{ fontSize: 24, marginBottom: 8 }}>{p.icon}</div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f3ee", marginBottom: 4 }}>{p.name}</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{p.name}</div>
                           <div style={{ fontSize: 11.5, color: "rgba(226,224,219,0.45)", lineHeight: 1.5, marginBottom: 8 }}>{p.traits}</div>
                           <span style={{
                             padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700,
@@ -1721,7 +1871,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       placeholder="e.g., The home is priced at $850K, seller expects $920K based on Zillow, 3BR/2BA in a competitive suburban market..."
                       style={{
                         width: "100%", minHeight: 80, padding: "12px 16px",
-                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(0,0,0,0.1)",
                         borderRadius: 10, color: "#e2e0db", fontSize: 13, fontFamily: "inherit",
                         lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box"
                       }}
@@ -1752,8 +1902,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 20 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</span>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#f5f3ee" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</div>
-                    <div style={{ fontSize: 11, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</div>
+                    <div style={{ fontSize: 11, color: "rgba(0,0,0,0.35)", fontFamily: "'DM Mono', monospace" }}>
                       {PRACTICE_SCENARIOS.find(s => s.id === practiceScenario)?.title} • {practiceDifficulty}
                     </div>
                   </div>
@@ -1775,10 +1925,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 {practiceMessages.length === 0 && (
                   <div style={{ textAlign: "center", padding: "40px 20px" }}>
                     <div style={{ fontSize: 40, marginBottom: 16 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</div>
-                    <div style={{ fontSize: 15, color: "rgba(226,224,219,0.5)", marginBottom: 8 }}>
-                      You're speaking with <strong style={{ color: "#f5f3ee" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</strong>
+                    <div style={{ fontSize: 15, color: "rgba(0,0,0,0.45)", marginBottom: 8 }}>
+                      You're speaking with <strong style={{ color: "#1a1a1a" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</strong>
                     </div>
-                    <div style={{ fontSize: 13, color: "rgba(226,224,219,0.3)", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+                    <div style={{ fontSize: 13, color: "rgba(0,0,0,0.3)", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
                       Start the conversation. Open the way you'd open a real call. The client will respond in character.
                     </div>
                   </div>
@@ -1807,7 +1957,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 {practiceLoading && (
                   <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
                     <div style={{ padding: "12px 16px", borderRadius: 14, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", borderBottomLeftRadius: 4 }}>
-                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.4)" }}>typing...</div>
+                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.4)" }}>typing...</div>
                     </div>
                   </div>
                 )}
@@ -1855,15 +2005,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 {feedbackLoading ? (
                   <div style={{ textAlign: "center", padding: "80px 20px" }}>
                     <div style={{ fontSize: 40, marginBottom: 20 }}>🎯</div>
-                    <div style={{ fontSize: 18, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>Analyzing your conversation...</div>
-                    <div style={{ fontSize: 13, color: "rgba(226,224,219,0.4)" }}>Scoring Clarity, Empathy, Persuasion, and Confidence</div>
+                    <div style={{ fontSize: 18, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>Analyzing your conversation...</div>
+                    <div style={{ fontSize: 13, color: "rgba(0,0,0,0.4)" }}>Scoring Clarity, Empathy, Persuasion, and Confidence</div>
                   </div>
                 ) : practiceFeedback && (
                   <>
                     <div style={{ textAlign: "center", marginBottom: 36 }}>
                       <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16 }}>Session Complete</div>
                       <div style={{ fontSize: 64, fontWeight: 700, color: "#e05a33", fontFamily: "'DM Mono', monospace", lineHeight: 1 }}>{practiceFeedback.overall}</div>
-                      <div style={{ fontSize: 12, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 8 }}>Overall Score</div>
+                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 8 }}>Overall Score</div>
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
@@ -1875,10 +2025,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       ].map((dim, i) => (
                         <div key={i} style={{
                           padding: "20px", borderRadius: 14, textAlign: "center",
-                          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)"
+                          background: "#fff", border: "1px solid rgba(0,0,0,0.08)"
                         }}>
                           <div style={{ fontSize: 32, fontWeight: 700, color: dim.color, fontFamily: "'DM Mono', monospace" }}>{dim.score}</div>
-                          <div style={{ fontSize: 10, color: "rgba(226,224,219,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 4 }}>{dim.label}</div>
+                          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.35)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 4 }}>{dim.label}</div>
                         </div>
                       ))}
                     </div>
@@ -1886,14 +2036,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     <div style={{ marginBottom: 24 }}>
                       <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Strengths</div>
                       {practiceFeedback.strengths.map((s, i) => (
-                        <div key={i} style={{ fontSize: 14, color: "rgba(226,224,219,0.7)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.3)", lineHeight: 1.6 }}>{s}</div>
+                        <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.65)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.3)", lineHeight: 1.6 }}>{s}</div>
                       ))}
                     </div>
 
                     <div style={{ marginBottom: 24 }}>
                       <div style={{ fontSize: 10, color: "#f59e0b", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Areas to Improve</div>
                       {practiceFeedback.improvements.map((s, i) => (
-                        <div key={i} style={{ fontSize: 14, color: "rgba(226,224,219,0.7)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(245,158,11,0.3)", lineHeight: 1.6 }}>{s}</div>
+                        <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.65)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(245,158,11,0.3)", lineHeight: 1.6 }}>{s}</div>
                       ))}
                     </div>
 
@@ -1903,7 +2053,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       marginBottom: 24
                     }}>
                       <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Try This Phrasing</div>
-                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.65)", lineHeight: 1.65, fontStyle: "italic" }}>{practiceFeedback.suggestedPhrasing}</div>
+                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65, fontStyle: "italic" }}>{practiceFeedback.suggestedPhrasing}</div>
                     </div>
 
                     <div style={{
@@ -1912,7 +2062,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       marginBottom: 32
                     }}>
                       <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Next Practice Focus</div>
-                      <div style={{ fontSize: 14, color: "rgba(226,224,219,0.65)", lineHeight: 1.65 }}>{practiceFeedback.nextFocus}</div>
+                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 }}>{practiceFeedback.nextFocus}</div>
                     </div>
 
                     <div style={{ display: "flex", gap: 12 }}>
@@ -1926,7 +2076,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       <button onClick={() => { setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); }} style={{
                         padding: "12px 28px", borderRadius: 10,
                         border: "1px solid rgba(255,255,255,0.1)",
-                        background: "transparent", color: "rgba(226,224,219,0.5)",
+                        background: "transparent", color: "rgba(0,0,0,0.45)",
                         fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
                       }}>
                         New Scenario
@@ -1945,10 +2095,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           <div style={{ maxWidth: 700, margin: "0 auto" }}>
             <div style={{ marginBottom: 36 }}>
               <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
-              <h2 style={{ fontSize: 28, fontWeight: 700, color: "#f5f3ee", marginBottom: 8, fontFamily: "'Space Grotesk', sans-serif" }}>
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>
                 {vsStep < 4 ? "Build Your Script" : "Your Value Script"}
               </h2>
-              <p style={{ fontSize: 14, color: "rgba(226,224,219,0.5)" }}>
+              <p style={{ fontSize: 14, color: "rgba(0,0,0,0.45)" }}>
                 {vsStep < 4 ? "Answer three questions. Get a script that sounds like you — not a template." : "Use these everywhere — listing appointments, networking, social media, cold calls."}
               </p>
             </div>
@@ -1965,18 +2115,18 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               <div>
                 <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 1 — Who You Serve</div>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What's your favorite type of transaction?</label>
-                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Think about the deal that made you proudest. First-time buyers? Luxury listings? Relocations?</p>
-                  <input type="text" value={vsFavoriteTransaction} onChange={e => setVsFavoriteTransaction(e.target.value)} placeholder="e.g., Helping first-time buyers find their first home" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>What's your favorite type of transaction?</label>
+                  <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Think about the deal that made you proudest. First-time buyers? Luxury listings? Relocations?</p>
+                  <input type="text" value={vsFavoriteTransaction} onChange={e => setVsFavoriteTransaction(e.target.value)} placeholder="e.g., Helping first-time buyers find their first home" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>Who is your ideal client?</label>
-                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Describe who you love working with. The more specific, the sharper your script.</p>
-                  <input type="text" value={vsIdealClient} onChange={e => setVsIdealClient(e.target.value)} placeholder="e.g., Young families moving from the city to suburbs for better schools" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>Who is your ideal client?</label>
+                  <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Describe who you love working with. The more specific, the sharper your script.</p>
+                  <input type="text" value={vsIdealClient} onChange={e => setVsIdealClient(e.target.value)} placeholder="e.g., Young families moving from the city to suburbs for better schools" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ marginBottom: 28 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What market or area do you work in?</label>
-                  <input type="text" value={vsMarket} onChange={e => setVsMarket(e.target.value)} placeholder="e.g., North Dallas suburbs, Frisco, McKinney" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>What market or area do you work in?</label>
+                  <input type="text" value={vsMarket} onChange={e => setVsMarket(e.target.value)} placeholder="e.g., North Dallas suburbs, Frisco, McKinney" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer" }}>Next →</button>
               </div>
@@ -1986,12 +2136,12 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               <div>
                 <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 2 — The Problem You Solve</div>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What's the biggest problem your clients face before they find you?</label>
-                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>What keeps them up at night? The fear, the frustration, the thing they can't figure out alone.</p>
-                  <textarea value={vsProblem} onChange={e => setVsProblem(e.target.value)} placeholder="e.g., They're overwhelmed, don't know what they can afford, and terrified of making a mistake on the biggest purchase of their life" style={{ width: "100%", minHeight: 100, padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>What's the biggest problem your clients face before they find you?</label>
+                  <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 10, lineHeight: 1.5 }}>What keeps them up at night? The fear, the frustration, the thing they can't figure out alone.</p>
+                  <textarea value={vsProblem} onChange={e => setVsProblem(e.target.value)} placeholder="e.g., They're overwhelmed, don't know what they can afford, and terrified of making a mistake on the biggest purchase of their life" style={{ width: "100%", minHeight: 100, padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setVsStep(1)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
+                  <button onClick={() => setVsStep(1)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
                   <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(212,160,62,0.2)" : "#d4a03e", color: !vsProblem.trim() ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer" }}>Next →</button>
                 </div>
               </div>
@@ -2001,17 +2151,17 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               <div>
                 <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 3 — Your Results</div>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>What measurable result do you deliver?</label>
-                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Numbers are powerful. Sale-to-list ratio, days on market, homes sold — whatever proves your value.</p>
-                  <input type="text" value={vsResult} onChange={e => setVsResult(e.target.value)} placeholder="e.g., My sellers average 99.3% of list price" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>What measurable result do you deliver?</label>
+                  <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 10, lineHeight: 1.5 }}>Numbers are powerful. Sale-to-list ratio, days on market, homes sold — whatever proves your value.</p>
+                  <input type="text" value={vsResult} onChange={e => setVsResult(e.target.value)} placeholder="e.g., My sellers average 99.3% of list price" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ marginBottom: 28 }}>
-                  <label style={{ display: "block", fontSize: 14, color: "#f5f3ee", fontWeight: 600, marginBottom: 8 }}>In what timeframe?</label>
-                  <p style={{ fontSize: 12, color: "rgba(226,224,219,0.4)", marginBottom: 10, lineHeight: 1.5 }}>How quickly do you get results? This creates urgency and credibility.</p>
-                  <input type="text" value={vsTimeframe} onChange={e => setVsTimeframe(e.target.value)} placeholder="e.g., Average 11 days on market, 40% faster than area average" style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                  <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>In what timeframe?</label>
+                  <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 10, lineHeight: 1.5 }}>How quickly do you get results? This creates urgency and credibility.</p>
+                  <input type="text" value={vsTimeframe} onChange={e => setVsTimeframe(e.target.value)} placeholder="e.g., Average 11 days on market, 40% faster than area average" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setVsStep(2)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
+                  <button onClick={() => setVsStep(2)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
                   <button onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsResult.trim() || vsGenerating) ? "not-allowed" : "pointer" }}>{vsGenerating ? "Generating..." : "Build My Script →"}</button>
                 </div>
               </div>
@@ -2026,23 +2176,23 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   { key: "coldCallHook", label: "Cold Call Hook", desc: "First 10 seconds of any prospecting call", color: "#3b82f6" },
                   { key: "objectionAnchor", label: "\"Why Should I Work With You?\"", desc: "Your anchor for the most important question", color: "#8b5cf6" }
                 ].map(({ key, label, desc, color }) => (
-                  <div key={key} style={{ marginBottom: 20, padding: "20px 24px", borderRadius: 14, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderLeft: `3px solid ${color}` }}>
+                  <div key={key} style={{ marginBottom: 20, padding: "20px 24px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderLeft: `3px solid ${color}` }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                       <div>
-                        <div style={{ fontSize: 15, fontWeight: 600, color: "#f5f3ee" }}>{label}</div>
-                        <div style={{ fontSize: 11, color: "rgba(226,224,219,0.35)", marginTop: 2 }}>{desc}</div>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{label}</div>
+                        <div style={{ fontSize: 11, color: "rgba(0,0,0,0.35)", marginTop: 2 }}>{desc}</div>
                       </div>
                       <button onClick={() => { navigator.clipboard.writeText(vsGeneratedScript[key]); setVsCopied(key); setTimeout(() => setVsCopied(null), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${vsCopied === key ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"}`, background: vsCopied === key ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.03)", color: vsCopied === key ? "#10b981" : "rgba(226,224,219,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'DM Mono', monospace", cursor: "pointer", flexShrink: 0 }}>{vsCopied === key ? "✓ Copied" : "Copy"}</button>
                     </div>
-                    <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(226,224,219,0.7)", whiteSpace: "pre-wrap" }}>{vsGeneratedScript[key]}</div>
+                    <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(0,0,0,0.65)", whiteSpace: "pre-wrap" }}>{vsGeneratedScript[key]}</div>
                   </div>
                 ))}
                 <div style={{ marginBottom: 28, padding: "20px 24px", borderRadius: 14, background: "rgba(212,160,62,0.04)", border: "1px solid rgba(212,160,62,0.12)" }}>
                   <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Coaching Notes</div>
-                  <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(226,224,219,0.65)" }}>{vsGeneratedScript.coachingNotes}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(0,0,0,0.6)" }}>{vsGeneratedScript.coachingNotes}</div>
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
-                  <button onClick={() => { setVsStep(1); setVsGeneratedScript(null); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(226,224,219,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Start Over</button>
+                  <button onClick={() => { setVsStep(1); setVsGeneratedScript(null); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Start Over</button>
                   <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice Delivering It →</button>
                 </div>
               </div>
@@ -2054,10 +2204,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         {showCustom && (
           <div style={S.modal} onClick={e => e.target === e.currentTarget && setShowCustom(false)}>
             <div style={S.modalContent}>
-              <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#f5f3ee", letterSpacing: "-0.01em" }}>
+              <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.01em" }}>
                 Get Primed on Any Scenario
               </h3>
-              <p style={{ fontSize: 13, color: "rgba(226,224,219,0.4)", marginTop: 8, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", marginTop: 8, lineHeight: 1.5 }}>
                 Describe what's happening and we'll generate your full briefing — impact analysis, talk tracks, and client scripts.
               </p>
               <textarea
@@ -2072,7 +2222,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   style={{
                     padding: "10px 24px", borderRadius: 8,
                     border: "1px solid rgba(255,255,255,0.1)",
-                    background: "transparent", color: "rgba(226,224,219,0.4)",
+                    background: "transparent", color: "rgba(0,0,0,0.4)",
                     fontSize: 13, cursor: "pointer", fontFamily: "inherit"
                   }}
                   onClick={() => { setShowCustom(false); setCustomPrompt(""); }}
