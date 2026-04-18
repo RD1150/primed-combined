@@ -13,6 +13,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
     body { background: #f8f7f4; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
   </style>
 </head>
 <body>
@@ -939,7 +940,100 @@ function Primed() {
   const [generatedScenario, setGeneratedScenario] = useState(null);
   const [showCustom, setShowCustom] = useState(false);
   const [copiedSection, setCopiedSection] = useState(null);
-  const [scriptFormat, setScriptFormat] = useState("conversation"); // quick | conversation | highConviction
+  const [scriptFormat, setScriptFormat] = useState("conversation");
+  
+  // Voice practice state
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const recognitionRef = useRef(null);
+  const audioRef = useRef(null);
+
+  // Start voice recording using Web Speech API
+  const startRecording = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Voice is not supported in this browser. Try Chrome.");
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setPracticeInput(transcript);
+      setIsRecording(false);
+      // Auto-send after voice input
+      setTimeout(() => {
+        const userMsg = { role: "agent", content: transcript };
+        setPracticeMessages(prev => [...prev, userMsg]);
+        setPracticeInput("");
+        sendVoiceMessage(transcript);
+      }, 300);
+    };
+    
+    recognition.onerror = () => setIsRecording(false);
+    recognition.onend = () => setIsRecording(false);
+    
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsRecording(false);
+  }, []);
+
+  // Send message and play TTS response
+  const sendVoiceMessage = useCallback(async (text) => {
+    setPracticeLoading(true);
+    try {
+      const transcript = [...practiceMessages, { role: "agent", content: text }].map(m =>
+        m.role === "agent" ? { role: "user", content: m.content } : { role: "assistant", content: m.content }
+      );
+      
+      // Get AI response
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({ max_tokens: 1000, system: buildPracticePrompt(), messages: transcript })
+      });
+      const data = await response.json();
+      const reply = data.content.map(i => i.text || "").join("");
+      setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
+      
+      // Play TTS
+      if (voiceEnabled) {
+        setIsPlaying(true);
+        try {
+          const ttsRes = await fetch(API_URL + "/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+            body: JSON.stringify({ text: reply })
+          });
+          if (ttsRes.ok) {
+            const audioBlob = await ttsRes.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            audioRef.current = audio;
+            audio.onended = () => setIsPlaying(false);
+            audio.play();
+          } else {
+            setIsPlaying(false);
+          }
+        } catch { setIsPlaying(false); }
+      }
+    } catch (err) {
+      console.error("Voice practice error:", err);
+      setPracticeMessages(prev => [...prev, { role: "client", content: "Sorry, can you say that again?" }]);
+    }
+    setPracticeLoading(false);
+  }, [practiceMessages, voiceEnabled]); // quick | conversation | highConviction
   const contentRef = useRef(null);
   const chatEndRef = useRef(null);
 
@@ -1099,12 +1193,30 @@ RULES:
       const data = await response.json();
       const reply = data.content.map(i => i.text || "").join("");
       setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
+      // Play TTS if voice is enabled (text input path)
+      if (voiceEnabled) {
+        setIsPlaying(true);
+        try {
+          const ttsRes = await fetch(API_URL + "/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+            body: JSON.stringify({ text: reply })
+          });
+          if (ttsRes.ok) {
+            const ab = await ttsRes.blob();
+            const au = new Audio(URL.createObjectURL(ab));
+            audioRef.current = au;
+            au.onended = () => setIsPlaying(false);
+            au.play();
+          } else { setIsPlaying(false); }
+        } catch { setIsPlaying(false); }
+      }
     } catch (err) {
       console.error("Practice simulation error:", err);
       setPracticeMessages(prev => [...prev, { role: "client", content: "I'm sorry, can you repeat that? I got distracted for a moment." }]);
     }
     setPracticeLoading(false);
-  }, [practiceInput, practiceMessages, practiceLoading]);
+  }, [practiceInput, practiceMessages, practiceLoading, voiceEnabled]);
 
   const endPracticeSession = useCallback(async () => {
     if (practiceMessages.length < 2) return;
@@ -1576,23 +1688,154 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     </div>
   );
 
-  const renderScript = () => (
-    <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
-      <div style={S.sectionTitle}>Client Interaction Script</div>
-      <p style={{ fontSize: 13, color: "rgba(0,0,0,0.35)", marginBottom: 20, lineHeight: 1.6 }}>
-        Customize for your voice. Bracketed sections show buyer/seller variations.
-      </p>
-      <div style={S.scriptBox}>
-        <button
-          onClick={() => handleCopy(currentScenario.clientScript, "script")}
-          style={S.copyBtn(copiedSection === "script")}
-        >
-          {copiedSection === "script" ? "✓ Copied" : "Copy Script"}
-        </button>
-        {currentScenario.clientScript}
+  // Generate script variants from the base clientScript
+  const getQuickScript = (script) => {
+    if (!script) return "";
+    const lines = script.split("\n").filter(l => l.trim() && !l.includes("[") && !l.includes("LISTEN"));
+    return lines.slice(0, 2).join(" ").replace(/\\n/g, " ").substring(0, 300);
+  };
+
+  const getHighConvictionScript = (script) => {
+    if (!script) return "";
+    return script.replace(/I'd recommend/g, "Here's what we need to do")
+      .replace(/I'd suggest/g, "Here's my recommendation")
+      .replace(/What do you think/g, "Let's move forward")
+      .replace(/Would you like/g, "I'm going to")
+      .replace(/Can I/g, "I'd like to")
+      .replace(/Maybe we could/g, "We should")
+      .replace(/I think/g, "I'm confident")
+      .replace(/possibly/gi, "likely")
+      .replace(/might/g, "will");
+  };
+
+  const SCRIPT_FORMATS = [
+    { id: "quick", label: "Quick Response", desc: "1-2 sentences — use at networking events, casual conversations, or when caught off guard" },
+    { id: "conversation", label: "Full Conversation", desc: "Natural back-and-forth — use at listing appointments, buyer consultations, or scheduled calls" },
+    { id: "highConviction", label: "High Conviction", desc: "Direct and confident — use when the client needs decisive leadership or is wavering" }
+  ];
+
+  const COMMON_OBJECTIONS = {
+    "Pricing": [
+      { objection: "But my home has more upgrades than the comps.", response: "You're right that upgrades add value — and we'll highlight every one of them. What the data shows is that upgrades typically recover 60-80% of cost in the sale price, not dollar-for-dollar. Let me show you exactly how I've factored yours in." },
+      { objection: "I can always lower the price later if it doesn't sell.", response: "You could, but here's what happens: the first 14 days generate 80% of your buyer interest. A price reduction after that signals desperation to buyers and their agents. You end up netting less than if we'd priced it right from the start." },
+      { objection: "Online estimates say it's worth more.", response: "Those tools are great starting points, but they can't walk through your home. They miss condition, updates, and neighborhood nuances. Let me show you what actual buyers have paid for similar homes in the last 60 days — that's your real market value." }
+    ],
+    "Negotiation": [
+      { objection: "I don't want to negotiate — just reject it.", response: "I understand the frustration. But consider this: this buyer is pre-approved and motivated. Rejecting outright means starting over — more showings, more days on market, more uncertainty. Let me counter strategically and see where they land." },
+      { objection: "We can't afford to come up any higher.", response: "Let's look at this from a different angle. What if we adjust the terms instead of the price? A faster closing, covering some of the seller's costs, or adjusting contingencies can make your offer more attractive without increasing your out-of-pocket." },
+      { objection: "Why should I pay your commission when I found the house myself?", response: "Finding the home is actually just the beginning. My value is in negotiating the best price, navigating inspection issues, coordinating financing, and protecting you legally through closing. On average, represented buyers pay 3-5% less than unrepresented ones — that savings alone exceeds my fee." }
+    ],
+    "Market": [
+      { objection: "I'll just wait until the market corrects.", response: "I understand that instinct. But here's what history shows: people who try to time the market almost always miss. Meanwhile, you're paying rent or carrying costs, and if rates drop, competition surges and prices go up. Let's look at the numbers for your specific situation." },
+      { objection: "The news says the market is slowing down.", response: "Headlines sell fear, but your local market tells a different story. Let me show you what's actually happening in our area — days on market, inventory levels, sale prices. National trends don't buy your house; local buyers do." },
+      { objection: "Interest rates are too high right now.", response: "I hear you. But remember — you marry the house, you date the rate. When rates drop, you refinance. But you can't go back and buy at today's prices once demand surges. The cost of waiting often exceeds the rate savings." }
+    ],
+    "Prospecting": [
+      { objection: "I already have an agent.", response: "That's great — having representation is important. I'm not here to step on anyone's toes. If you ever want a second opinion or your situation changes, I'd love to be a resource. Can I send you my market updates in the meantime?" },
+      { objection: "I'm not interested in selling right now.", response: "Totally understand — there's no pressure. Would it be helpful to know what your home is worth in today's market? Even if you're not selling, it's valuable information for financial planning. I can send you a quick analysis." },
+      { objection: "We had a bad experience with our last agent.", response: "I'm sorry to hear that. Can I ask what happened? I want to make sure that if we ever work together, those issues don't repeat. My approach is [address their specific pain point] — and I'm happy to earn your trust over time." }
+    ],
+    "Life Transition": [
+      { objection: "We're not emotionally ready to sell yet.", response: "That's completely valid — this is a big decision and there's no right timeline except yours. What I can do is get everything prepared so that when you are ready, we can move quickly and smoothly. No pressure, just preparation." },
+      { objection: "The family can't agree on what to do.", response: "That's more common than you'd think. What I've found helpful is putting the facts on the table — what the property is worth, what the options are, what the financial implications look like — so everyone can make an informed decision. Would a no-obligation consultation help?" },
+      { objection: "We don't want to deal with the hassle of selling.", response: "I completely understand — it can feel overwhelming. That's exactly what I'm here for. I handle everything: staging, showings, negotiations, paperwork. Most of my clients tell me it was much easier than they expected because I took the burden off them." }
+    ],
+    "Buyer": [
+      { objection: "We want to keep looking before we decide.", response: "Absolutely — you should feel confident in your choice. My only concern is that in this market, homes at this price point are averaging [X] days before going under contract. Let me set up alerts so if something better comes along, you'll know immediately. But I'd hate for you to lose this one while searching for perfect." },
+      { objection: "We need to sell our current home first.", response: "That's a common situation and there are several ways to handle it. We could make your offer contingent on the sale of your home, explore bridge financing, or I could list your home now to get that process started. Let me walk you through the options." },
+      { objection: "We're worried about overpaying.", response: "That's a smart concern. Let me show you the comps — what similar homes have actually sold for, not just listed for. If the data supports the price, you're not overpaying — you're paying market value. And I'll negotiate hard to make sure you're getting the best deal possible." }
+    ],
+    "Objection": [
+      { objection: "We want to wait until after the election.", response: "I understand the uncertainty. But here's what the data shows: in the last 6 election cycles, housing prices continued to rise regardless of who won. The market responds to fundamentals — jobs, inventory, rates — not elections. Let me show you the historical data." },
+      { objection: "We want to wait for spring.", response: "Spring does bring more inventory — but it also brings 40% more buyers. Right now, you have less competition and more negotiating power. The 'spring is better' belief is one of the most expensive myths in real estate." },
+      { objection: "What if we buy and the value drops?", response: "In the short term, anything is possible. But if you're planning to be in this home for 5+ years, history strongly favors you. Real estate has appreciated in 90% of 5-year periods over the last 50 years. The real risk is waiting and paying more later." }
+    ]
+  };
+
+  const getObjectionsForScenario = () => {
+    if (!currentScenario) return [];
+    const cat = currentScenario.category;
+    return COMMON_OBJECTIONS[cat] || COMMON_OBJECTIONS["Market"] || [];
+  };
+
+  const renderScript = () => {
+    const script = currentScenario.clientScript;
+    const quickScript = getQuickScript(script);
+    const highScript = getHighConvictionScript(script);
+    const objections = getObjectionsForScenario();
+    const currentScript = scriptFormat === "quick" ? quickScript : scriptFormat === "highConviction" ? highScript : script;
+
+    return (
+      <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={S.sectionTitle}>Client Interaction Script</div>
+
+        {/* Script Format Selector */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          {SCRIPT_FORMATS.map(f => (
+            <button key={f.id} onClick={() => setScriptFormat(f.id)} style={{
+              padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600,
+              border: "1px solid", cursor: "pointer", transition: "all 0.2s",
+              fontFamily: "'IBM Plex Mono', monospace",
+              borderColor: scriptFormat === f.id ? "#e05a33" : "rgba(0,0,0,0.1)",
+              background: scriptFormat === f.id ? "rgba(224,90,51,0.06)" : "#fff",
+              color: scriptFormat === f.id ? "#e05a33" : "rgba(0,0,0,0.5)"
+            }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 16, lineHeight: 1.5, fontStyle: "italic" }}>
+          {SCRIPT_FORMATS.find(f => f.id === scriptFormat)?.desc}
+        </p>
+
+        {/* Script Content */}
+        <div style={S.scriptBox}>
+          <button
+            onClick={() => handleCopy(currentScript, "script")}
+            style={S.copyBtn(copiedSection === "script")}
+          >
+            {copiedSection === "script" ? "✓ Copied" : "Copy Script"}
+          </button>
+          {currentScript}
+        </div>
+
+        {/* Objection Handling */}
+        {objections.length > 0 && (
+          <div style={{ marginTop: 36 }}>
+            <div style={S.sectionTitle}>Common Objections</div>
+            <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 16, lineHeight: 1.5 }}>
+              If the client pushes back, here's how to respond naturally.
+            </p>
+            {objections.map((obj, i) => (
+              <div key={i} style={{
+                marginBottom: 16, padding: "18px 20px", borderRadius: 12,
+                background: "#fff", border: "1px solid rgba(0,0,0,0.08)",
+                borderLeft: "3px solid #d4a03e"
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 8 }}>
+                  "{obj.objection}"
+                </div>
+                <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 }}>
+                  {obj.response}
+                </div>
+                <button
+                  onClick={() => handleCopy(obj.response, "obj-" + i)}
+                  style={{
+                    marginTop: 10, padding: "4px 12px", borderRadius: 6, fontSize: 10,
+                    border: "1px solid rgba(0,0,0,0.08)", background: copiedSection === "obj-" + i ? "rgba(16,185,129,0.06)" : "#f8f7f4",
+                    color: copiedSection === "obj-" + i ? "#10b981" : "rgba(0,0,0,0.4)",
+                    cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600
+                  }}
+                >
+                  {copiedSection === "obj-" + i ? "✓ Copied" : "Copy Response"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -1966,34 +2209,70 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
 
               {/* Input */}
               <div style={{
-                padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.06)",
-                background: "rgba(10,11,15,0.95)", flexShrink: 0,
-                display: "flex", gap: 10
+                padding: "16px 24px", borderTop: "1px solid rgba(0,0,0,0.08)",
+                background: "#fff", flexShrink: 0
               }}>
-                <input
-                  type="text"
-                  value={practiceInput}
-                  onChange={e => setPracticeInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendPracticeMessage(); } }}
-                  placeholder="Type your response..."
-                  disabled={practiceLoading}
-                  style={{
-                    flex: 1, padding: "12px 16px",
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 10, color: "#e2e0db", fontSize: 14, fontFamily: "inherit",
-                    outline: "none"
-                  }}
-                />
-                <button onClick={sendPracticeMessage} disabled={practiceLoading || !practiceInput.trim()} style={{
-                  padding: "12px 24px", borderRadius: 10, border: "none",
-                  background: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.2)" : "#e05a33",
-                  color: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.5)" : "#fff",
-                  fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace",
-                  cursor: practiceLoading || !practiceInput.trim() ? "not-allowed" : "pointer",
-                  transition: "all 0.2s"
-                }}>
-                  Send
-                </button>
+                {/* Voice Toggle */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <button onClick={() => setVoiceEnabled(!voiceEnabled)} style={{
+                    padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                    border: "1px solid", cursor: "pointer", transition: "all 0.2s",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    borderColor: voiceEnabled ? "#e05a33" : "rgba(0,0,0,0.1)",
+                    background: voiceEnabled ? "rgba(224,90,51,0.06)" : "transparent",
+                    color: voiceEnabled ? "#e05a33" : "rgba(0,0,0,0.4)"
+                  }}>
+                    {voiceEnabled ? "🎙 Voice On" : "🔇 Voice Off"}
+                  </button>
+                  {isPlaying && <span style={{ fontSize: 11, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace" }}>🔊 Client speaking...</span>}
+                </div>
+                
+                <div style={{ display: "flex", gap: 10 }}>
+                  {voiceEnabled ? (
+                    <button
+                      onClick={isRecording ? stopRecording : startRecording}
+                      disabled={practiceLoading || isPlaying}
+                      style={{
+                        flex: 1, padding: "16px", borderRadius: 10, border: "none",
+                        background: isRecording ? "#ef4444" : practiceLoading || isPlaying ? "rgba(224,90,51,0.15)" : "#e05a33",
+                        color: "#fff", fontSize: 15, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        cursor: practiceLoading || isPlaying ? "not-allowed" : "pointer",
+                        transition: "all 0.2s",
+                        animation: isRecording ? "pulse 1.5s infinite" : "none"
+                      }}
+                    >
+                      {isRecording ? "⏹ Stop Recording" : practiceLoading ? "⏳ Processing..." : isPlaying ? "🔊 Listening..." : "🎙 Hold to Speak"}
+                    </button>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={practiceInput}
+                        onChange={e => setPracticeInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendPracticeMessage(); } }}
+                        placeholder="Type your response..."
+                        disabled={practiceLoading}
+                        style={{
+                          flex: 1, padding: "12px 16px",
+                          background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)",
+                          borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit",
+                          outline: "none"
+                        }}
+                      />
+                      <button onClick={sendPracticeMessage} disabled={practiceLoading || !practiceInput.trim()} style={{
+                        padding: "12px 24px", borderRadius: 10, border: "none",
+                        background: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.2)" : "#e05a33",
+                        color: practiceLoading || !practiceInput.trim() ? "rgba(224,90,51,0.5)" : "#fff",
+                        fontSize: 13, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace",
+                        cursor: practiceLoading || !practiceInput.trim() ? "not-allowed" : "pointer",
+                        transition: "all 0.2s"
+                      }}>
+                        Send
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           )}

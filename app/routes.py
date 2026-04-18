@@ -16,7 +16,12 @@ router = APIRouter()
 
 @router.post("/auth/register", response_model=TokenResponse)
 async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
-    return await register_user(data, db)
+    try:
+        return await register_user(data, db)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration error: {str(e)}")
 
 @router.post("/auth/login", response_model=TokenResponse)
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
@@ -176,3 +181,40 @@ async def user_stats(user: User = Depends(get_current_user), db: AsyncSession = 
     if feedbacks:
         avg = {k: round(sum(getattr(f, k) for f in feedbacks) / len(feedbacks)) for k in ["clarity", "empathy", "persuasion", "confidence", "overall"]}
     return {"total_sessions": len(sessions), "completed_sessions": len(completed), "average_scores": avg, "member_since": user.created_at}
+
+
+# ════════════════════════════════════════
+# TEXT-TO-SPEECH (ElevenLabs)
+# ════════════════════════════════════════
+
+class TTSRequest(BaseModel):
+    text: str
+    voice_id: Optional[str] = None
+
+@router.post("/tts")
+async def text_to_speech(data: TTSRequest, user: User = Depends(get_current_user)):
+    if not settings.elevenlabs_api_key:
+        raise HTTPException(status_code=503, detail="TTS not configured")
+    voice = data.voice_id or settings.elevenlabs_voice_id
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.post(
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice}",
+                headers={
+                    "xi-api-key": settings.elevenlabs_api_key,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "text": data.text,
+                    "model_id": "eleven_monolingual_v1",
+                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+                }
+            )
+            if response.status_code != 200:
+                raise HTTPException(status_code=502, detail="TTS service error")
+            from fastapi.responses import Response
+            return Response(content=response.content, media_type="audio/mpeg")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"TTS error: {str(e)}")
