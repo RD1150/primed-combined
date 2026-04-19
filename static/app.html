@@ -1144,6 +1144,84 @@ Return ONLY valid JSON (no markdown, no backticks):
     { id: "p-lowoffer", title: "Insulting Offer Response", icon: "😤", desc: "De-escalate a seller who wants to reject a low offer" },
   ];
 
+  const QUICK_STARTS = [
+    { label: "Expired Listing", desc: "Emotional seller whose home didn't sell", scenario: "p-expired", persona: "emotional", icon: "📞", color: "#ef4444" },
+    { label: "Price Reduction", desc: "Resistant seller who won't budge on price", scenario: "p-reduction", persona: "analytical", icon: "📉", color: "#3b82f6" },
+    { label: "First-Time Buyer", desc: "Nervous buyer overwhelmed by the process", scenario: "p-hesitation", persona: "firsttimer", icon: "😰", color: "#10b981" },
+    { label: "Commission Defense", desc: "Skeptical seller questioning your fee", scenario: "p-commission", persona: "distrustful", icon: "💰", color: "#f59e0b" }
+  ];
+
+  const quickLaunch = useCallback(async (qs) => {
+    setPracticeScenario(qs.scenario);
+    setPracticePersona(qs.persona);
+    setPracticeDifficulty("medium");
+    setPracticeContext("");
+    setPracticeState("active");
+    setPracticeMessages([]);
+    setPracticeFeedback(null);
+    // AI speaks first
+    setTimeout(() => sendAIFirstMessage(qs.scenario, qs.persona), 500);
+  }, []);
+
+  const sendAIFirstMessage = useCallback(async (scenarioId, personaId) => {
+    setPracticeLoading(true);
+    const scenario = PRACTICE_SCENARIOS.find(s => s.id === scenarioId);
+    const persona = PERSONAS.find(p => p.id === personaId);
+    const diffMap = { easy: "Agree relatively quickly.", medium: "Push back on some points.", hard: "Challenge everything." };
+    const systemPrompt = `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times.
+
+PERSONA: ${persona.name}
+TRAITS: ${persona.traits}
+DIFFICULTY: medium — ${diffMap["medium"]}
+
+SCENARIO: ${scenario.title} — ${scenario.desc}
+
+RULES:
+- You are STARTING the conversation. Open with your problem or question.
+- Respond as a real client would — natural, conversational, 1-2 paragraphs max
+- Never reveal you are an AI
+- React emotionally when it fits your persona
+- Keep it concise like a real conversation`;
+
+    try {
+      const response = await fetch(API_URL + "/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          max_tokens: 500,
+          system: systemPrompt,
+          messages: [{ role: "user", content: "Start the conversation. You are the client reaching out to the agent. Open with your situation or question." }]
+        })
+      });
+      const data = await response.json();
+      const reply = data.content.map(i => i.text || "").join("");
+      setPracticeMessages([{ role: "client", content: reply }]);
+      
+      // Play TTS if voice is enabled
+      if (voiceEnabled) {
+        setIsPlaying(true);
+        try {
+          const ttsRes = await fetch(API_URL + "/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+            body: JSON.stringify({ text: reply })
+          });
+          if (ttsRes.ok) {
+            const ab = await ttsRes.blob();
+            const au = new Audio(URL.createObjectURL(ab));
+            audioRef.current = au;
+            au.onended = () => setIsPlaying(false);
+            au.play();
+          } else { setIsPlaying(false); }
+        } catch { setIsPlaying(false); }
+      }
+    } catch (err) {
+      console.error("AI first message error:", err);
+      setPracticeMessages([{ role: "client", content: "Hi, I was hoping to talk to you about my home. I've been thinking about selling but I'm not sure where to start." }]);
+    }
+    setPracticeLoading(false);
+  }, [voiceEnabled]);
+
   const buildPracticePrompt = () => {
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
     const persona = PERSONAS.find(p => p.id === practicePersona);
@@ -2044,21 +2122,61 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           {practiceState === "setup" && (
             <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
               <div style={{ maxWidth: 900, margin: "0 auto" }}>
-                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Practice Mode</div>
-                <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>Choose Your Scenario</h2>
-                <p style={{ fontSize: 14, color: "rgba(0,0,0,0.45)", marginBottom: 28 }}>Select a conversation to practice, then choose who you're talking to.</p>
+                
+                {/* GET PRIMED - Hero Section */}
+                <div style={{ textAlign: "center", marginBottom: 40 }}>
+                  <h2 style={{ fontSize: 32, fontWeight: 400, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>Get Primed</h2>
+                  <p style={{ fontSize: 15, color: "rgba(0,0,0,0.45)", marginBottom: 24 }}>Practice the conversation before it happens.</p>
+                  <button onClick={() => quickLaunch(QUICK_STARTS[0])} style={{
+                    padding: "16px 40px", borderRadius: 12, border: "none",
+                    background: "#e05a33", color: "#fff", fontSize: 16, fontWeight: 700,
+                    fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em",
+                    cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(224,90,51,0.25)"
+                  }}>
+                    Start Practice
+                  </button>
+                  <p style={{ fontSize: 11, color: "rgba(0,0,0,0.3)", marginTop: 10 }}>Launches: Expired Listing + Emotional Seller</p>
+                </div>
+
+                {/* Quick Start Cards */}
+                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Quick Start</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10, marginBottom: 40 }}>
+                  {QUICK_STARTS.map((qs, i) => (
+                    <div key={i} onClick={() => quickLaunch(qs)} style={{
+                      padding: "16px 18px", borderRadius: 12, cursor: "pointer",
+                      border: "1px solid rgba(0,0,0,0.08)", background: "#fff",
+                      transition: "all 0.2s", borderLeft: `3px solid ${qs.color}`
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <span style={{ fontSize: 18 }}>{qs.icon}</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>{qs.label}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.45)", lineHeight: 1.5 }}>{qs.desc}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Divider */}
+                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
+                  <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                  <span style={{ fontSize: 11, color: "rgba(0,0,0,0.25)", fontFamily: "'IBM Plex Mono', monospace" }}>or customize</span>
+                  <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                </div>
+
+                {/* Existing Scenario Picker */}
+                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Scenario</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10, marginBottom: 40 }}>
                   {PRACTICE_SCENARIOS.map(s => (
                     <div key={s.id} onClick={() => setPracticeScenario(s.id)} style={{
                       padding: "14px 18px", borderRadius: 12, cursor: "pointer",
-                      border: `1px solid ${practiceScenario === s.id ? "rgba(224,90,51,0.3)" : "rgba(255,255,255,0.06)"}`,
-                      background: practiceScenario === s.id ? "rgba(224,90,51,0.07)" : "rgba(255,255,255,0.02)",
+                      border: `1px solid ${practiceScenario === s.id ? "rgba(224,90,51,0.3)" : "rgba(0,0,0,0.08)"}`,
+                      background: practiceScenario === s.id ? "rgba(224,90,51,0.06)" : "#fff",
                       transition: "all 0.2s"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: practiceScenario === s.id ? "#f5f3ee" : "rgba(226,224,219,0.7)" }}>{s.title}</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: practiceScenario === s.id ? "#e05a33" : "#1a1a1a" }}>{s.title}</span>
                       </div>
                       <div style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
@@ -2072,8 +2190,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       {PERSONAS.map(p => (
                         <div key={p.id} onClick={() => setPracticePersona(p.id)} style={{
                           padding: "16px 18px", borderRadius: 12, cursor: "pointer",
-                          border: `1px solid ${practicePersona === p.id ? p.color + "44" : "rgba(255,255,255,0.06)"}`,
-                          background: practicePersona === p.id ? p.color + "11" : "rgba(255,255,255,0.02)",
+                          border: `1px solid ${practicePersona === p.id ? p.color + "44" : "rgba(0,0,0,0.08)"}`,
+                          background: practicePersona === p.id ? p.color + "11" : "#fff",
                           transition: "all 0.2s"
                         }}>
                           <div style={{ fontSize: 24, marginBottom: 8 }}>{p.icon}</div>
@@ -2120,7 +2238,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       }}
                     />
 
-                    <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); }} style={{
+                    <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 500); }} style={{
                       marginTop: 24, padding: "14px 36px", borderRadius: 10, border: "none",
                       background: "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700,
                       fontFamily: "'DM Mono', monospace", letterSpacing: "0.03em",
@@ -2139,8 +2257,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
               {/* Practice header */}
               <div style={{
-                padding: "12px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)",
-                background: "rgba(12,13,18,0.9)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0
+                padding: "12px 24px", borderBottom: "1px solid rgba(0,0,0,0.08)",
+                background: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 20 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</span>
