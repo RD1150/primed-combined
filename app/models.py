@@ -15,6 +15,10 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     name = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    stripe_customer_id = Column(String, nullable=True)
+    stripe_subscription_id = Column(String, nullable=True)
+    subscription_status = Column(String, nullable=True, default="trial")  # trial | active | canceled | past_due
+    trial_ends_at = Column(DateTime(timezone=True), nullable=True)
     sessions = relationship("PracticeSession", back_populates="user")
     value_scripts = relationship("ValueScript", back_populates="user")
     custom_scenarios = relationship("CustomScenario", back_populates="user")

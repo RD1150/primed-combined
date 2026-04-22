@@ -10,7 +10,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-20250514"
     elevenlabs_api_key: str = ""
-    elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"  # Rachel - default female voice
+    elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"
+    stripe_secret_key: str = ""
+    stripe_publishable_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_price_id: str = ""  # Set this after creating a price in Stripe  # Rachel - default female voice
 
     class Config:
         env_file = ".env"

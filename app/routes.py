@@ -218,3 +218,102 @@ async def text_to_speech(data: TTSRequest, user: User = Depends(get_current_user
             raise
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"TTS error: {str(e)}")
+
+
+# ════════════════════════════════════════
+# STRIPE SUBSCRIPTIONS
+# ════════════════════════════════════════
+
+import stripe as stripe_lib
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from datetime import datetime, timedelta, timezone
+
+@router.post("/billing/create-checkout")
+async def create_checkout(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if not settings.stripe_secret_key:
+        raise HTTPException(status_code=503, detail="Billing not configured")
+    stripe_lib.api_key = settings.stripe_secret_key
+    
+    # Create or retrieve Stripe customer
+    if not user.stripe_customer_id:
+        customer = stripe_lib.Customer.create(email=user.email, name=user.name or user.email)
+        user.stripe_customer_id = customer.id
+        await db.commit()
+    
+    # Create checkout session
+    session = stripe_lib.checkout.Session.create(
+        customer=user.stripe_customer_id,
+        payment_method_types=["card"],
+        line_items=[{"price": settings.stripe_price_id, "quantity": 1}],
+        mode="subscription",
+        success_url="https://primed-api.onrender.com/app?subscribed=true",
+        cancel_url="https://primed-api.onrender.com/app?canceled=true",
+        metadata={"user_id": user.id}
+    )
+    return {"checkout_url": session.url}
+
+
+@router.post("/billing/portal")
+async def billing_portal(user: User = Depends(get_current_user)):
+    if not settings.stripe_secret_key or not user.stripe_customer_id:
+        raise HTTPException(status_code=400, detail="No billing account found")
+    stripe_lib.api_key = settings.stripe_secret_key
+    session = stripe_lib.billing_portal.Session.create(
+        customer=user.stripe_customer_id,
+        return_url="https://primed-api.onrender.com/app"
+    )
+    return {"portal_url": session.url}
+
+
+@router.get("/billing/status")
+async def billing_status(user: User = Depends(get_current_user)):
+    # Check trial
+    now = datetime.now(timezone.utc)
+    trial_days = 7
+    trial_end = user.created_at.replace(tzinfo=timezone.utc) + timedelta(days=trial_days)
+    in_trial = now < trial_end
+    days_left = max(0, (trial_end - now).days)
+    
+    return {
+        "status": user.subscription_status or "trial",
+        "in_trial": in_trial,
+        "trial_days_left": days_left,
+        "has_access": in_trial or user.subscription_status == "active",
+        "stripe_customer_id": user.stripe_customer_id
+    }
+
+
+@router.post("/billing/webhook")
+async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
+    stripe_lib.api_key = settings.stripe_secret_key
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    
+    try:
+        event = stripe_lib.Webhook.construct_event(payload, sig_header, settings.stripe_webhook_secret)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid webhook")
+    
+    # Handle subscription events
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = session.get("metadata", {}).get("user_id")
+        if user_id:
+            result = await db.execute(select(User).where(User.id == user_id))
+            user = result.scalar_one_or_none()
+            if user:
+                user.subscription_status = "active"
+                user.stripe_subscription_id = session.get("subscription")
+                await db.commit()
+    
+    elif event["type"] in ["customer.subscription.updated", "customer.subscription.deleted"]:
+        sub = event["data"]["object"]
+        customer_id = sub.get("customer")
+        result = await db.execute(select(User).where(User.stripe_customer_id == customer_id))
+        user = result.scalar_one_or_none()
+        if user:
+            user.subscription_status = sub.get("status", "canceled")
+            await db.commit()
+    
+    return JSONResponse({"received": True})

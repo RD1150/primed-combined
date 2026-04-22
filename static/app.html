@@ -899,6 +899,38 @@ function Primed() {
   const [authError, setAuthError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [user, setUser] = useState(getUser());
+  const [billingStatus, setBillingStatus] = useState(null);
+
+  // Fetch billing status after login
+  useEffect(() => {
+    if (!authScreen && getToken()) {
+      fetch(API_URL + "/billing/status", {
+        headers: { "Authorization": "Bearer " + getToken() }
+      }).then(r => r.json()).then(d => setBillingStatus(d)).catch(() => {});
+    }
+  }, [authScreen]);
+
+  const handleSubscribe = async () => {
+    try {
+      const res = await fetch(API_URL + "/billing/create-checkout", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + getToken() }
+      });
+      const data = await res.json();
+      if (data.checkout_url) window.location.href = data.checkout_url;
+    } catch (err) { console.error("Checkout error:", err); }
+  };
+
+  const handleManageBilling = async () => {
+    try {
+      const res = await fetch(API_URL + "/billing/portal", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + getToken() }
+      });
+      const data = await res.json();
+      if (data.portal_url) window.location.href = data.portal_url;
+    } catch (err) { console.error("Portal error:", err); }
+  };
 
   const handleAuth = useCallback(async (isSignup) => {
     setAuthLoading(true);
@@ -1967,6 +1999,45 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       {/* ═══ MAIN APP (when logged in) ═══ */}
       {!authScreen && (
       <div style={S.app}>
+        
+        {/* Paywall overlay - shows when trial expired and not subscribed */}
+        {billingStatus && !billingStatus.has_access && (
+          <div style={{
+            position: "fixed", inset: 0, background: "rgba(248,247,244,0.97)",
+            zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
+            flexDirection: "column", padding: 40, textAlign: "center"
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>⚡</div>
+            <h2 style={{ fontSize: 28, fontWeight: 400, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>
+              Your trial has ended.
+            </h2>
+            <p style={{ fontSize: 16, color: "rgba(0,0,0,0.5)", marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>
+              Subscribe to continue accessing all 24 scenarios, practice mode, voice coaching, and your personal value scripts.
+            </p>
+            <div style={{
+              background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 16,
+              padding: "32px 40px", marginBottom: 24, minWidth: 300
+            }}>
+              <div style={{ fontSize: 13, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Primed Pro</div>
+              <div style={{ fontSize: 40, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>$29<span style={{ fontSize: 16, fontWeight: 400, color: "rgba(0,0,0,0.4)" }}>/month</span></div>
+              <div style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", marginBottom: 24 }}>Cancel anytime</div>
+              {["24 conversation scenarios", "AI voice practice mode", "3 script formats per scenario", "Objection handling library", "Personal value script builder", "Session history & coaching scores"].map((f, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, textAlign: "left" }}>
+                  <span style={{ color: "#e05a33", fontWeight: 700 }}>✓</span>
+                  <span style={{ fontSize: 13, color: "rgba(0,0,0,0.6)" }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={handleSubscribe} style={{
+              padding: "16px 48px", borderRadius: 12, border: "none",
+              background: "#e05a33", color: "#fff", fontSize: 16, fontWeight: 700,
+              fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em",
+              cursor: "pointer", boxShadow: "0 4px 16px rgba(224,90,51,0.25)"
+            }}>
+              Subscribe Now →
+            </button>
+          </div>
+        )}
         <header style={S.header}>
           <div style={S.logoArea}>
             <h1 style={S.logoText}>
@@ -1977,6 +2048,29 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             {user && <span style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", fontFamily: "'IBM Plex Mono', monospace" }}>{user.email}</span>}
+            {billingStatus && billingStatus.in_trial && (
+              <span style={{
+                padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 600,
+                background: "rgba(212,160,62,0.1)", color: "#b8860b",
+                border: "1px solid rgba(212,160,62,0.3)", fontFamily: "'IBM Plex Mono', monospace"
+              }}>
+                {billingStatus.trial_days_left}d trial
+              </span>
+            )}
+            {billingStatus && !billingStatus.has_access && (
+              <button onClick={handleSubscribe} style={{
+                padding: "6px 14px", borderRadius: 8, border: "none",
+                background: "#e05a33", color: "#fff", fontSize: 11,
+                fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer"
+              }}>Subscribe $29/mo</button>
+            )}
+            {billingStatus && billingStatus.status === "active" && (
+              <button onClick={handleManageBilling} style={{
+                padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)",
+                background: "transparent", color: "rgba(0,0,0,0.4)", fontSize: 10,
+                fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer"
+              }}>Manage Plan</button>
+            )}
             <button onClick={handleLogout} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: "transparent", color: "rgba(0,0,0,0.4)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Log out</button>
           </div>
         </header>
