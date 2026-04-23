@@ -2001,7 +2001,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       <div style={S.app}>
         
         {/* Paywall overlay - shows when trial expired and not subscribed */}
-        {billingStatus && !billingStatus.has_access && (
+        {billingStatus && !billingStatus.has_access && billingStatus.status !== "active" && (
           <div style={{
             position: "fixed", inset: 0, background: "rgba(248,247,244,0.97)",
             zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",

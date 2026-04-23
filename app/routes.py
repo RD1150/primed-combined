@@ -268,18 +268,22 @@ async def billing_portal(user: User = Depends(get_current_user)):
 
 @router.get("/billing/status")
 async def billing_status(user: User = Depends(get_current_user)):
-    # Check trial
     now = datetime.now(timezone.utc)
     trial_days = 7
     trial_end = user.created_at.replace(tzinfo=timezone.utc) + timedelta(days=trial_days)
     in_trial = now < trial_end
     days_left = max(0, (trial_end - now).days)
     
+    # Active subscription always has access
+    is_active = user.subscription_status == "active"
+    has_access = in_trial or is_active
+    
     return {
         "status": user.subscription_status or "trial",
         "in_trial": in_trial,
         "trial_days_left": days_left,
-        "has_access": in_trial or user.subscription_status == "active",
+        "has_access": has_access,
+        "is_active": is_active,
         "stripe_customer_id": user.stripe_customer_id
     }
 
