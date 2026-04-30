@@ -919,6 +919,20 @@ function Primed() {
     }
   }, [authScreen]);
 
+  // Sync browser-autofilled input values into React state.
+  // Chrome/Safari autofill writes to input.value without firing onChange,
+  // so without this, the form submits with empty strings.
+  useEffect(() => {
+    if (!authScreen) return;
+    const t = setTimeout(() => {
+      const emailEl = document.querySelector('input[type="email"]');
+      const passEl = document.querySelector('input[type="password"]');
+      if (emailEl && emailEl.value && !authEmail) setAuthEmail(emailEl.value);
+      if (passEl && passEl.value && !authPass) setAuthPass(passEl.value);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [authScreen]);
+
   const handleSubscribe = async () => {
     try {
       const res = await fetch(API_URL + "/billing/create-checkout", {
@@ -2057,14 +2071,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup") && (
-              <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading || !authEmail || !authPass}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail || !authPass) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail || !authPass) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading}
+                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: authLoading ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
                 {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
               </button>
             )}
             {authScreen === "forgot" && (
-              <button onClick={handleForgot} disabled={authLoading || !authEmail}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              <button onClick={handleForgot} disabled={authLoading}
+                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: authLoading ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
                 {authLoading ? "..." : "Send reset link"}
               </button>
             )}
