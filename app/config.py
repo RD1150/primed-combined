@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     email_from: str = "Primed <noreply@primed.today>"
     app_base_url: str = "https://primed-api.onrender.com"
     password_reset_token_expire_minutes: int = 30
+    admin_emails: str = ""  # comma-separated list of emails that bypass the paywall
 
     class Config:
         env_file = ".env"
