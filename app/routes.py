@@ -14,7 +14,7 @@ from app.models import User, PracticeSession, SessionFeedback, ValueScript, Cust
 settings = get_settings()
 router = APIRouter()
 
-@router.post("/auth/register", response_model=TokenResponse)
+@router.post("/auth/register")
 async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
     try:
         return await register_user(data, db)
@@ -23,7 +23,7 @@ async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Registration error: {str(e)}")
 
-@router.post("/auth/login", response_model=TokenResponse)
+@router.post("/auth/login")
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
     return await login_user(data, db)
 

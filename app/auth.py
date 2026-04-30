@@ -90,9 +90,19 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
-async def register_user(data: UserCreate, db: AsyncSession) -> TokenResponse:
+def _send_setup_link(user: User) -> None:
+    from app.email_service import send_password_reset_email
+    token = create_password_reset_token(user.id, user.password_set_at)
+    reset_url = f"{settings.app_base_url.rstrip('/')}/app#/reset-password?token={token}"
+    send_password_reset_email(user.email, reset_url)
+
+async def register_user(data: UserCreate, db: AsyncSession):
     result = await db.execute(select(User).where(User.email == data.email))
-    if result.scalar_one_or_none():
+    existing = result.scalar_one_or_none()
+    if existing:
+        if existing.hashed_password is None:
+            _send_setup_link(existing)
+            return {"password_setup_required": True, "email": existing.email}
         raise HTTPException(status_code=400, detail="Email already registered")
     user = User(email=data.email, hashed_password=hash_password(data.password), name=data.name, password_set_at=datetime.now(timezone.utc))
     db.add(user)
@@ -101,23 +111,25 @@ async def register_user(data: UserCreate, db: AsyncSession) -> TokenResponse:
     token = create_access_token(user.id)
     return TokenResponse(access_token=token, user=UserResponse(id=user.id, email=user.email, name=user.name, created_at=user.created_at))
 
-async def login_user(data: UserLogin, db: AsyncSession) -> TokenResponse:
+async def login_user(data: UserLogin, db: AsyncSession):
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
-    if not user or not user.hashed_password or not verify_password(data.password, user.hashed_password):
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if user.hashed_password is None:
+        _send_setup_link(user)
+        return {"password_setup_required": True, "email": user.email}
+    if not verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     token = create_access_token(user.id)
     return TokenResponse(access_token=token, user=UserResponse(id=user.id, email=user.email, name=user.name, created_at=user.created_at))
 
 async def request_password_reset(data: ForgotPasswordRequest, db: AsyncSession) -> None:
-    from app.email_service import send_password_reset_email
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
     if not user:
         return
-    token = create_password_reset_token(user.id, user.password_set_at)
-    reset_url = f"{settings.app_base_url.rstrip('/')}/app#/reset-password?token={token}"
-    send_password_reset_email(user.email, reset_url)
+    _send_setup_link(user)
 
 async def reset_password(data: ResetPasswordRequest, db: AsyncSession) -> TokenResponse:
     if len(data.new_password) < 8:

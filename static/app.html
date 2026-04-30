@@ -944,6 +944,7 @@ function Primed() {
   const handleAuth = useCallback(async (isSignup) => {
     setAuthLoading(true);
     setAuthError("");
+    setAuthInfo("");
     try {
       const endpoint = isSignup ? "/auth/register" : "/auth/login";
       const body = isSignup
@@ -958,6 +959,12 @@ function Primed() {
       let data;
       try { data = JSON.parse(text); } catch { data = { detail: text }; }
       if (!res.ok) { setAuthError(data.detail || "Error: " + res.status); setAuthLoading(false); return; }
+      if (data.password_setup_required) {
+        setAuthInfo("We see you're already on our list. Check your inbox for a link to set your password.");
+        setAuthPass("");
+        setAuthLoading(false);
+        return;
+      }
       setToken(data.access_token);
       setUserData(data.user);
       setUser(data.user);
