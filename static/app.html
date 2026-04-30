@@ -892,12 +892,21 @@ const HeatBadge = ({ heat }) => {
 
 function Primed() {
   // Auth state
-  const [authScreen, setAuthScreen] = useState(getToken() ? null : "login"); // null = logged in, "login", "signup"
+  const initialResetToken = (() => {
+    const h = typeof window !== "undefined" ? window.location.hash || "" : "";
+    const m = h.match(/^#\/reset-password\?token=([^&]+)/);
+    return m ? decodeURIComponent(m[1]) : "";
+  })();
+  const [authScreen, setAuthScreen] = useState(
+    initialResetToken ? "reset" : (getToken() ? null : "login")
+  ); // null = logged in, "login", "signup", "forgot", "reset"
   const [authEmail, setAuthEmail] = useState("");
   const [authPass, setAuthPass] = useState("");
   const [authName, setAuthName] = useState("");
   const [authError, setAuthError] = useState("");
+  const [authInfo, setAuthInfo] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [resetToken, setResetToken] = useState(initialResetToken);
   const [user, setUser] = useState(getUser());
   const [billingStatus, setBillingStatus] = useState(null);
 
@@ -958,6 +967,52 @@ function Primed() {
     }
     setAuthLoading(false);
   }, [authEmail, authPass, authName]);
+
+  const handleForgot = useCallback(async () => {
+    setAuthLoading(true);
+    setAuthError("");
+    setAuthInfo("");
+    try {
+      await fetch(API_URL + "/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: authEmail })
+      });
+      setAuthInfo("If that email is registered, a password reset link is on its way. Check your inbox.");
+    } catch (err) {
+      setAuthError("Connection failed: " + err.message);
+    }
+    setAuthLoading(false);
+  }, [authEmail]);
+
+  const handleReset = useCallback(async () => {
+    setAuthLoading(true);
+    setAuthError("");
+    setAuthInfo("");
+    try {
+      const res = await fetch(API_URL + "/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: resetToken, new_password: authPass })
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { detail: text }; }
+      if (!res.ok) { setAuthError(data.detail || "Error: " + res.status); setAuthLoading(false); return; }
+      setToken(data.access_token);
+      setUserData(data.user);
+      setUser(data.user);
+      if (typeof window !== "undefined") {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      setResetToken("");
+      setAuthPass("");
+      setAuthScreen(null);
+    } catch (err) {
+      setAuthError("Connection failed: " + err.message);
+    }
+    setAuthLoading(false);
+  }, [resetToken, authPass]);
 
   const handleLogout = () => { clearAuth(); setUser(null); setAuthScreen("login"); };
 
@@ -1963,35 +2018,80 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               <span style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", fontFamily: "'Outfit', sans-serif" }}>primed</span>
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 400, color: "#1a1a1a", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
-              {authScreen === "login" ? "Welcome back." : "Get started."}
+              {authScreen === "login" ? "Welcome back." :
+               authScreen === "signup" ? "Get started." :
+               authScreen === "forgot" ? "Reset your password." :
+               "Set a new password."}
             </h2>
             <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginBottom: 32 }}>
-              {authScreen === "login" ? "Log in to your account" : "Create your free account"}
+              {authScreen === "login" ? "Log in to your account" :
+               authScreen === "signup" ? "Create your free account" :
+               authScreen === "forgot" ? "Enter your email to receive a reset link" :
+               "Choose a password for your account"}
             </p>
             {authError && (
               <div style={{ padding: "10px 16px", borderRadius: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 13, marginBottom: 16, textAlign: "center" }}>{authError}</div>
+            )}
+            {authInfo && (
+              <div style={{ padding: "10px 16px", borderRadius: 8, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#16a34a", fontSize: 13, marginBottom: 16, textAlign: "center" }}>{authInfo}</div>
             )}
             {authScreen === "signup" && (
               <input type="text" placeholder="Your name" value={authName} onChange={e => setAuthName(e.target.value)}
                 style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
-            <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
-              style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
-            <input type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleAuth(authScreen === "signup"); }}
-              style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
-            <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading || !authEmail || !authPass}
-              style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail || !authPass) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail || !authPass) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
-              {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
-            </button>
-            <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginTop: 20 }}>
-              {authScreen === "login" ? "Don't have an account? " : "Already have an account? "}
-              <span onClick={() => { setAuthScreen(authScreen === "login" ? "signup" : "login"); setAuthError(""); }}
-                style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
-                {authScreen === "login" ? "Sign up" : "Log in"}
-              </span>
-            </p>
+            {(authScreen === "login" || authScreen === "signup" || authScreen === "forgot") && (
+              <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") { authScreen === "forgot" ? handleForgot() : handleAuth(authScreen === "signup"); } }}
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+            )}
+            {(authScreen === "login" || authScreen === "signup" || authScreen === "reset") && (
+              <input type="password" placeholder={authScreen === "reset" ? "New password (8+ characters)" : "Password"} value={authPass} onChange={e => setAuthPass(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") { authScreen === "reset" ? handleReset() : handleAuth(authScreen === "signup"); } }}
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
+            )}
+            {(authScreen === "login" || authScreen === "signup") && (
+              <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading || !authEmail || !authPass}
+                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail || !authPass) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail || !authPass) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+                {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
+              </button>
+            )}
+            {authScreen === "forgot" && (
+              <button onClick={handleForgot} disabled={authLoading || !authEmail}
+                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authEmail) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authEmail) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+                {authLoading ? "..." : "Send reset link"}
+              </button>
+            )}
+            {authScreen === "reset" && (
+              <button onClick={handleReset} disabled={authLoading || !authPass || authPass.length < 8}
+                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authPass || authPass.length < 8) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authPass || authPass.length < 8) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+                {authLoading ? "..." : "Set password"}
+              </button>
+            )}
+            {authScreen === "login" && (
+              <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginTop: 12 }}>
+                <span onClick={() => { setAuthScreen("forgot"); setAuthError(""); setAuthInfo(""); setAuthPass(""); }}
+                  style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
+                  Forgot password?
+                </span>
+              </p>
+            )}
+            {(authScreen === "login" || authScreen === "signup") && (
+              <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginTop: 20 }}>
+                {authScreen === "login" ? "Don't have an account? " : "Already have an account? "}
+                <span onClick={() => { setAuthScreen(authScreen === "login" ? "signup" : "login"); setAuthError(""); setAuthInfo(""); }}
+                  style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
+                  {authScreen === "login" ? "Sign up" : "Log in"}
+                </span>
+              </p>
+            )}
+            {(authScreen === "forgot" || authScreen === "reset") && (
+              <p style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", textAlign: "center", marginTop: 20 }}>
+                <span onClick={() => { setAuthScreen("login"); setAuthError(""); setAuthInfo(""); setAuthPass(""); }}
+                  style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600 }}>
+                  Back to log in
+                </span>
+              </p>
+            )}
           </div>
         </div>
       )}

@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     stripe_publishable_key: str = ""
     stripe_webhook_secret: str = ""
     stripe_price_id: str = ""  # Set this after creating a price in Stripe  # Rachel - default female voice
+    resend_api_key: str = ""
+    email_from: str = "Primed <noreply@primed.today>"
+    app_base_url: str = "https://primed-api.onrender.com"
+    password_reset_token_expire_minutes: int = 30
 
     class Config:
         env_file = ".env"

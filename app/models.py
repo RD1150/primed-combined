@@ -12,9 +12,10 @@ class User(Base):
     __tablename__ = "users"
     id = Column(String, primary_key=True, default=gen_uuid)
     email = Column(String, unique=True, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)
     name = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    password_set_at = Column(DateTime(timezone=True), nullable=True)
     stripe_customer_id = Column(String, nullable=True)
     stripe_subscription_id = Column(String, nullable=True)
     subscription_status = Column(String, nullable=True, default="trial")  # trial | active | canceled | past_due

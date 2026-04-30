@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import httpx
 from app.database import get_db
 from app.config import get_settings
-from app.auth import UserCreate, UserLogin, TokenResponse, register_user, login_user, get_current_user, UserResponse
+from app.auth import UserCreate, UserLogin, TokenResponse, register_user, login_user, get_current_user, UserResponse, ForgotPasswordRequest, ResetPasswordRequest, request_password_reset, reset_password
 from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario
 
 settings = get_settings()
@@ -30,6 +30,15 @@ async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
 @router.get("/auth/me", response_model=UserResponse)
 async def me(user: User = Depends(get_current_user)):
     return UserResponse(id=user.id, email=user.email, name=user.name, created_at=user.created_at)
+
+@router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    await request_password_reset(data, db)
+    return {"ok": True}
+
+@router.post("/auth/reset-password", response_model=TokenResponse)
+async def reset_password_endpoint(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    return await reset_password(data, db)
 
 class AIRequest(BaseModel):
     messages: list
