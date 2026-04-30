@@ -1,4 +1,6 @@
 import logging
+import sys
+import traceback
 import resend
 from app.config import get_settings
 
@@ -6,17 +8,30 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
+def _log(msg: str) -> None:
+    # print to stdout so Render captures it regardless of root-logger config
+    print(f"[email_service] {msg}", file=sys.stdout, flush=True)
+
+
 def _client_configured() -> bool:
-    if not settings.resend_api_key:
-        logger.warning("RESEND_API_KEY not configured; email send skipped")
+    key = settings.resend_api_key
+    if not key:
+        _log("ABORT: settings.resend_api_key is empty or missing")
         return False
-    resend.api_key = settings.resend_api_key
+    _log(f"resend_api_key present (length={len(key)})")
+    _log(f"email_from={settings.email_from!r}")
+    _log(f"app_base_url={settings.app_base_url!r}")
+    resend.api_key = key
     return True
 
 
 def send_password_reset_email(to: str, reset_url: str) -> None:
+    _log(f"send_password_reset_email called: to={to!r}")
     if not _client_configured():
+        _log("send aborted: client not configured")
         return
+    _log(f"about to call resend.Emails.send: from={settings.email_from!r}, to={to!r}, subject='Set your Primed password'")
+    _log(f"reset_url={reset_url}")
     html = f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1a1a1a;">
       <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 16px;">Set your Primed password</h2>
@@ -37,12 +52,14 @@ def send_password_reset_email(to: str, reset_url: str) -> None:
         "If you didn't request this, you can safely ignore this email."
     )
     try:
-        resend.Emails.send({
+        response = resend.Emails.send({
             "from": settings.email_from,
             "to": [to],
             "subject": "Set your Primed password",
             "html": html,
             "text": text,
         })
+        _log(f"resend.Emails.send returned: {response!r}")
     except Exception as e:
-        logger.exception("Failed to send password reset email to %s: %s", to, e)
+        _log(f"resend.Emails.send raised: {type(e).__name__}: {e}")
+        _log(f"traceback:\n{traceback.format_exc()}")
