@@ -1028,18 +1028,24 @@ const DirectionBadge = ({ direction }) => {
   );
 };
 
-const HeatBadge = ({ heat }) => {
+const HeatBadge = ({ heat, size = "sm" }) => {
   const colors = {
-    Critical: { bg: "#dc2626", text: "#fff" },
-    High: { bg: "#f59e0b", text: "#000" },
-    Medium: { bg: "#3b82f6", text: "#fff" }
+    Critical: { bg: "#FEE2E2", text: "#B91C1C", icon: "⚠️" },
+    High: { bg: "#FEF3C7", text: "#B45309", icon: null },
+    Medium: { bg: "#DBEAFE", text: "#1D4ED8", icon: null }
   };
   const c = colors[heat];
+  const sizing = size === "lg"
+    ? { padding: "6px 12px", fontSize: 11, gap: 5 }
+    : { padding: "3px 10px", fontSize: 10, gap: 4 };
   return (
     <span style={{
-      padding: "2px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700,
-      background: c.bg, color: c.text, letterSpacing: "0.08em", textTransform: "uppercase"
+      display: "inline-flex", alignItems: "center", gap: sizing.gap,
+      padding: sizing.padding, borderRadius: 6, fontSize: sizing.fontSize, fontWeight: 700,
+      background: c.bg, color: c.text, letterSpacing: "0.08em", textTransform: "uppercase",
+      border: `1px solid ${c.text}1a`
     }}>
+      {c.icon && <span style={{ fontSize: sizing.fontSize + 1 }}>{c.icon}</span>}
       {heat}
     </span>
   );
@@ -1818,15 +1824,16 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     }),
     scenarioList: { flex: 1, overflowY: "auto", padding: "8px" },
     scenarioCard: (active) => ({
-      padding: "14px 16px", borderRadius: 10, marginBottom: 4, cursor: "pointer",
-      background: active ? "rgba(224,90,51,0.06)" : "transparent",
-      border: "1px solid", borderColor: active ? "rgba(224,90,51,0.2)" : "transparent",
+      padding: "14px 16px 14px 13px", borderRadius: 10, marginBottom: 4, cursor: "pointer",
+      background: active ? "rgba(224,90,51,0.09)" : "transparent",
+      borderLeft: `3px solid ${active ? "#e05a33" : "transparent"}`,
+      opacity: active ? 1 : 0.78,
       transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
     }),
-    cardTitle: {
-      fontSize: 14, fontWeight: 600, color: "#1a1a1a",
+    cardTitle: (active) => ({
+      fontSize: 14, fontWeight: active ? 700 : 600, color: "#1a1a1a",
       display: "flex", alignItems: "center", gap: 8
-    },
+    }),
     cardMeta: { display: "flex", alignItems: "center", gap: 8, marginTop: 6 },
     categoryTag: {
       fontSize: 10, color: "rgba(0,0,0,0.4)", letterSpacing: "0.08em",
@@ -1841,14 +1848,16 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     content: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" },
     tabBar: {
-      display: "flex", gap: 0, padding: "0 24px",
+      display: "flex", gap: 8, padding: "16px 24px 14px",
       borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0, background: "#fff"
     },
     tab: (active) => ({
-      padding: "14px 20px", fontSize: 11, fontWeight: 600,
-      color: active ? "#e05a33" : "rgba(0,0,0,0.35)", cursor: "pointer",
-      transition: "all 0.2s", background: active ? "rgba(224,90,51,0.04)" : "transparent",
-      border: "none", borderBottom: `2px solid ${active ? "#e05a33" : "transparent"}`,
+      padding: "10px 16px", fontSize: 11, fontWeight: 700,
+      color: active ? "#e05a33" : "rgba(0,0,0,0.45)", cursor: "pointer",
+      transition: "all 0.2s",
+      background: active ? "rgba(224,90,51,0.1)" : "transparent",
+      border: `1px solid ${active ? "rgba(224,90,51,0.25)" : "rgba(0,0,0,0.08)"}`,
+      borderRadius: 999,
       fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em",
       textTransform: "uppercase", display: "flex", alignItems: "center", gap: 7
     }),
@@ -1919,30 +1928,61 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     modalBtns: { display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }
   };
 
-  const renderSynopsis = () => (
+  const renderSynopsis = () => {
+    const arrow = (d) => d === "up" ? "↑" : d === "down" ? "↓" : "↕";
+    const arrowColor = (d) => d === "up" ? "#10b981" : d === "down" ? "#ef4444" : "#f59e0b";
+    const takeaways = (currentScenario.realEstateImpact || []).slice(0, 4);
+    return (
     <div style={{ opacity: animateIn ? 1 : 0, transform: animateIn ? "translateY(0)" : "translateY(12px)", transition: "all 0.4s cubic-bezier(0.4,0,0.2,1)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 24 }}>
         <div style={{
-          width: 52, height: 52, borderRadius: 12,
+          width: 56, height: 56, borderRadius: 14,
           background: "rgba(224,90,51,0.06)",
           border: "1px solid rgba(224,90,51,0.15)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 26
+          fontSize: 28, flexShrink: 0
         }}>
           {currentScenario.icon}
         </div>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 400, color: "#1a1a1a", letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, color: "#1a1a1a", letterSpacing: "-0.015em", lineHeight: 1.15, fontFamily: "'Instrument Serif', Georgia, serif" }}>
             {currentScenario.title}
           </h2>
-          <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 12, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
             <span style={S.categoryTag}>{currentScenario.category}</span>
-            <HeatBadge heat={currentScenario.heat} />
+            <HeatBadge heat={currentScenario.heat} size="lg" />
           </div>
         </div>
       </div>
+      {takeaways.length > 0 && (
+        <div style={{
+          background: "#FFF7ED",
+          border: "1px solid #FED7AA",
+          borderRadius: 12, padding: "18px 20px", marginBottom: 28,
+          maxWidth: "72ch"
+        }}>
+          <div style={{
+            fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase",
+            color: "#C2410C", fontFamily: "'IBM Plex Mono', monospace",
+            fontWeight: 700, marginBottom: 12
+          }}>
+            Key Takeaways
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+            {takeaways.map((t, i) => (
+              <li key={i} style={{
+                display: "flex", alignItems: "baseline", gap: 10,
+                fontSize: 14, color: "rgba(0,0,0,0.78)", lineHeight: 1.5
+              }}>
+                <span style={{ color: arrowColor(t.direction), fontWeight: 700, fontSize: 15, width: 14, flexShrink: 0 }}>{arrow(t.direction)}</span>
+                <span><strong style={{ color: "#1a1a1a", fontWeight: 600 }}>{t.area}:</strong> {t.detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div style={S.sectionTitle}>Scenario Briefing</div>
-      <p style={{ fontSize: 15, color: "rgba(0,0,0,0.65)", lineHeight: 1.8, margin: 0 }}>
+      <p style={{ fontSize: 15, color: "rgba(0,0,0,0.65)", lineHeight: 1.8, margin: 0, maxWidth: "70ch" }}>
         {currentScenario.synopsis}
       </p>
       <div style={{
@@ -1951,13 +1991,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         border: "1px solid rgba(224,90,51,0.1)",
         fontSize: 12, color: "rgba(224,90,51,0.8)",
         fontFamily: "'IBM Plex Mono', monospace",
-        display: "flex", alignItems: "center", gap: 8
+        display: "flex", alignItems: "center", gap: 8,
+        maxWidth: "70ch"
       }}>
         <span style={{ fontSize: 14 }}>→</span>
         Navigate tabs above for market impact, talk tracks, and client scripts
       </div>
     </div>
-  );
+    );
+  };
 
   const renderImpact = () => (
     <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -2424,7 +2466,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     if (selectedScenario !== scenario.id) e.currentTarget.style.background = "transparent";
                   }}
                 >
-                  <div style={S.cardTitle}>
+                  <div style={S.cardTitle(selectedScenario === scenario.id)}>
                     <span>{scenario.icon}</span>
                     <span>{scenario.title}</span>
                   </div>
@@ -2439,7 +2481,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   onClick={() => selectScenario(generatedScenario.id)}
                   style={S.scenarioCard(selectedScenario === generatedScenario.id)}
                 >
-                  <div style={S.cardTitle}>
+                  <div style={S.cardTitle(selectedScenario === generatedScenario.id)}>
                     <span>{generatedScenario.icon}</span>
                     <span>{generatedScenario.title}</span>
                   </div>
