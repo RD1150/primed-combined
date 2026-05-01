@@ -2159,6 +2159,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             }}>
               Subscribe Now →
             </button>
+            <p style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", marginTop: 20 }}>
+              <span onClick={handleLogout} style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}>
+                Sign out
+              </span>
+              {" · "}
+              <span onClick={() => { clearAuth(); setUser(null); setAuthScreen("login"); setAuthScreen("forgot"); }} style={{ color: "#e05a33", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}>
+                Reset password
+              </span>
+            </p>
           </div>
         )}
         <header style={S.header}>
