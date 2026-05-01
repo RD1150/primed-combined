@@ -14,6 +14,15 @@
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
     body { background: #f8f7f4; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    input:focus, textarea:focus {
+      border-color: #e05a33 !important;
+      box-shadow: 0 0 0 3px rgba(224,90,51,0.12) !important;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(0,0,0,0.32); }
+    button:focus-visible {
+      outline: 2px solid #e05a33;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
@@ -1311,6 +1320,7 @@ function Primed() {
   const [practiceState, setPracticeState] = useState("setup"); // setup | context | active | feedback
   const [practiceScenario, setPracticeScenario] = useState(null);
   const [practicePersona, setPracticePersona] = useState(null);
+  const [selectedQuickStart, setSelectedQuickStart] = useState(null);
   const [practiceDifficulty, setPracticeDifficulty] = useState("medium");
   const [practiceContext, setPracticeContext] = useState("");
   const [practiceMessages, setPracticeMessages] = useState([]);
@@ -1928,13 +1938,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     modalBtns: { display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }
   };
 
-  const renderSynopsis = () => {
-    const arrow = (d) => d === "up" ? "↑" : d === "down" ? "↓" : "↕";
-    const arrowColor = (d) => d === "up" ? "#10b981" : d === "down" ? "#ef4444" : "#f59e0b";
-    const takeaways = (currentScenario.realEstateImpact || []).slice(0, 4);
-    return (
+  const renderSynopsis = () => (
     <div style={{ opacity: animateIn ? 1 : 0, transform: animateIn ? "translateY(0)" : "translateY(12px)", transition: "all 0.4s cubic-bezier(0.4,0,0.2,1)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 28 }}>
         <div style={{
           width: 56, height: 56, borderRadius: 14,
           background: "rgba(224,90,51,0.06)",
@@ -1954,33 +1960,6 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           </div>
         </div>
       </div>
-      {takeaways.length > 0 && (
-        <div style={{
-          background: "#FFF7ED",
-          border: "1px solid #FED7AA",
-          borderRadius: 12, padding: "18px 20px", marginBottom: 28,
-          maxWidth: "72ch"
-        }}>
-          <div style={{
-            fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase",
-            color: "#C2410C", fontFamily: "'IBM Plex Mono', monospace",
-            fontWeight: 700, marginBottom: 12
-          }}>
-            Key Takeaways
-          </div>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-            {takeaways.map((t, i) => (
-              <li key={i} style={{
-                display: "flex", alignItems: "baseline", gap: 10,
-                fontSize: 14, color: "rgba(0,0,0,0.78)", lineHeight: 1.5
-              }}>
-                <span style={{ color: arrowColor(t.direction), fontWeight: 700, fontSize: 15, width: 14, flexShrink: 0 }}>{arrow(t.direction)}</span>
-                <span><strong style={{ color: "#1a1a1a", fontWeight: 600 }}>{t.area}:</strong> {t.detail}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       <div style={S.sectionTitle}>Scenario Briefing</div>
       <p style={{ fontSize: 15, color: "rgba(0,0,0,0.65)", lineHeight: 1.8, margin: 0, maxWidth: "70ch" }}>
         {currentScenario.synopsis}
@@ -1998,8 +1977,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         Navigate tabs above for market impact, talk tracks, and client scripts
       </div>
     </div>
-    );
-  };
+  );
 
   const renderImpact = () => (
     <div style={{ opacity: animateIn ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -2415,13 +2393,13 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             { id: "myscript", label: "My Script", icon: "◆" }
           ].map(m => (
             <button key={m.id} onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); }} style={{
-              flex: 1, padding: "12px 0", textAlign: "center",
-              fontSize: 12, fontWeight: 600, fontFamily: "'DM Mono', monospace",
+              flex: 1, padding: "13px 0", textAlign: "center",
+              fontSize: 12, fontWeight: appMode === m.id ? 700 : 600, fontFamily: "'DM Mono', monospace",
               letterSpacing: "0.08em", textTransform: "uppercase",
-              background: appMode === m.id ? "rgba(224,90,51,0.06)" : "transparent",
-              color: appMode === m.id ? "#e05a33" : "rgba(0,0,0,0.3)",
+              background: appMode === m.id ? "rgba(224,90,51,0.07)" : "transparent",
+              color: appMode === m.id ? "#e05a33" : "rgba(0,0,0,0.45)",
               border: "none", borderBottom: `2px solid ${appMode === m.id ? "#e05a33" : "transparent"}`,
-              cursor: "pointer", transition: "all 0.2s",
+              cursor: "pointer", transition: "all 180ms ease",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8
             }}>
               <span style={{ fontSize: 10 }}>{m.icon}</span> {m.label}
@@ -2550,39 +2528,52 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
                   <h2 style={{ fontSize: 32, fontWeight: 400, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>Get Primed</h2>
                   <p style={{ fontSize: 15, color: "rgba(0,0,0,0.45)", marginBottom: 24 }}>Practice the conversation before it happens.</p>
-                  <button onClick={() => quickLaunch(QUICK_STARTS[0])} style={{
+                  <button onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
                     padding: "16px 40px", borderRadius: 12, border: "none",
                     background: "#e05a33", color: "#fff", fontSize: 16, fontWeight: 700,
                     fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em",
                     cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(224,90,51,0.25)"
-                  }}>
-                    Start Practice
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 22px rgba(224,90,51,0.32)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(224,90,51,0.25)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  >
+                    {selectedQuickStart ? `Start ${selectedQuickStart.label} Practice` : "Start Practice"}
                   </button>
-                  <p style={{ fontSize: 11, color: "rgba(0,0,0,0.3)", marginTop: 10 }}>Launches: Expired Listing + Emotional Seller</p>
+                  <p style={{ fontSize: 11, color: "rgba(0,0,0,0.35)", marginTop: 10 }}>
+                    {selectedQuickStart ? `${selectedQuickStart.desc}` : `Launches: ${QUICK_STARTS[0].label} + ${QUICK_STARTS[0].desc.split(" ").slice(0, 3).join(" ")}`}
+                  </p>
                 </div>
 
                 {/* Quick Start Cards */}
                 <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Quick Start</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10, marginBottom: 40 }}>
-                  {QUICK_STARTS.map((qs, i) => (
-                    <div key={i} onClick={() => quickLaunch(qs)} style={{
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10, marginBottom: 44 }}>
+                  {QUICK_STARTS.map((qs, i) => {
+                    const isSelected = selectedQuickStart && selectedQuickStart.scenario === qs.scenario && selectedQuickStart.persona === qs.persona;
+                    return (
+                    <div key={i} onClick={() => setSelectedQuickStart(qs)} style={{
                       padding: "16px 18px", borderRadius: 12, cursor: "pointer",
-                      border: "1px solid rgba(0,0,0,0.08)", background: "#fff",
-                      transition: "all 0.2s", borderLeft: `3px solid ${qs.color}`
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <span style={{ fontSize: 18 }}>{qs.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>{qs.label}</span>
+                      border: `1px solid ${isSelected ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.08)"}`,
+                      background: isSelected ? "rgba(224,90,51,0.06)" : "#fff",
+                      transition: "all 180ms ease",
+                      borderLeft: `3px solid ${isSelected ? "#e05a33" : "rgba(0,0,0,0.12)"}`,
+                      boxShadow: isSelected ? "0 4px 14px rgba(224,90,51,0.12)" : "0 1px 2px rgba(0,0,0,0.03)"
+                    }}
+                      onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.06)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.14)"; } }}
+                      onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.03)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; } }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                        <span style={{ fontSize: 22 }}>{qs.icon}</span>
+                        <span style={{ fontSize: 14, fontWeight: isSelected ? 700 : 600, color: isSelected ? "#e05a33" : "#1a1a1a" }}>{qs.label}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.45)", lineHeight: 1.5 }}>{qs.desc}</div>
+                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{qs.desc}</div>
                     </div>
-                  ))}
+                  );})}
                 </div>
 
                 {/* Divider */}
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 12, marginBottom: 32 }}>
                   <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
-                  <span style={{ fontSize: 11, color: "rgba(0,0,0,0.25)", fontFamily: "'IBM Plex Mono', monospace" }}>or customize</span>
+                  <span style={{ fontSize: 12, color: "rgba(0,0,0,0.42)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em" }}>Or choose a full scenario</span>
                   <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
                 </div>
 
@@ -2590,20 +2581,27 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Scenario</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10, marginBottom: 40 }}>
-                  {PRACTICE_SCENARIOS.map(s => (
+                  {PRACTICE_SCENARIOS.map(s => {
+                    const isActive = practiceScenario === s.id;
+                    return (
                     <div key={s.id} onClick={() => setPracticeScenario(s.id)} style={{
                       padding: "14px 18px", borderRadius: 12, cursor: "pointer",
-                      border: `1px solid ${practiceScenario === s.id ? "rgba(224,90,51,0.3)" : "rgba(0,0,0,0.08)"}`,
-                      background: practiceScenario === s.id ? "rgba(224,90,51,0.06)" : "#fff",
-                      transition: "all 0.2s"
-                    }}>
+                      border: `1px solid ${isActive ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.08)"}`,
+                      background: isActive ? "rgba(224,90,51,0.06)" : "#fff",
+                      borderLeft: `3px solid ${isActive ? "#e05a33" : "rgba(0,0,0,0.12)"}`,
+                      transition: "all 180ms ease",
+                      boxShadow: isActive ? "0 4px 14px rgba(224,90,51,0.1)" : "0 1px 2px rgba(0,0,0,0.03)"
+                    }}
+                      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.06)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.14)"; } }}
+                      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.03)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; } }}
+                    >
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: practiceScenario === s.id ? "#e05a33" : "#1a1a1a" }}>{s.title}</span>
+                        <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 600, color: isActive ? "#e05a33" : "#1a1a1a" }}>{s.title}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", lineHeight: 1.5 }}>{s.desc}</div>
+                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
-                  ))}
+                  );})}
                 </div>
 
                 {practiceScenario && (
@@ -2913,21 +2911,31 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         {appMode === "myscript" && (
         <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
           <div style={{ maxWidth: 700, margin: "0 auto" }}>
-            <div style={{ marginBottom: 36 }}>
+            <div style={{ marginBottom: 28 }}>
               <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
-              <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>
+              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
                 {vsStep < 4 ? "Build Your Script" : "Your Value Script"}
               </h2>
-              <p style={{ fontSize: 14, color: "rgba(0,0,0,0.45)" }}>
-                {vsStep < 4 ? "Answer three questions. Get a script that sounds like you — not a template." : "Use these everywhere — listing appointments, networking, social media, cold calls."}
+              <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>
+                {vsStep < 4 ? "Answer three questions and build a script that actually sounds like you." : "Use these everywhere — listing appointments, networking, social media, cold calls."}
               </p>
             </div>
 
             {vsStep < 4 && (
-              <div style={{ display: "flex", gap: 8, marginBottom: 36 }}>
-                {[1, 2, 3].map(s => (
-                  <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= vsStep ? "#d4a03e" : "rgba(255,255,255,0.06)", transition: "background 0.3s" }} />
-                ))}
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                    Step {vsStep} of 3
+                  </span>
+                  <span style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em" }}>
+                    {Math.round((vsStep / 3) * 100)}%
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[1, 2, 3].map(s => (
+                    <div key={s} style={{ flex: 1, height: 5, borderRadius: 3, background: s <= vsStep ? "#d4a03e" : "rgba(0,0,0,0.06)", transition: "background 0.3s" }} />
+                  ))}
+                </div>
               </div>
             )}
 
@@ -2948,7 +2956,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   <label style={{ display: "block", fontSize: 14, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>What market or area do you work in?</label>
                   <input type="text" value={vsMarket} onChange={e => setVsMarket(e.target.value)} placeholder="e.g., North Dallas suburbs, Frisco, McKinney" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
-                <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer" }}>Next →</button>
+                <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.18)" : "#e05a33", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
               </div>
             )}
 
@@ -2962,7 +2970,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => setVsStep(1)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
-                  <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(212,160,62,0.2)" : "#d4a03e", color: !vsProblem.trim() ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer" }}>Next →</button>
+                  <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(224,90,51,0.18)" : "#e05a33", color: !vsProblem.trim() ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: !vsProblem.trim() ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
                 </div>
               </div>
             )}
@@ -2982,7 +2990,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => setVsStep(2)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
-                  <button onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "12px 32px", borderRadius: 10, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.2)" : "#d4a03e", color: (!vsResult.trim() || vsGenerating) ? "rgba(212,160,62,0.5)" : "#000", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsResult.trim() || vsGenerating) ? "not-allowed" : "pointer" }}>{vsGenerating ? "Generating..." : "Build My Script →"}</button>
+                  <button onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.18)" : "#e05a33", color: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsResult.trim() || vsGenerating) ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: (!vsResult.trim() || vsGenerating) ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>{vsGenerating ? "Generating..." : "Build My Script →"}</button>
                 </div>
               </div>
             )}
