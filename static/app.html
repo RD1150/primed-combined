@@ -1850,8 +1850,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     main: { display: "flex", flex: 1, overflow: "hidden" },
     sidebar: {
-      width: 340, borderRight: "1px solid rgba(0,0,0,0.06)",
-      display: "flex", flexDirection: "column", background: "#f4f3ef", flexShrink: 0
+      width: 340, borderRight: "1px solid rgba(0,0,0,0.08)",
+      display: "flex", flexDirection: "column", background: "#e8e5dc", flexShrink: 0
     },
     sidebarControls: {
       padding: "16px 16px 12px", borderBottom: "1px solid rgba(0,0,0,0.06)", flexShrink: 0
@@ -1874,9 +1874,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     scenarioList: { flex: 1, overflowY: "auto", padding: "8px" },
     scenarioCard: (active) => ({
       padding: "14px 16px 14px 13px", borderRadius: 10, marginBottom: 4, cursor: "pointer",
-      background: active ? "rgba(224,90,51,0.09)" : "transparent",
+      background: active ? "#fff" : "transparent",
       borderLeft: `3px solid ${active ? "#e05a33" : "transparent"}`,
-      opacity: active ? 1 : 0.78,
+      boxShadow: active ? "0 4px 14px rgba(0,0,0,0.06)" : "none",
       transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
     }),
     cardTitle: (active) => ({
@@ -2511,7 +2511,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   onClick={() => selectScenario(scenario.id)}
                   style={S.scenarioCard(selectedScenario === scenario.id)}
                   onMouseEnter={e => {
-                    if (selectedScenario !== scenario.id) e.currentTarget.style.background = "rgba(255,255,255,0.025)";
+                    if (selectedScenario !== scenario.id) e.currentTarget.style.background = "rgba(255,255,255,0.5)";
                   }}
                   onMouseLeave={e => {
                     if (selectedScenario !== scenario.id) e.currentTarget.style.background = "transparent";
