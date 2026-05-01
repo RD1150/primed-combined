@@ -14,15 +14,51 @@
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
     body { background: #f8f7f4; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes barFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* Inputs — Linear-flavored focus state */
+    input, textarea {
+      transition: border-color 160ms ease-out, box-shadow 160ms ease-out;
+    }
     input:focus, textarea:focus {
       border-color: #e05a33 !important;
-      box-shadow: 0 0 0 3px rgba(224,90,51,0.12) !important;
+      box-shadow: 0 0 0 3px rgba(224,90,51,0.14) !important;
     }
     input::placeholder, textarea::placeholder { color: rgba(0,0,0,0.32); }
+
+    /* Keyboard accessibility */
     button:focus-visible {
       outline: 2px solid #e05a33;
       outline-offset: 2px;
     }
+
+    /* Duolingo-style chunky CTA — primary actions only.
+       The shelf shadow gives the button physical weight; pressing
+       collapses the shelf and drops the button (no hover-jiggle). */
+    .pcta {
+      position: relative;
+      transition: transform 100ms ease-out, box-shadow 100ms ease-out, filter 160ms ease-out;
+      box-shadow: 0 4px 0 #a83b1c, 0 10px 22px rgba(224,90,51,0.22);
+    }
+    .pcta:hover { filter: brightness(1.04); }
+    .pcta:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #a83b1c, 0 4px 10px rgba(224,90,51,0.18);
+    }
+    .pcta:disabled {
+      box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 6px 14px rgba(0,0,0,0.04);
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    /* Standard interactive card — used everywhere we want hover lift */
+    .icard { transition: transform 160ms ease-out, box-shadow 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out; }
+    .icard:hover:not(.is-selected) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.14);
+    }
+    .icard:active { transform: translateY(0); transition-duration: 80ms; }
   </style>
 </head>
 <body>
@@ -1850,11 +1886,12 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace"
     },
     generateBtn: {
-      margin: "8px 8px 12px", padding: "12px 16px", borderRadius: 10,
-      border: "1px dashed rgba(224,90,51,0.3)", background: "rgba(224,90,51,0.04)",
+      margin: "10px 10px 14px", padding: "12px 16px", borderRadius: 12,
+      border: "1px solid rgba(224,90,51,0.25)", background: "rgba(224,90,51,0.06)",
       color: "#e05a33", fontSize: 13, fontWeight: 600, cursor: "pointer",
-      textAlign: "center", transition: "all 0.2s", fontFamily: "inherit",
-      flexShrink: 0, letterSpacing: "0.01em"
+      textAlign: "center", transition: "all 160ms ease-out", fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: "0.04em", textTransform: "uppercase",
+      flexShrink: 0
     },
     content: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" },
     tabBar: {
@@ -2248,20 +2285,20 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup") && (
-              <button onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: authLoading ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              <button className="pcta" onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading}
+                style={{ width: "100%", padding: "16px", borderRadius: 14, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: authLoading ? "not-allowed" : "pointer" }}>
                 {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
               </button>
             )}
             {authScreen === "forgot" && (
-              <button onClick={handleForgot} disabled={authLoading}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: authLoading ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              <button className="pcta" onClick={handleForgot} disabled={authLoading}
+                style={{ width: "100%", padding: "16px", borderRadius: 14, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: authLoading ? "not-allowed" : "pointer" }}>
                 {authLoading ? "..." : "Send reset link"}
               </button>
             )}
             {authScreen === "reset" && (
-              <button onClick={handleReset} disabled={authLoading || !authPass || authPass.length < 8}
-                style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: (authLoading || !authPass || authPass.length < 8) ? "rgba(224,90,51,0.3)" : "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: (authLoading || !authPass || authPass.length < 8) ? "not-allowed" : "pointer", transition: "all 0.2s" }}>
+              <button className="pcta" onClick={handleReset} disabled={authLoading || !authPass || authPass.length < 8}
+                style={{ width: "100%", padding: "16px", borderRadius: 14, border: "none", background: (authLoading || !authPass || authPass.length < 8) ? "rgba(224,90,51,0.3)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: (authLoading || !authPass || authPass.length < 8) ? "not-allowed" : "pointer" }}>
                 {authLoading ? "..." : "Set password"}
               </button>
             )}
@@ -2526,17 +2563,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 
                 {/* GET PRIMED - Hero Section */}
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <h2 style={{ fontSize: 32, fontWeight: 400, color: "#1a1a1a", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif" }}>Get Primed</h2>
-                  <p style={{ fontSize: 15, color: "rgba(0,0,0,0.45)", marginBottom: 24 }}>Practice the conversation before it happens.</p>
-                  <button onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
-                    padding: "16px 40px", borderRadius: 12, border: "none",
-                    background: "#e05a33", color: "#fff", fontSize: 16, fontWeight: 700,
-                    fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em",
-                    cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(224,90,51,0.25)"
-                  }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 22px rgba(224,90,51,0.32)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(224,90,51,0.25)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                  >
+                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Outfit', sans-serif" }}>Get Primed</h2>
+                  <p style={{ fontSize: 15, color: "rgba(0,0,0,0.5)", marginBottom: 28, letterSpacing: "0.01em" }}>Practice the conversation before it matters.</p>
+                  <button className="pcta" onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
+                    padding: "18px 44px", borderRadius: 16, border: "none",
+                    background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)",
+                    color: "#fff", fontSize: 16, fontWeight: 700,
+                    fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em",
+                    cursor: "pointer", textTransform: "uppercase"
+                  }}>
                     {selectedQuickStart ? `Start ${selectedQuickStart.label} Practice` : "Start Practice"}
                   </button>
                   <p style={{ fontSize: 11, color: "rgba(0,0,0,0.35)", marginTop: 10 }}>
@@ -2550,22 +2585,18 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   {QUICK_STARTS.map((qs, i) => {
                     const isSelected = selectedQuickStart && selectedQuickStart.scenario === qs.scenario && selectedQuickStart.persona === qs.persona;
                     return (
-                    <div key={i} onClick={() => setSelectedQuickStart(qs)} style={{
-                      padding: "16px 18px", borderRadius: 12, cursor: "pointer",
-                      border: `1px solid ${isSelected ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.08)"}`,
+                    <div key={i} onClick={() => setSelectedQuickStart(qs)} className={"icard" + (isSelected ? " is-selected" : "")} style={{
+                      padding: "18px 20px", borderRadius: 14, cursor: "pointer",
+                      border: `1px solid ${isSelected ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: isSelected ? "rgba(224,90,51,0.06)" : "#fff",
-                      transition: "all 180ms ease",
-                      borderLeft: `3px solid ${isSelected ? "#e05a33" : "rgba(0,0,0,0.12)"}`,
-                      boxShadow: isSelected ? "0 4px 14px rgba(224,90,51,0.12)" : "0 1px 2px rgba(0,0,0,0.03)"
-                    }}
-                      onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.06)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.14)"; } }}
-                      onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.03)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; } }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                      borderLeft: `3px solid ${isSelected ? "#e05a33" : "transparent"}`,
+                      boxShadow: isSelected ? "0 6px 20px rgba(224,90,51,0.12)" : "0 1px 2px rgba(0,0,0,0.03)"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 22 }}>{qs.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: isSelected ? 700 : 600, color: isSelected ? "#e05a33" : "#1a1a1a" }}>{qs.label}</span>
+                        <span style={{ fontSize: 14, fontWeight: isSelected ? 700 : 600, color: isSelected ? "#e05a33" : "#1a1a1a", letterSpacing: "-0.005em" }}>{qs.label}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{qs.desc}</div>
+                      <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{qs.desc}</div>
                     </div>
                   );})}
                 </div>
@@ -2584,22 +2615,18 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   {PRACTICE_SCENARIOS.map(s => {
                     const isActive = practiceScenario === s.id;
                     return (
-                    <div key={s.id} onClick={() => setPracticeScenario(s.id)} style={{
-                      padding: "14px 18px", borderRadius: 12, cursor: "pointer",
-                      border: `1px solid ${isActive ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.08)"}`,
+                    <div key={s.id} onClick={() => setPracticeScenario(s.id)} className={"icard" + (isActive ? " is-selected" : "")} style={{
+                      padding: "16px 20px", borderRadius: 14, cursor: "pointer",
+                      border: `1px solid ${isActive ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: isActive ? "rgba(224,90,51,0.06)" : "#fff",
-                      borderLeft: `3px solid ${isActive ? "#e05a33" : "rgba(0,0,0,0.12)"}`,
-                      transition: "all 180ms ease",
-                      boxShadow: isActive ? "0 4px 14px rgba(224,90,51,0.1)" : "0 1px 2px rgba(0,0,0,0.03)"
-                    }}
-                      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.06)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.14)"; } }}
-                      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.03)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; } }}
-                    >
+                      borderLeft: `3px solid ${isActive ? "#e05a33" : "transparent"}`,
+                      boxShadow: isActive ? "0 6px 20px rgba(224,90,51,0.1)" : "0 1px 2px rgba(0,0,0,0.03)"
+                    }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 600, color: isActive ? "#e05a33" : "#1a1a1a" }}>{s.title}</span>
+                        <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 600, color: isActive ? "#e05a33" : "#1a1a1a", letterSpacing: "-0.005em" }}>{s.title}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{s.desc}</div>
+                      <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
                   );})}
                 </div>
@@ -2659,13 +2686,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       }}
                     />
 
-                    <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 500); }} style={{
-                      marginTop: 24, padding: "14px 36px", borderRadius: 10, border: "none",
-                      background: "#e05a33", color: "#fff", fontSize: 15, fontWeight: 700,
-                      fontFamily: "'DM Mono', monospace", letterSpacing: "0.03em",
-                      cursor: "pointer", transition: "all 0.2s", display: "block"
+                    <button className="pcta" onClick={() => { setPracticeState("active"); setPracticeMessages([]); setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 500); }} style={{
+                      marginTop: 28, padding: "16px 36px", borderRadius: 14, border: "none",
+                      background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)",
+                      color: "#fff", fontSize: 15, fontWeight: 700,
+                      fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                      cursor: "pointer", display: "block"
                     }}>
-                      Start Practice →
+                      Start Practice
                     </button>
                   </>
                 )}
@@ -2990,7 +3019,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => setVsStep(2)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
-                  <button onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.18)" : "#e05a33", color: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsResult.trim() || vsGenerating) ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: (!vsResult.trim() || vsGenerating) ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>{vsGenerating ? "Generating..." : "Build My Script →"}</button>
+                  <button className="pcta" onClick={generateValueScript} disabled={!vsResult.trim() || vsGenerating} style={{ padding: "16px 32px", borderRadius: 14, border: "none", background: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.22)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: (!vsResult.trim() || vsGenerating) ? "rgba(224,90,51,0.6)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase" }}>{vsGenerating ? "Generating..." : "Build My Script"}</button>
                 </div>
               </div>
             )}
