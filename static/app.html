@@ -1996,6 +1996,21 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             <HeatBadge heat={currentScenario.heat} size="lg" />
           </div>
         </div>
+        <button onClick={() => setAppMode("practice")} style={{
+          padding: "10px 16px", borderRadius: 10,
+          border: "1px solid rgba(224,90,51,0.3)",
+          background: "#fff",
+          color: "#e05a33", fontSize: 11, fontWeight: 700,
+          fontFamily: "'IBM Plex Mono', monospace",
+          letterSpacing: "0.06em", textTransform: "uppercase",
+          cursor: "pointer", transition: "all 160ms ease-out",
+          flexShrink: 0, whiteSpace: "nowrap"
+        }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(224,90,51,0.06)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "#fff"; }}
+        >
+          Practice This →
+        </button>
       </div>
       <div style={S.sectionTitle}>Scenario Briefing</div>
       <p style={{ fontSize: 15, color: "rgba(0,0,0,0.65)", lineHeight: 1.8, margin: 0, maxWidth: "70ch" }}>
@@ -2448,24 +2463,42 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         <div style={S.main}>
           <aside style={S.sidebar}>
             <div style={S.sidebarControls}>
-              <input
-                type="text"
-                placeholder="Search scenarios..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={S.searchInput}
-              />
-              <div style={S.filterRow}>
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setFilterCategory(cat)}
-                    style={S.filterBtn(filterCategory === cat)}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <div style={{ position: "relative", marginBottom: 10 }}>
+                <span style={{
+                  position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+                  fontSize: 14, color: "rgba(0,0,0,0.4)", pointerEvents: "none"
+                }}>⌕</span>
+                <input
+                  type="text"
+                  placeholder="Search scenarios"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  style={{ ...S.searchInput, paddingLeft: 34 }}
+                />
               </div>
+              <select
+                value={filterCategory}
+                onChange={e => setFilterCategory(e.target.value)}
+                style={{
+                  width: "100%", padding: "9px 32px 9px 12px",
+                  background: filterCategory === "All" ? "#f4f3f0" : "rgba(224,90,51,0.06)",
+                  border: `1px solid ${filterCategory === "All" ? "rgba(0,0,0,0.08)" : "rgba(224,90,51,0.3)"}`,
+                  borderRadius: 8,
+                  color: filterCategory === "All" ? "rgba(0,0,0,0.65)" : "#e05a33",
+                  fontSize: 12, fontWeight: 600,
+                  fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em",
+                  outline: "none", cursor: "pointer",
+                  appearance: "none", WebkitAppearance: "none",
+                  backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='${filterCategory === "All" ? "%23999" : "%23e05a33"}' d='M0 0l5 6 5-6z'/></svg>")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 12px center",
+                  transition: "all 160ms ease-out"
+                }}
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat === "All" ? "All categories" : cat}</option>
+                ))}
+              </select>
             </div>
 
             <div style={S.scenarioList}>
@@ -2542,11 +2575,109 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 </div>
               </>
             ) : (
-              <div style={S.emptyState}>
-                <div style={S.emptyIcon}>⚡</div>
-                <div style={S.emptyTitle}>Get Primed</div>
-                <div style={S.emptyText}>
-                  Select a scenario from the sidebar or generate a custom one. Know exactly what to say before the phone rings.
+              <div style={{ flex: 1, overflowY: "auto", padding: "48px 56px" }}>
+                <div style={{ maxWidth: 760, margin: "0 auto" }}>
+                  <div style={{
+                    background: "#fff",
+                    border: "1px solid rgba(0,0,0,0.06)",
+                    borderRadius: 16,
+                    padding: "44px 48px 40px",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 8px 30px rgba(0,0,0,0.04)",
+                    textAlign: "center"
+                  }}>
+                    <div style={{
+                      width: 64, height: 64, borderRadius: 16, margin: "0 auto 20px",
+                      background: "linear-gradient(180deg, rgba(224,90,51,0.12), rgba(224,90,51,0.06))",
+                      border: "1px solid rgba(224,90,51,0.2)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 32
+                    }}>⚡</div>
+                    <h1 style={{
+                      fontSize: 36, fontWeight: 700, color: "#1a1a1a", margin: 0,
+                      letterSpacing: "-0.02em", lineHeight: 1.15,
+                      fontFamily: "'Outfit', sans-serif"
+                    }}>
+                      Get Primed.
+                    </h1>
+                    <p style={{
+                      fontSize: 15, color: "rgba(0,0,0,0.55)",
+                      marginTop: 12, marginBottom: 28, lineHeight: 1.55,
+                      maxWidth: "52ch", marginLeft: "auto", marginRight: "auto"
+                    }}>
+                      Pick the conversation you're walking into. We'll give you the briefing, the talking points, and the words.
+                    </p>
+                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+                      <button className="pcta" onClick={() => selectScenario("commission-objection")} style={{
+                        padding: "14px 28px", borderRadius: 14, border: "none",
+                        background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)",
+                        color: "#fff", fontSize: 13, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        letterSpacing: "0.04em", textTransform: "uppercase",
+                        cursor: "pointer"
+                      }}>
+                        Start Recommended
+                      </button>
+                      <button onClick={() => setShowCustom(true)} style={{
+                        padding: "14px 24px", borderRadius: 14,
+                        border: "1px solid rgba(224,90,51,0.3)",
+                        background: "#fff",
+                        color: "#e05a33", fontSize: 13, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        letterSpacing: "0.04em", textTransform: "uppercase",
+                        cursor: "pointer", transition: "all 160ms ease-out"
+                      }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(224,90,51,0.05)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "#fff"; }}
+                      >
+                        Generate Custom
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    fontSize: 11, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace",
+                    letterSpacing: "0.16em", textTransform: "uppercase",
+                    marginTop: 36, marginBottom: 14, fontWeight: 700
+                  }}>
+                    High-frequency conversations
+                  </div>
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: 12
+                  }}>
+                    {[
+                      { id: "commission-objection", title: "Handle a pricing objection", desc: "What to say when a client challenges your value.", icon: "💰", badge: "Pricing" },
+                      { id: "market-crash", title: "Explain market uncertainty", desc: "Turn confusing headlines into confident guidance.", icon: "📉", badge: "Market" },
+                      { id: "listing-appointment", title: "Prepare for a seller call", desc: "A clear, calm script before the listing presentation.", icon: "📋", badge: "Conversation" }
+                    ].map((qs, i) => (
+                      <div key={i} className="icard" onClick={() => selectScenario(qs.id)} style={{
+                        background: "#fff",
+                        border: "1px solid rgba(0,0,0,0.06)",
+                        borderRadius: 14,
+                        padding: "18px 20px",
+                        cursor: "pointer",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                          <span style={{ fontSize: 22 }}>{qs.icon}</span>
+                          <span style={{
+                            fontSize: 9, color: "rgba(0,0,0,0.5)",
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            letterSpacing: "0.1em", textTransform: "uppercase",
+                            padding: "2px 8px", borderRadius: 4,
+                            background: "rgba(0,0,0,0.04)"
+                          }}>{qs.badge}</span>
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", marginBottom: 5, letterSpacing: "-0.005em" }}>
+                          {qs.title}
+                        </div>
+                        <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.55)", lineHeight: 1.5 }}>
+                          {qs.desc}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
