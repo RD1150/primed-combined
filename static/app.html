@@ -55,8 +55,8 @@
     .icard { transition: transform 160ms ease-out, box-shadow 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out; }
     .icard:hover:not(.is-selected) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      border-color: rgba(0,0,0,0.14);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.07);
+      border-color: rgba(0,0,0,0.12);
     }
     .icard:active { transform: translateY(0); transition-duration: 80ms; }
   </style>
@@ -1850,14 +1850,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     main: { display: "flex", flex: 1, overflow: "hidden" },
     sidebar: {
-      width: 340, borderRight: "1px solid rgba(0,0,0,0.08)",
-      display: "flex", flexDirection: "column", background: "#fff", flexShrink: 0
+      width: 340, borderRight: "1px solid rgba(0,0,0,0.06)",
+      display: "flex", flexDirection: "column", background: "#f4f3ef", flexShrink: 0
     },
     sidebarControls: {
       padding: "16px 16px 12px", borderBottom: "1px solid rgba(0,0,0,0.06)", flexShrink: 0
     },
     searchInput: {
-      width: "100%", padding: "10px 14px", background: "#f4f3f0",
+      width: "100%", padding: "10px 14px", background: "#fff",
       border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8,
       color: "#1a1a1a", fontSize: 13, fontFamily: "inherit",
       outline: "none", boxSizing: "border-box", transition: "border-color 0.2s"
@@ -1991,7 +1991,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           {currentScenario.icon}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, color: "#1a1a1a", letterSpacing: "-0.015em", lineHeight: 1.15, fontFamily: "'Instrument Serif', Georgia, serif" }}>
+          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, color: "#0d0d0d", letterSpacing: "-0.015em", lineHeight: 1.15, fontFamily: "'Instrument Serif', Georgia, serif" }}>
             {currentScenario.title}
           </h2>
           <div style={{ display: "flex", gap: 12, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
@@ -2484,7 +2484,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 onChange={e => setFilterCategory(e.target.value)}
                 style={{
                   width: "100%", padding: "9px 32px 9px 12px",
-                  background: filterCategory === "All" ? "#f4f3f0" : "rgba(224,90,51,0.06)",
+                  background: filterCategory === "All" ? "#fff" : "rgba(224,90,51,0.06)",
                   border: `1px solid ${filterCategory === "All" ? "rgba(0,0,0,0.08)" : "rgba(224,90,51,0.3)"}`,
                   borderRadius: 8,
                   color: filterCategory === "All" ? "rgba(0,0,0,0.65)" : "#e05a33",
@@ -2596,7 +2596,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       fontSize: 32
                     }}>⚡</div>
                     <h1 style={{
-                      fontSize: 36, fontWeight: 700, color: "#1a1a1a", margin: 0,
+                      fontSize: 36, fontWeight: 700, color: "#0d0d0d", margin: 0,
                       letterSpacing: "-0.02em", lineHeight: 1.15,
                       fontFamily: "'Outfit', sans-serif"
                     }}>
@@ -2638,9 +2638,13 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   </div>
 
                   <div style={{
+                    height: 1, background: "rgba(0,0,0,0.06)",
+                    marginTop: 44, marginBottom: 24
+                  }} />
+                  <div style={{
                     fontSize: 11, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace",
                     letterSpacing: "0.16em", textTransform: "uppercase",
-                    marginTop: 36, marginBottom: 14, fontWeight: 700
+                    marginBottom: 16, fontWeight: 700
                   }}>
                     High-frequency conversations
                   </div>
@@ -2660,7 +2664,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         borderRadius: 14,
                         padding: "18px 20px",
                         cursor: "pointer",
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
                       }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                           <span style={{ fontSize: 22 }}>{qs.icon}</span>
@@ -2697,7 +2701,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 
                 {/* GET PRIMED - Hero Section */}
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Outfit', sans-serif" }}>Get Primed</h2>
+                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#0d0d0d", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Outfit', sans-serif" }}>Get Primed</h2>
                   <p style={{ fontSize: 15, color: "rgba(0,0,0,0.5)", marginBottom: 28, letterSpacing: "0.01em" }}>Practice the conversation before it matters.</p>
                   <button className="pcta" onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
                     padding: "18px 44px", borderRadius: 16, border: "none",
@@ -2724,7 +2728,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       border: `1px solid ${isSelected ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: isSelected ? "rgba(224,90,51,0.06)" : "#fff",
                       borderLeft: `3px solid ${isSelected ? "#e05a33" : "transparent"}`,
-                      boxShadow: isSelected ? "0 6px 20px rgba(224,90,51,0.12)" : "0 1px 2px rgba(0,0,0,0.03)"
+                      boxShadow: isSelected ? "0 6px 20px rgba(224,90,51,0.12)" : "0 8px 24px rgba(0,0,0,0.04)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 22 }}>{qs.icon}</span>
@@ -2754,7 +2758,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       border: `1px solid ${isActive ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: isActive ? "rgba(224,90,51,0.06)" : "#fff",
                       borderLeft: `3px solid ${isActive ? "#e05a33" : "transparent"}`,
-                      boxShadow: isActive ? "0 6px 20px rgba(224,90,51,0.1)" : "0 1px 2px rgba(0,0,0,0.03)"
+                      boxShadow: isActive ? "0 6px 20px rgba(224,90,51,0.1)" : "0 8px 24px rgba(0,0,0,0.04)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
@@ -3076,7 +3080,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           <div style={{ maxWidth: 700, margin: "0 auto" }}>
             <div style={{ marginBottom: 28 }}>
               <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
-              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
+              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#0d0d0d", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
                 {vsStep < 4 ? "Build Your Script" : "Your Value Script"}
               </h2>
               <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>
