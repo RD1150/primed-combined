@@ -844,6 +844,161 @@ const SCENARIOS = [
       "Develop a standard CMA presentation that addresses neighbor comparisons proactively"
     ],
     clientScript: `"You're absolutely right to look at that sale—it's great market data and I actually pulled that listing before coming today. Let me show you what I found.\n\n[PRESENT SIDE-BY-SIDE COMPARISON]\n\nThat home sold for [price] because [specific reasons: they had a renovated kitchen, larger lot, finished basement, sold in peak season, etc.]. Those are real value drivers that buyers pay more for.\n\nYour home has its own strengths: [highlight their home's best features]. And that's what we're going to market aggressively.\n\nHere's what I want you to think about: if we price at [their suggested higher price], we'd be competing against homes that have [features theirs doesn't]. Buyers at that price point will see those homes side-by-side with yours and choose the one that delivers more value. But at [recommended price], your home becomes the best option in its range—and that's when we get multiple offers.\n\nWould you rather be the most expensive home buyers pass over, or the best-priced home they fight for? In my experience, the second approach actually gets sellers MORE money, not less.\n\nLet me show you the data on that."`
+  },
+  {
+    id: "nar-settlement",
+    title: "Buyer-Rep Agreement Pushback (NAR Settlement)",
+    icon: "⚖️",
+    category: "Industry",
+    heat: "Critical",
+    synopsis: `The 2024 NAR settlement permanently changed how U.S. real estate compensation works: buyers must now sign a written buyer-broker agreement before any home tour, and listing-side compensation can no longer be advertised on the MLS. Two years in, most agents have adapted operationally—but consumer awareness still lags. Buyers balk at signing agreements they don't understand, sellers question whether to offer buyer-agent compensation at all, and listing presentations now include explicit conversations about what compensation gets a seller in return. Agents who can't articulate their value crisply are losing both buyers and listings to competitors who can.`,
+    realEstateImpact: [
+      { area: "Buyer-Side Workflow", direction: "mixed", detail: "Mandatory upfront agreements slow first showings but qualify buyers earlier—serious clients sign, tire-kickers self-eliminate." },
+      { area: "Compensation Conversations", direction: "up", detail: "Both buyer and listing sides must explicitly negotiate fees before any commitment. The conversation has moved from implicit to written and signed." },
+      { area: "Commission Compression", direction: "down", detail: "Average buyer-side compensation has dropped 0.3–0.5% across most markets since 2024, with further drift expected through 2027." },
+      { area: "Newer-Agent Pressure", direction: "down", detail: "Agents who can't articulate value lose buyers to listing-side dual representation or unrepresented offers, accelerating churn at the bottom of the production tier." },
+      { area: "Buyer Concessions", direction: "up", detail: "Buyers increasingly request seller concessions to cover agent compensation rather than asking sellers to pay agents directly—shifts paperwork but preserves economics." },
+      { area: "MLS Data Visibility", direction: "mixed", detail: "Buyer compensation no longer in MLS. Brokerages negotiate directly via off-MLS channels (cooperating-broker addenda, websites, broker-to-broker calls)—reduces transparency, increases friction." }
+    ],
+    teamTalkingPoints: [
+      "Lead with: 'Just like a CPA or attorney, I work on a written agreement upfront—that's how I protect your time and represent you fully'",
+      "Frame the buyer-rep agreement as buyer protection, not buyer commitment—you can specify single-tour, single-property, or term-limited",
+      "Have a one-page 'Buyer's Agent Value' sheet ready: data on what you do beyond opening doors (negotiation, inspections, financing coordination, contract review)",
+      "For sellers: explain that offering buyer-agent compensation is usually still optimal positioning—broader buyer pool, faster sale, fewer negotiation surprises",
+      "If a buyer flatly refuses to sign anything, walk away professionally—those clients used to bleed weeks of time and rarely closed"
+    ],
+    brokerageTalkingPoints: [
+      "Standardize buyer-rep agreement templates with clear, flexible fee structures (flat fee, % of price, hourly, hybrid)",
+      "Train every new agent on the buyer-value conversation in their first 30 days—it's the new core skill",
+      "Track how often listing sellers in your market offer buyer-agent compensation; share the trend monthly with the team",
+      "Develop multi-tier compensation menus (seller-paid, buyer-paid, concession-funded) so agents can match any situation",
+      "Provide compliance review on every buyer-rep agreement until each agent has done 5+ flawlessly"
+    ],
+    clientScript: `"Before we look at homes together, I want to take five minutes to walk you through how I work, what I'll do for you, and what it costs.\n\nYou may have heard about changes to how real estate agents are paid—there was a major settlement in 2024 that means buyers now sign a written agreement with their agent before viewing homes. The reason is consumer protection: it makes everyone clear about what's expected, what's owed, and by whom.\n\n[FOR BUYER: Here's what's in the agreement: I commit to representing only your interests, negotiating on your behalf, and being available for showings, paperwork, inspections, and everything in between. The fee is [X%]. In most cases the seller has agreed to cover that as part of the listing—but if not, we have options: a seller concession, a price reduction equal to the fee, or you covering the difference. We figure that out before we offer on a home, never after. And if you're not ready to commit to me long-term, we can do a single-property or single-tour agreement to start.\n\n/ FOR SELLER: When we list your home, we'll discuss whether to offer compensation to a buyer's agent. There's no law saying you must, but there's a math problem: most buyers come with an agent, and if your listing offers no compensation, those agents will steer their clients toward listings that do—or pass yours along to clients who must now find a way to pay their own agent. We can model both scenarios and decide what gets you the most net dollars.]\n\nThis whole conversation should make you feel more in control, not less. What questions do you have?"`
+  },
+  {
+    id: "insurance-crisis",
+    title: "Home Insurance Spike or Cancellation",
+    icon: "🛡️",
+    category: "Regulatory",
+    heat: "Critical",
+    synopsis: `Wildfire, hurricane, and flood risks have made entire regions either uninsurable or insurable only at extreme premiums. Major carriers have pulled out of California, Florida, and Louisiana. State-run "insurer of last resort" pools (FAIR Plan, Citizens) have ballooned, and even unaffected regions are seeing 20–40% premium hikes due to industry-wide reinsurance pressure. Buyers now discover at the worst possible moment—often 10 days before closing—that the home they want is uninsurable, or the premium is 2–4x what they expected. Sellers in affected areas face longer days on market and forced price cuts. Agents who don't pre-screen insurability lose deals at the eleventh hour.`,
+    realEstateImpact: [
+      { area: "Insurance Premiums", direction: "up", detail: "30–300% premium increases in fire, flood, and wind-exposed zones; some homes now uninsurable in the standard market and must use surplus-lines or state pools." },
+      { area: "Buyer Qualification", direction: "down", detail: "Higher insurance escrow pushes monthly DTI ratios over loan thresholds, killing financing for buyers who would have qualified two years ago." },
+      { area: "Property Values", direction: "down", detail: "Uninsurable or expensive-to-insure homes are trading 5–15% below comparable properties just outside risk zones—a divergence that's widening annually." },
+      { area: "Closing Timelines", direction: "up", detail: "Insurance shopping that used to take 48 hours now takes 2–4 weeks for hard-to-place homes. Contracts must build in longer contingency windows." },
+      { area: "Disclosure Obligations", direction: "up", detail: "Several states (CA, FL, NC) now require pre-listing flood, fire, and wind disclosure. Failure to disclose creates post-close litigation exposure." },
+      { area: "Lender Requirements", direction: "up", detail: "Lenders now demand proof of binder insurance earlier in the process—some won't even accept an offer without it. Insurance pre-approval is becoming a parallel track to mortgage pre-approval." }
+    ],
+    teamTalkingPoints: [
+      "Pre-screen every listing's insurability before going active—run a quote yourself or via a partner agency",
+      "Build a roster of 4–5 specialty insurers (FAIR Plan, Citizens, surplus-lines brokers) for hard-to-place homes",
+      "Add an insurance-cost estimate to every buyer pre-qualification conversation—'total cost of ownership, not just the mortgage'",
+      "For sellers in known risk zones: have a current insurance quote ready as a marketing asset before listing",
+      "Train your team to spot risk-zone listings on first walk-through (proximity to wildland, age of roof, flood elevation, hurricane straps)"
+    ],
+    brokerageTalkingPoints: [
+      "Partner with an insurance brokerage that specializes in hard-to-place markets and can turn quotes around in 48 hours",
+      "Train every agent on flood maps, wildfire severity zones, and your state's regulatory disclosure requirements",
+      "Add an 'insurability check' line item to the standard transaction checklist for every listing and every buyer offer",
+      "Track lost deals by reason—'insurance issue' is climbing fast and the data informs pricing strategy",
+      "Develop client-ready letters explaining insurance options and risks for use during the offer/contract phase"
+    ],
+    clientScript: `"Before we go any further, I want to talk about something most agents don't bring up early enough: insurance.\n\n[FOR BUYER: In our market, home insurance has changed dramatically over the last few years. Some homes that look great on paper are uninsurable, or the premium is three times what you'd expect. I've seen deals fall apart at closing because of this, and I don't want that to happen to you.\n\nWhat I'd like to do is, before we make an offer on any home, get a real insurance quote—not a guess. It takes 24–48 hours and tells us exactly what your true monthly cost will be. That way you can budget accurately, and we know going in whether the deal is even financeable.\n\n/ FOR SELLER: Buyers in our market are now insurance-shopping before they offer, not after. If your home has any flood, fire, or wind exposure—and most homes have at least some—I want to get a current quote in hand before we list. That way we can either reassure buyers with real numbers, or, if the news is hard, price accordingly so we don't have a contract collapse two weeks before closing.]\n\nI know this adds a step. But it's the difference between closing smoothly and losing 60 days to a deal that was never going to work. Are you willing to do this with me?"`
+  },
+  {
+    id: "ibuyer-cash-offer",
+    title: "\"Opendoor Offered Me Cash\"",
+    icon: "💵",
+    category: "Pricing",
+    heat: "Critical",
+    synopsis: `A seller has received an instant cash offer from Opendoor, Offerpad, or a similar iBuyer—typically 5–12% below market—and is weighing the speed and certainty of cash against the higher net of a traditional listing. The math almost always favors listing: even after agent fees and time on market, sellers usually net more by 8–15%. But fear of "what if it doesn't sell" and the appeal of certainty are powerful. The agent must respect the iBuyer offer (it's real money) while quantifying the gap clearly enough that the seller chooses listing on their own.`,
+    realEstateImpact: [
+      { area: "Net Proceeds", direction: "down", detail: "iBuyer offers typically come in 5–12% below true market, plus 7–10% in service fees, plus 1–3% in post-inspection repair credits. Actual net is often 12–18% below a competently run listing." },
+      { area: "Speed", direction: "up", detail: "iBuyer can close in 14–21 days; a traditional listing averages 45–90 days from list to close. For time-sensitive sellers (estate, divorce, relocation) this matters a lot." },
+      { area: "Certainty", direction: "up", detail: "Cash offer is largely guaranteed once accepted; traditional sale carries financing, appraisal, and inspection risk that can cause fall-throughs in 5–10% of contracts." },
+      { area: "Convenience", direction: "up", detail: "No showings, no staging, no negotiations, no repairs. Major appeal for sellers in life-disruption situations, hoarding-condition homes, or full-time-job sellers with no bandwidth." },
+      { area: "Repair Demands", direction: "mixed", detail: "iBuyers do post-offer inspection and reduce price for repairs; the reduction is often non-negotiable. Traditional buyers may negotiate, walk, or accept as-is depending on market." },
+      { area: "Seller Education Burden", direction: "up", detail: "Sellers consistently underestimate the dollar gap between iBuyer net and listing net. The agent's job is to make the comparison painfully clear—in net dollars, not gross prices." }
+    ],
+    teamTalkingPoints: [
+      "Always ask to see the iBuyer offer in writing before responding—you cannot counter what you can't see",
+      "Build a side-by-side net sheet: their cash offer (less fees, less repair credits) vs. a realistic listing price (less commission, less concessions)",
+      "Don't bash iBuyers—acknowledge speed and convenience are real value to specific sellers; respect the seller's reason for considering it",
+      "Use the phrase: 'Their offer is real and it's a fair backstop. Let me show you what your home might do on the open market—then you decide'",
+      "For sellers genuinely needing speed, offer a 'guaranteed sale' alternative (list 7–14 days; if no offer, you or a partner buy at iBuyer-equivalent price)"
+    ],
+    brokerageTalkingPoints: [
+      "Track iBuyer activity in your market—average offers vs. final sale prices on comparable homes—and share monthly",
+      "Build template net-sheet calculators that auto-populate from MLS data and the iBuyer offer screenshot",
+      "Develop a 'fast sale' listing program for time-sensitive sellers as a credible alternative to iBuyers",
+      "Train agents on the actual fee structures and inspection-credit patterns of major iBuyers operating in your market",
+      "Maintain relationships with cash investors who can serve as a back-pocket alternative when an iBuyer pull-out is the seller's actual constraint"
+    ],
+    clientScript: `"Congratulations—getting a cash offer from Opendoor means your home is desirable. That offer is real money, and it's a fair backstop to have in your pocket.\n\nNow let's do the math together. Their offer is [$X]. Their service fee is typically [7–9%], and after their inspection they'll reduce by another [1–3%] for repairs. So your actual net to you is closer to [$Y].\n\nIf we list your home for [recommended list price], even after my commission and reasonable seller concessions, you'd net [$Z]. That's a difference of [$gap]—that's [a year of college tuition / a kitchen remodel / a full year of retirement contributions].\n\nThe trade-off is time. They close in 14 days. We'd target a contract in 30–45 days, closing in 60–75. So the question is: is [time gap] worth [dollar gap] to you?\n\nIf you genuinely need to be done in 14 days—divorce, estate timeline, job relocation that's already started—Opendoor is the right call and I'll help you close cleanly. But if you have 60 days, I'd argue strongly for the open market. The gap is real money.\n\nWant to walk through the comparison line by line?"`
+  },
+  {
+    id: "first-time-affordability",
+    title: "\"We Can't Afford Anything\"",
+    icon: "🔑",
+    category: "Buyer",
+    heat: "High",
+    synopsis: `First-time buyers—often a couple in their late 20s or early 30s—are convinced homeownership is permanently out of reach. Median home prices have outpaced wages for over a decade, and the post-pandemic rate environment compounded the problem. Most first-time buyers have already given up before meeting an agent. The conversation isn't really about finding a home—it's about reopening the door: down-payment programs, FHA, USDA, condo vs. single-family, market timing, and managing the gap between dream-home expectations and a realistic first home. The agent who handles this well wins a client for the next 30 years, not just one transaction.`,
+    realEstateImpact: [
+      { area: "Affordability Gap", direction: "down", detail: "Median home now requires 38–45% of median household income in many metros, vs. the historical 25%—the worst affordability since the early 1980s." },
+      { area: "Down Payment Myths", direction: "mixed", detail: "Most first-time buyers believe 20% is required. In practice 3–5% conventional and 3.5% FHA are widely available, plus 0% USDA in eligible rural areas." },
+      { area: "First-Time Buyer Programs", direction: "up", detail: "State and local first-time buyer grants and forgivable second mortgages expanded significantly in 2023–2025; many sit unused due to consumer awareness gaps." },
+      { area: "Patience Capital", direction: "mixed", detail: "Buyers willing to wait 6–12 months for the right combination of price, rate, and home often get materially better terms—but most lack patience or context to wait wisely." },
+      { area: "Compromise Areas", direction: "mixed", detail: "Condo, townhome, smaller starter, longer commute, less-glamorous neighborhood—each unlocks 10–25% of affordability. The agent's job is to surface trade-offs the buyer hasn't considered." },
+      { area: "Long-Term Wealth Effect", direction: "up", detail: "Even at peak prices, owners outperform renters over 7+ year horizons in most metros. The 'should I buy now' question is best answered with personal time-horizon math, not market-timing." }
+    ],
+    teamTalkingPoints: [
+      "Open with: 'Tell me what you've been told about what you need to buy a home'—clears assumptions before they harden into barriers",
+      "Get them in front of a great loan officer in the first conversation, not the fifth—real numbers change the conversation",
+      "Map every first-time buyer program in your state and county; most agents miss 3–5 grants per buyer",
+      "Reframe 'we can't afford' to 'what trade-offs unlock our first home?'—condo, neighborhood, square footage, commute",
+      "Use the phrase: 'Your first home doesn't have to be your forever home—it's the foundation'"
+    ],
+    brokerageTalkingPoints: [
+      "Maintain a partnership with a lender who specializes in first-time buyer programs and can turn pre-quals around in 48 hours",
+      "Create and update a state-specific first-time buyer guide annually; share with every team member",
+      "Run quarterly first-time buyer workshops to fill the top of the funnel—these clients have 12–18 month decision windows",
+      "Track conversion rates and cycle times on first-time buyer leads; the metric set is different from move-up buyers",
+      "Provide template comparison sheets: 'rent vs. own at $X/mo' so agents can reframe affordability into a current-spending comparison"
+    ],
+    clientScript: `"I hear you—and most people in your shoes feel exactly the same way. Before we decide anything, let me ask a few questions:\n\nWhat's the down payment number you've been told you need? [Most say 20%.] In our market, the loan programs that close most often for first-time buyers ask for [3–5%]. There's a big difference between 'you should have 20%' and 'you need 20%.' We'll talk trade-offs honestly, but the door opens at much lower numbers than you think.\n\nWhat are you paying in rent right now? Your current rent is going somewhere. What if [a number close to their current rent] could go toward a home you own?\n\nWhat's the first home you've been picturing? [If it's the dream home: their assumption is broken—first homes aren't dream homes for almost anyone.] Your first home is the one that gets you on the ladder. It's not your forever home. Most homeowners I work with own three to five homes in their lifetime, and the first one is usually the one they remember most fondly because it was the hardest to get.\n\nHere's what I'd like to do: introduce you to a lender I trust this week. Free conversation, no commitment. They'll tell you exactly what you qualify for, what programs you're eligible for in [state/county], and what the actual monthly payment would look like at different price points. Once we have real numbers, we make a real plan.\n\nSound good?"`
+  },
+  {
+    id: "discount-brokerage",
+    title: "\"Redfin/Flat-Fee Will List for Less\"",
+    icon: "💰",
+    category: "Pricing",
+    heat: "Critical",
+    synopsis: `A seller is comparing the agent's 5–6% commission against a discount brokerage's 1–1.5% listing fee, a flat-fee MLS service ($300–$2,000), or a tech-forward 1% commission model. They focus on the gross fee saved and miss the net-proceeds question entirely. The conversation isn't about defending commission—it's about quantifying the agent's contribution to the final sale price and the cost of a slower sale. Top agents typically deliver 5–10% better outcomes than discount alternatives, but the seller has to see the math, not just hear the claim.`,
+    realEstateImpact: [
+      { area: "Listing Price Discipline", direction: "mixed", detail: "Full-service agents typically push back on seller overpricing; discount and flat-fee agents often accept the seller's price to win the contract, leading to longer DOM and price reductions." },
+      { area: "Marketing Investment", direction: "down", detail: "Discount and flat-fee models cap marketing spend; full-service agents can deploy variable spend (premium photo, video, paid social, broker open) on premium homes." },
+      { area: "Negotiation Strength", direction: "up", detail: "Skilled negotiators recover 1–3% on the buyer-side that discount agents often leave on the table; this swing alone usually exceeds the entire commission gap." },
+      { area: "Days on Market", direction: "down", detail: "Flat-fee MLS listings sit 30–50% longer on average; carrying costs (mortgage, taxes, insurance, opportunity cost) often exceed the commission saved." },
+      { area: "Showing Coverage", direction: "down", detail: "Discount and flat-fee models often have agents handling 30–50 active listings; full-service agents typically run 8–12. Service quality and response times reflect the load." },
+      { area: "Net Proceeds Comparison", direction: "mixed", detail: "Apples-to-apples comparison must be net dollars in pocket, not commission saved. The seller's job is to maximize net; the agent's job is to make that math impossible to miss." }
+    ],
+    teamTalkingPoints: [
+      "Don't bash the competitor—acknowledge that discount models work for specific sellers and specific homes",
+      "Quantify your value with hard data: average list-to-sale ratio, days on market, price-reduction rate—yours vs. the local market average",
+      "Bring a 'net proceeds comparison' sheet to every listing presentation; never let the conversation be about percentages",
+      "Use the phrase: 'You're not paying for the listing—you're paying for the outcome'",
+      "Offer a tiered service menu so price-conscious sellers can choose less without going to a competitor"
+    ],
+    brokerageTalkingPoints: [
+      "Track and publish your team's list-to-sale ratio, DOM, and price-reduction rate vs. the local market average—update quarterly",
+      "Create a service-tier menu: full-service, mid-tier, MLS-only—keeps the lower-fee options inside the brokerage",
+      "Train agents on the net-dollars-vs-fees reframing in every single listing presentation; role-play it monthly",
+      "Develop case studies of high-touch agents who outperformed local discount listings on net proceeds—use them as listing-presentation collateral",
+      "Audit lost listings quarterly: what model won, what objection was used, did the listing actually close at the lower fee, and at what final price?"
+    ],
+    clientScript: `"You're absolutely right—there are options at lower fees, and they exist for a reason. Let me ask you something: what would you say is the most important number in this transaction—the commission percentage, or the dollars in your pocket at the end?\n\nBecause here's what the data in our market shows: [reference local stats—list-to-sale ratio, DOM, price reductions]. Homes I list close at [X%] of asking price; flat-fee and discount listings in our market close at [Y%]. On a [home value], that gap is [$amount].\n\nWhen you do the math: if a discount listing saves you 2% in commission but loses 4% in final sale price, you're paying 2% to do worse. The question isn't 'who charges less'—it's 'who gets you more.'\n\nThat said: I'm not going to pretend my approach is right for every home. If your home is in great condition, in a hot neighborhood, priced sharply, and you have the time and skill to handle showings, offers, inspections, and negotiations yourself—a flat-fee MLS service could absolutely work. I can refer you to one if that's the right call.\n\nBut if you want me handling marketing strategy, price negotiation, inspection responses, appraisal disputes, and pushing back on every buyer-agent who tries to grind you down—that's what my fee buys. And I'd rather you understand exactly what you're getting than save 1.5% and wish you hadn't.\n\nWant to walk through the comparison side by side?"`
   }
 
 ];
@@ -2144,7 +2299,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               <div style={{ fontSize: 13, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Primed Pro</div>
               <div style={{ fontSize: 40, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>$29<span style={{ fontSize: 16, fontWeight: 400, color: "rgba(0,0,0,0.4)" }}>/month</span></div>
               <div style={{ fontSize: 13, color: "rgba(0,0,0,0.4)", marginBottom: 24 }}>Cancel anytime</div>
-              {["24 conversation scenarios", "AI voice practice mode", "3 script formats per scenario", "Objection handling library", "Personal value script builder", "Session history & coaching scores"].map((f, i) => (
+              {["30 conversation scenarios", "AI voice practice mode", "3 script formats per scenario", "Objection handling library", "Personal value script builder", "Session history & coaching scores"].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, textAlign: "left" }}>
                   <span style={{ color: "#e05a33", fontWeight: 700 }}>✓</span>
                   <span style={{ fontSize: 13, color: "rgba(0,0,0,0.6)" }}>{f}</span>
