@@ -2509,7 +2509,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
         <div style={S.main}>
           <aside style={S.sidebar}>
             <div style={S.sidebarControls}>
-              <div style={{ position: "relative", marginBottom: 10 }}>
+              <div style={{ position: "relative" }}>
                 <span style={{
                   position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
                   fontSize: 14, color: "rgba(0,0,0,0.4)", pointerEvents: "none"
@@ -2522,67 +2522,126 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   style={{ ...S.searchInput, paddingLeft: 34 }}
                 />
               </div>
-              <select
-                value={filterCategory}
-                onChange={e => setFilterCategory(e.target.value)}
-                style={{
-                  width: "100%", padding: "9px 32px 9px 12px",
-                  background: filterCategory === "All" ? "#fff" : "rgba(224,90,51,0.06)",
-                  border: `1px solid ${filterCategory === "All" ? "rgba(0,0,0,0.08)" : "rgba(224,90,51,0.3)"}`,
-                  borderRadius: 8,
-                  color: filterCategory === "All" ? "rgba(0,0,0,0.65)" : "#e05a33",
-                  fontSize: 12, fontWeight: 600,
-                  fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em",
-                  outline: "none", cursor: "pointer",
-                  appearance: "none", WebkitAppearance: "none",
-                  backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='${filterCategory === "All" ? "%23999" : "%23e05a33"}' d='M0 0l5 6 5-6z'/></svg>")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 12px center",
-                  transition: "all 160ms ease-out"
-                }}
-              >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat === "All" ? "All categories" : cat}</option>
-                ))}
-              </select>
             </div>
 
             <div style={S.scenarioList}>
-              {filteredScenarios.map(scenario => {
-                const isForecasted = scenario.phase === "forecasted";
-                const baseStyle = S.scenarioCard(selectedScenario === scenario.id);
-                const cardStyle = isForecasted
-                  ? {
-                      ...baseStyle,
-                      borderLeft: `3px dashed ${selectedScenario === scenario.id ? "#7c3aed" : "rgba(124,58,237,0.4)"}`,
-                      background: selectedScenario === scenario.id ? "#fff" : "rgba(124,58,237,0.025)"
-                    }
-                  : baseStyle;
-                return (
-                  <div
-                    key={scenario.id}
-                    onClick={() => selectScenario(scenario.id)}
-                    style={cardStyle}
-                    onMouseEnter={e => {
-                      if (selectedScenario !== scenario.id) e.currentTarget.style.background = isForecasted ? "rgba(124,58,237,0.06)" : "rgba(255,255,255,0.5)";
-                    }}
-                    onMouseLeave={e => {
-                      if (selectedScenario !== scenario.id) e.currentTarget.style.background = isForecasted ? "rgba(124,58,237,0.025)" : "transparent";
-                    }}
-                  >
-                    <div style={S.cardTitle(selectedScenario === scenario.id)}>
-                      <span>{scenario.icon}</span>
-                      <span style={isForecasted ? { fontStyle: "italic" } : null}>{scenario.title}</span>
+              {(() => {
+                const renderCard = (scenario) => {
+                  const isForecasted = scenario.phase === "forecasted";
+                  const baseStyle = S.scenarioCard(selectedScenario === scenario.id);
+                  const cardStyle = isForecasted
+                    ? {
+                        ...baseStyle,
+                        borderLeft: `3px dashed ${selectedScenario === scenario.id ? "#7c3aed" : "rgba(124,58,237,0.4)"}`,
+                        background: selectedScenario === scenario.id ? "#fff" : "rgba(124,58,237,0.025)"
+                      }
+                    : baseStyle;
+                  return (
+                    <div
+                      key={scenario.id}
+                      onClick={() => selectScenario(scenario.id)}
+                      style={cardStyle}
+                      onMouseEnter={e => {
+                        if (selectedScenario !== scenario.id) e.currentTarget.style.background = isForecasted ? "rgba(124,58,237,0.06)" : "rgba(255,255,255,0.5)";
+                      }}
+                      onMouseLeave={e => {
+                        if (selectedScenario !== scenario.id) e.currentTarget.style.background = isForecasted ? "rgba(124,58,237,0.025)" : "transparent";
+                      }}
+                    >
+                      <div style={S.cardTitle(selectedScenario === scenario.id)}>
+                        <span>{scenario.icon}</span>
+                        <span style={isForecasted ? { fontStyle: "italic" } : null}>{scenario.title}</span>
+                      </div>
+                      <div style={{ ...S.cardMeta, flexWrap: "wrap" }}>
+                        {scenario.phase
+                          ? <WhenBadge phase={scenario.phase} />
+                          : <span style={S.categoryTag}>{scenario.category}</span>}
+                        <HeatBadge heat={scenario.heat} />
+                      </div>
                     </div>
-                    <div style={{ ...S.cardMeta, flexWrap: "wrap" }}>
-                      {scenario.phase
-                        ? <WhenBadge phase={scenario.phase} />
-                        : <span style={S.categoryTag}>{scenario.category}</span>}
-                      <HeatBadge heat={scenario.heat} />
-                    </div>
+                  );
+                };
+
+                const sectionHeader = (label, count, accent) => (
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "14px 4px 8px",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    color: accent || "rgba(0,0,0,0.55)"
+                  }}>
+                    <span>{label}</span>
+                    <span style={{
+                      fontSize: 9, padding: "2px 7px", borderRadius: 999,
+                      background: "rgba(0,0,0,0.05)", color: "rgba(0,0,0,0.55)",
+                      letterSpacing: "0.04em", fontWeight: 600
+                    }}>{count}</span>
+                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.06)", marginLeft: 4 }} />
                   </div>
                 );
-              })}
+
+                const subHeader = (label, count) => (
+                  <div style={{
+                    padding: "10px 4px 6px",
+                    fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    color: "rgba(0,0,0,0.4)",
+                    display: "flex", alignItems: "center", gap: 6
+                  }}>
+                    {label}
+                    <span style={{ fontSize: 9, color: "rgba(0,0,0,0.3)" }}>· {count}</span>
+                  </div>
+                );
+
+                const happeningNow = filteredScenarios.filter(s => s.phase === "now");
+                const forecasted = filteredScenarios.filter(s => s.phase === "forecasted");
+                const conversation = filteredScenarios.filter(s => !s.phase);
+
+                const conversationGroupOrder = [
+                  "Pricing", "Negotiation", "Prospecting", "Conversation",
+                  "Buyer", "Life Transition", "Objection", "Market"
+                ];
+                const conversationGroups = conversationGroupOrder
+                  .map(cat => ({ cat, items: conversation.filter(s => s.category === cat) }))
+                  .filter(g => g.items.length > 0);
+
+                const empty = filteredScenarios.length === 0;
+
+                return (
+                  <>
+                    {empty && (
+                      <div style={{ padding: "24px 8px", textAlign: "center", fontSize: 12, color: "rgba(0,0,0,0.45)" }}>
+                        No scenarios match your search.
+                      </div>
+                    )}
+                    {happeningNow.length > 0 && (
+                      <>
+                        {sectionHeader("Happening Now", happeningNow.length, "#166534")}
+                        {happeningNow.map(renderCard)}
+                      </>
+                    )}
+                    {forecasted.length > 0 && (
+                      <>
+                        {sectionHeader("Forecasted Impact", forecasted.length, "#5B21B6")}
+                        {forecasted.map(renderCard)}
+                      </>
+                    )}
+                    {conversationGroups.length > 0 && (
+                      <>
+                        {sectionHeader("Client Conversations", conversation.length)}
+                        {conversationGroups.map(g => (
+                          <React.Fragment key={g.cat}>
+                            {subHeader(g.cat, g.items.length)}
+                            {g.items.map(renderCard)}
+                          </React.Fragment>
+                        ))}
+                      </>
+                    )}
+                  </>
+                );
+              })()}
               {generatedScenario && (
                 <div
                   onClick={() => selectScenario(generatedScenario.id)}
