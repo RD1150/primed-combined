@@ -2040,7 +2040,6 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           <div style={{ display: "flex", gap: 12, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
             {currentScenario.phase && <WhenBadge phase={currentScenario.phase} size="lg" />}
             <span style={S.categoryTag}>{currentScenario.category}</span>
-            <HeatBadge heat={currentScenario.heat} size="lg" />
           </div>
         </div>
         <button onClick={() => setAppMode("practice")} style={{
@@ -2557,7 +2556,6 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         {scenario.phase
                           ? <WhenBadge phase={scenario.phase} />
                           : <span style={S.categoryTag}>{scenario.category}</span>}
-                        <HeatBadge heat={scenario.heat} />
                       </div>
                     </div>
                   );
@@ -2678,7 +2676,6 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   </div>
                   <div style={S.cardMeta}>
                     <span style={S.categoryTag}>{generatedScenario.category}</span>
-                    <HeatBadge heat={generatedScenario.heat} />
                     <span style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace" }}>AI GENERATED</span>
                   </div>
                 </div>
