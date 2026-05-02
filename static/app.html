@@ -2563,11 +2563,25 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   );
                 };
 
+                const sectionContainer = (accent, children) => (
+                  <div style={{
+                    background: "#fff",
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    borderTop: accent ? `3px solid ${accent}` : "1px solid rgba(0,0,0,0.08)",
+                    borderRadius: 12,
+                    padding: "12px 10px 10px",
+                    marginBottom: 14,
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
+                  }}>
+                    {children}
+                  </div>
+                );
+
                 const sectionHeader = (label, count, accent) => (
                   <div style={{
                     display: "flex", alignItems: "baseline", gap: 10,
-                    padding: "22px 4px 10px",
-                    fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em",
+                    padding: "2px 4px 12px",
+                    fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em",
                     fontFamily: "'Outfit', sans-serif",
                     color: accent || "#1a1a1a"
                   }}>
@@ -2581,18 +2595,24 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   </div>
                 );
 
-                const subHeader = (label, count) => (
+                const subHeader = (label, count, isFirst) => (
                   <div style={{
-                    padding: "14px 4px 4px",
-                    fontSize: 10, fontWeight: 600, letterSpacing: "0.12em",
+                    padding: isFirst ? "2px 4px 6px" : "14px 4px 6px",
+                    marginTop: isFirst ? 0 : 8,
+                    borderTop: isFirst ? "none" : "1px solid rgba(0,0,0,0.06)",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
                     textTransform: "uppercase",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    color: "rgba(0,0,0,0.38)",
+                    color: "rgba(0,0,0,0.5)",
                     display: "flex", alignItems: "center", gap: 8
                   }}>
+                    <span style={{
+                      width: 4, height: 4, borderRadius: "50%",
+                      background: "rgba(0,0,0,0.25)"
+                    }} />
                     <span>{label}</span>
-                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.05)" }} />
-                    <span style={{ fontSize: 9, color: "rgba(0,0,0,0.3)", letterSpacing: "0.04em" }}>{count}</span>
+                    <div style={{ flex: 1 }} />
+                    <span style={{ fontSize: 9, color: "rgba(0,0,0,0.35)", letterSpacing: "0.04em" }}>{count}</span>
                   </div>
                 );
 
@@ -2617,29 +2637,29 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         No scenarios match your search.
                       </div>
                     )}
-                    {happeningNow.length > 0 && (
+                    {happeningNow.length > 0 && sectionContainer("#16a34a", (
                       <>
                         {sectionHeader("Happening Now", happeningNow.length, "#166534")}
                         {happeningNow.map(renderCard)}
                       </>
-                    )}
-                    {forecasted.length > 0 && (
+                    ))}
+                    {forecasted.length > 0 && sectionContainer("#7c3aed", (
                       <>
                         {sectionHeader("Forecasted Impact", forecasted.length, "#5B21B6")}
                         {forecasted.map(renderCard)}
                       </>
-                    )}
-                    {conversationGroups.length > 0 && (
+                    ))}
+                    {conversationGroups.length > 0 && sectionContainer("rgba(0,0,0,0.25)", (
                       <>
                         {sectionHeader("Client Conversations", conversation.length)}
-                        {conversationGroups.map(g => (
+                        {conversationGroups.map((g, i) => (
                           <React.Fragment key={g.cat}>
-                            {subHeader(g.cat, g.items.length)}
+                            {subHeader(g.cat, g.items.length, i === 0)}
                             {g.items.map(renderCard)}
                           </React.Fragment>
                         ))}
                       </>
-                    )}
+                    ))}
                   </>
                 );
               })()}
