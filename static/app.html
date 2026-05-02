@@ -1922,8 +1922,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
     }),
     cardTitle: (active) => ({
-      fontSize: 14, fontWeight: active ? 700 : 600, color: "#1a1a1a",
-      display: "flex", alignItems: "center", gap: 8
+      fontSize: 14.5, fontWeight: active ? 700 : 550, color: "#1a1a1a",
+      display: "flex", alignItems: "center", gap: 8,
+      lineHeight: 1.3
     }),
     cardMeta: { display: "flex", alignItems: "center", gap: 8, marginTop: 6 },
     categoryTag: {
@@ -2564,34 +2565,34 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
 
                 const sectionHeader = (label, count, accent) => (
                   <div style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    padding: "16px 4px 10px",
-                    fontSize: 13, fontWeight: 700, letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    color: accent || "rgba(0,0,0,0.7)"
+                    display: "flex", alignItems: "baseline", gap: 10,
+                    padding: "22px 4px 10px",
+                    fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em",
+                    fontFamily: "'Outfit', sans-serif",
+                    color: accent || "#1a1a1a"
                   }}>
                     <span>{label}</span>
                     <span style={{
-                      fontSize: 11, padding: "2px 8px", borderRadius: 999,
-                      background: "rgba(0,0,0,0.06)", color: "rgba(0,0,0,0.6)",
-                      letterSpacing: "0.04em", fontWeight: 600
+                      fontSize: 11, fontWeight: 600,
+                      color: "rgba(0,0,0,0.4)",
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      letterSpacing: "0.04em"
                     }}>{count}</span>
-                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.06)", marginLeft: 4 }} />
                   </div>
                 );
 
                 const subHeader = (label, count) => (
                   <div style={{
-                    padding: "12px 4px 6px",
-                    fontSize: 12, fontWeight: 600, letterSpacing: "0.06em",
+                    padding: "14px 4px 4px",
+                    fontSize: 10, fontWeight: 600, letterSpacing: "0.12em",
                     textTransform: "uppercase",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    color: "rgba(0,0,0,0.55)",
-                    display: "flex", alignItems: "center", gap: 6
+                    color: "rgba(0,0,0,0.38)",
+                    display: "flex", alignItems: "center", gap: 8
                   }}>
-                    {label}
-                    <span style={{ fontSize: 10, color: "rgba(0,0,0,0.35)" }}>· {count}</span>
+                    <span>{label}</span>
+                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.05)" }} />
+                    <span style={{ fontSize: 9, color: "rgba(0,0,0,0.3)", letterSpacing: "0.04em" }}>{count}</span>
                   </div>
                 );
 
