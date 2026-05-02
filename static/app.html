@@ -2564,17 +2564,17 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
 
                 const sectionHeader = (label, count, accent) => (
                   <div style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "14px 4px 8px",
-                    fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "16px 4px 10px",
+                    fontSize: 13, fontWeight: 700, letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    color: accent || "rgba(0,0,0,0.55)"
+                    color: accent || "rgba(0,0,0,0.7)"
                   }}>
                     <span>{label}</span>
                     <span style={{
-                      fontSize: 9, padding: "2px 7px", borderRadius: 999,
-                      background: "rgba(0,0,0,0.05)", color: "rgba(0,0,0,0.55)",
+                      fontSize: 11, padding: "2px 8px", borderRadius: 999,
+                      background: "rgba(0,0,0,0.06)", color: "rgba(0,0,0,0.6)",
                       letterSpacing: "0.04em", fontWeight: 600
                     }}>{count}</span>
                     <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.06)", marginLeft: 4 }} />
@@ -2583,15 +2583,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
 
                 const subHeader = (label, count) => (
                   <div style={{
-                    padding: "10px 4px 6px",
-                    fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
+                    padding: "12px 4px 6px",
+                    fontSize: 12, fontWeight: 600, letterSpacing: "0.06em",
                     textTransform: "uppercase",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    color: "rgba(0,0,0,0.4)",
+                    color: "rgba(0,0,0,0.55)",
                     display: "flex", alignItems: "center", gap: 6
                   }}>
                     {label}
-                    <span style={{ fontSize: 9, color: "rgba(0,0,0,0.3)" }}>· {count}</span>
+                    <span style={{ fontSize: 10, color: "rgba(0,0,0,0.35)" }}>· {count}</span>
                   </div>
                 );
 
