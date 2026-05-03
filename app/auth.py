@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
@@ -93,7 +94,10 @@ async def get_current_user(
 def _send_setup_link(user: User) -> None:
     from app.email_service import send_password_reset_email
     token = create_password_reset_token(user.id, user.password_set_at)
-    reset_url = f"{settings.app_base_url.rstrip('/')}/app#/reset-password?token={token}"
+    base = settings.app_base_url.rstrip('/')
+    invite_key = os.environ.get("INVITE_KEY")
+    invite_q = f"?invite={invite_key}" if invite_key else ""
+    reset_url = f"{base}/app{invite_q}#/reset-password?token={token}"
     send_password_reset_email(user.email, reset_url)
 
 async def register_user(data: UserCreate, db: AsyncSession):

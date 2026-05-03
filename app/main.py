@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from contextlib import asynccontextmanager
 import os
 
@@ -37,10 +37,25 @@ app.add_middleware(
 app.include_router(router, prefix="/v1")
 
 
-# Serve the app HTML at /app and any /app/* deep link (React router handles the rest)
+# Pre-launch gate: if INVITE_KEY env var is set, /app and /app/* require either
+# an ?invite=<KEY> query param (which sets a long-lived cookie) or the cookie
+# itself. New visitors without either get redirected to the landing page.
+# To disable the gate at launch, unset INVITE_KEY on Render.
 @app.get("/app")
 @app.get("/app/{path:path}")
-async def serve_app(path: str = ""):
+async def serve_app(request: Request, path: str = ""):
+    invite_key = os.environ.get("INVITE_KEY")
+    if invite_key:
+        if request.query_params.get("invite") == invite_key:
+            response = FileResponse(os.path.join("static", "app.html"))
+            response.set_cookie(
+                "primed_invite", "1",
+                max_age=60 * 60 * 24 * 365,
+                samesite="lax",
+            )
+            return response
+        if request.cookies.get("primed_invite") != "1":
+            return RedirectResponse(url="/", status_code=302)
     return FileResponse(os.path.join("static", "app.html"))
 
 
