@@ -37,9 +37,10 @@ app.add_middleware(
 app.include_router(router, prefix="/v1")
 
 
-# Serve the app HTML at /app
+# Serve the app HTML at /app and any /app/* deep link (React router handles the rest)
 @app.get("/app")
-async def serve_app():
+@app.get("/app/{path:path}")
+async def serve_app(path: str = ""):
     return FileResponse(os.path.join("static", "app.html"))
 
 
