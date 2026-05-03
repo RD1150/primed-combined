@@ -1550,7 +1550,11 @@ function Primed() {
   const handleLogout = () => { clearAuth(); setUser(null); setAuthScreen("login"); };
 
   // App state
-  const [selectedScenario, setSelectedScenario] = useState(null);
+  const [selectedScenario, setSelectedScenario] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const m = window.location.pathname.match(/^\/app\/scenarios\/([^/?#]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  });
   const [activeTab, setActiveTab] = useState("synopsis");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
@@ -2036,6 +2040,12 @@ Return ONLY valid JSON (no markdown, no backticks):
       setSelectedScenario(id);
       setActiveTab("synopsis");
       setAnimateIn(true);
+      if (typeof window !== "undefined") {
+        const newPath = id ? `/app/scenarios/${id}` : "/app";
+        if (window.location.pathname !== newPath) {
+          window.history.pushState(null, "", newPath);
+        }
+      }
     }, 100);
   }, []);
 
