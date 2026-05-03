@@ -3046,69 +3046,91 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 </div>
               </>
             ) : (
-              <div style={{ flex: 1, overflowY: "auto", padding: "48px 64px" }}>
-                <div style={{ maxWidth: 760, margin: "0 auto" }}>
-                  <div style={{
-                    background: "#fff",
-                    border: "1px solid rgba(0,0,0,0.1)",
-                    borderRadius: 16,
-                    padding: "44px 48px 40px",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 8px 30px rgba(0,0,0,0.04)",
-                    textAlign: "center"
-                  }}>
+              <div style={{ flex: 1, overflowY: "auto" }}>
+                <div style={{
+                  background: "#0F172A",
+                  padding: "56px 64px 40px",
+                  borderBottom: "1px solid rgba(255,255,255,0.08)",
+                  textAlign: "center"
+                }}>
+                  <div style={{ maxWidth: 760, margin: "0 auto" }}>
                     <div style={{
-                      width: 64, height: 64, borderRadius: 16, margin: "0 auto 20px",
-                      background: "linear-gradient(180deg, rgba(224,90,51,0.12), rgba(224,90,51,0.06))",
-                      border: "1px solid rgba(224,90,51,0.2)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 32
-                    }}>⚡</div>
+                      fontSize: 10.5, color: "rgba(245,240,232,0.55)",
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      letterSpacing: "0.16em", textTransform: "uppercase",
+                      marginBottom: 18, fontWeight: 600
+                    }}>
+                      Market Scenarios
+                    </div>
                     <h1 style={{
-                      fontSize: 36, fontWeight: 700, color: "#0d0d0d", margin: 0,
-                      letterSpacing: "-0.02em", lineHeight: 1.15,
-                      fontFamily: "'Outfit', sans-serif"
+                      fontSize: 56, fontWeight: 400, color: "#F5F0E8", margin: 0,
+                      letterSpacing: "-0.02em", lineHeight: 1.05,
+                      fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic"
                     }}>
                       Get Primed.
                     </h1>
                     <p style={{
-                      fontSize: 15, color: "rgba(0,0,0,0.55)",
-                      marginTop: 12, marginBottom: 28, lineHeight: 1.55,
-                      maxWidth: "52ch", marginLeft: "auto", marginRight: "auto"
+                      fontSize: 16, color: "rgba(245,240,232,0.7)",
+                      marginTop: 16, marginBottom: 32, lineHeight: 1.55,
+                      maxWidth: "54ch", marginLeft: "auto", marginRight: "auto"
                     }}>
                       Pick the conversation you're walking into. We'll give you the briefing, the talking points, and the words.
                     </p>
-                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 32 }}>
                       <button className="pcta" onClick={() => selectScenario("commission-objection")} style={{
-                        padding: "14px 28px", borderRadius: 14, border: "none",
-                        background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)",
-                        color: "#fff", fontSize: 13, fontWeight: 700,
+                        padding: "14px 28px", borderRadius: 12, border: "none",
+                        background: "#e05a33",
+                        color: "#fff", fontSize: 12, fontWeight: 700,
                         fontFamily: "'IBM Plex Mono', monospace",
-                        letterSpacing: "0.04em", textTransform: "uppercase",
-                        cursor: "pointer"
-                      }}>
+                        letterSpacing: "0.08em", textTransform: "uppercase",
+                        cursor: "pointer", transition: "all 160ms ease-out",
+                        boxShadow: "0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(224,90,51,0.4)"
+                      }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = "#c14620";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = "#e05a33";
+                          e.currentTarget.style.transform = "translateY(0)";
+                        }}
+                      >
                         Start Recommended
                       </button>
                       <button onClick={() => setShowCustom(true)} style={{
-                        padding: "14px 24px", borderRadius: 14,
-                        border: "1px solid rgba(224,90,51,0.3)",
-                        background: "#fff",
-                        color: "#e05a33", fontSize: 13, fontWeight: 700,
+                        padding: "14px 24px", borderRadius: 12,
+                        border: "1px solid rgba(245,240,232,0.25)",
+                        background: "transparent",
+                        color: "#F5F0E8", fontSize: 12, fontWeight: 700,
                         fontFamily: "'IBM Plex Mono', monospace",
-                        letterSpacing: "0.04em", textTransform: "uppercase",
+                        letterSpacing: "0.08em", textTransform: "uppercase",
                         cursor: "pointer", transition: "all 160ms ease-out"
                       }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(224,90,51,0.05)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "#fff"; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(245,240,232,0.06)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                       >
                         Generate Custom
                       </button>
                     </div>
+                    <div style={{
+                      paddingTop: 22, marginTop: 4,
+                      borderTop: "1px solid rgba(255,255,255,0.1)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      gap: 16, flexWrap: "wrap",
+                      fontSize: 10.5, fontFamily: "'IBM Plex Mono', monospace",
+                      letterSpacing: "0.12em", textTransform: "uppercase",
+                      color: "rgba(245,240,232,0.55)"
+                    }}>
+                      <span><span style={{ color: "#e05a33", fontWeight: 700, marginRight: 8 }}>01</span>Choose a scenario</span>
+                      <span style={{ opacity: 0.4 }}>→</span>
+                      <span><span style={{ color: "#e05a33", fontWeight: 700, marginRight: 8 }}>02</span>Pick a mode</span>
+                      <span style={{ opacity: 0.25 }}>/</span>
+                      <span style={{ opacity: 0.5 }}>Synopsis · Impact · Talk Tracks · Script</span>
+                    </div>
                   </div>
+                </div>
 
-                  <div style={{
-                    height: 1, background: "rgba(0,0,0,0.06)",
-                    marginTop: 44, marginBottom: 24
-                  }} />
+                <div style={{ maxWidth: 760, margin: "0 auto", padding: "36px 64px 48px" }}>
                   <div style={{
                     fontSize: 11, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace",
                     letterSpacing: "0.16em", textTransform: "uppercase",
