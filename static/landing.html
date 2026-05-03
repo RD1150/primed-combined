@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Primed — Know What to Say. Always. | Real Estate Conversation Intelligence</title>
+  <meta name="description" content="Primed gives real estate agents instant briefings, talk tracks, and client scripts for any market scenario. Practice tough conversations with AI role-play before the real call.">
+  <meta property="og:title" content="Primed — Know What to Say. Always.">
+  <meta property="og:description" content="When the headlines hit and your client calls — Primed gives you the briefing, the talk track, and the script.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primed.today">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06070a;
+      --surface: #0c0d12;
+      --surface2: #111218;
+      --border: rgba(255,255,255,0.06);
+      --text: #f0eeea;
+      --text2: rgba(240,238,234,0.72);
+      --text3: rgba(240,238,234,0.45);
+      --accent: #e05a33;
+      --accent2: rgba(224,90,51,0.12);
+      --accent3: rgba(224,90,51,0.06);
+      --heading: 'Instrument Serif', 'Georgia', serif;
+      --body: 'Outfit', 'Helvetica Neue', sans-serif;
+      --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(224,90,51,0.3); color: #fff; }
+    a { text-decoration: none; }
+    button { cursor: pointer; border: none; font-family: inherit; }
+    input { font-family: inherit; }
+
+    /* ── GRAIN OVERLAY ── */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
+    }
+    .fade-up { animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) both; }
+    .fade-up-d1 { animation: fadeUp 0.9s 0.1s cubic-bezier(0.16,1,0.3,1) both; }
+    .fade-up-d2 { animation: fadeUp 0.9s 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+    .fade-up-d3 { animation: fadeUp 0.9s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: all 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── NAV ── */
+    .nav {
+      padding: 18px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,7,10,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px rgba(224,90,51,0.5);
+    }
+    .nav-name {
+      font-size: 22px; font-weight: 700; color: #f5f3ee;
+      letter-spacing: -0.02em;
+    }
+    .nav-tld {
+      font-size: 10px; color: var(--text3); font-family: var(--mono);
+      letter-spacing: 0.1em; margin-left: 2px;
+    }
+    .nav-cta {
+      padding: 8px 20px; border-radius: 8px;
+      border: 1px solid rgba(224,90,51,0.3);
+      background: var(--accent3);
+      color: var(--accent); font-size: 11px; font-weight: 600;
+      font-family: var(--mono); letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent2); }
+
+    /* ── SECTIONS ── */
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 10px; color: var(--accent); font-family: var(--mono);
+      letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label .dot { animation: pulse 2s ease-in-out infinite; }
+    .section-heading {
+      font-family: var(--heading); font-weight: 400; color: #f5f3ee; line-height: 1.12;
+    }
+    .section-heading i { font-style: italic; }
+    .accent { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero { padding: 100px 40px 80px; }
+    .hero h1 { font-size: clamp(42px, 6vw, 72px); margin-bottom: 28px; max-width: 800px; }
+    .hero-desc {
+      font-size: 18px; line-height: 1.7; color: var(--text2);
+      max-width: 560px; margin-bottom: 44px; font-weight: 300;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .btn-primary {
+      padding: 14px 32px; background: var(--accent); color: #fff;
+      border-radius: 10px; font-size: 14px; font-weight: 700;
+      font-family: var(--mono); letter-spacing: 0.03em;
+      transition: all 0.2s; display: inline-block;
+    }
+    .btn-primary:hover { background: #c94e2b; transform: translateY(-1px); }
+    .btn-secondary {
+      padding: 14px 32px; border: 1px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-weight: 500;
+      color: var(--text2); transition: all 0.2s; display: inline-block;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.12); color: var(--text); }
+
+    .hero-proof {
+      margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border);
+      display: flex; gap: 40px; flex-wrap: wrap;
+    }
+    .proof-item-label {
+      font-size: 10px; color: var(--text3); font-family: var(--mono);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .proof-item-value { font-size: 14px; color: var(--text); font-weight: 500; }
+
+    /* ── PROBLEM ── */
+    .problem {
+      padding: 80px 40px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .problem-text {
+      max-width: 800px; margin: 0 auto; text-align: center;
+      font-family: var(--heading); font-size: clamp(24px, 3.5vw, 36px);
+      font-style: italic; line-height: 1.5; color: var(--text); font-weight: 400;
+    }
+    .problem-sub {
+      text-align: center; font-size: 15px; color: var(--text3); margin-top: 24px;
+      font-family: var(--mono); letter-spacing: 0.02em;
+    }
+
+    /* ── DEMO ── */
+    .demo { padding: 100px 40px; }
+    .demo-layout { display: flex; gap: 20px; }
+    .demo-sidebar { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
+
+    .scenario-pill {
+      padding: 10px 16px; border-radius: 10px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text2); font-size: 13px; cursor: pointer;
+      transition: all 0.25s; text-align: left;
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      font-family: var(--body);
+    }
+    .scenario-pill.active {
+      background: var(--accent2); border-color: rgba(224,90,51,0.25); color: var(--text);
+    }
+    .scenario-pill:hover:not(.active) { background: rgba(255,255,255,0.02); }
+    .scenario-pill-icon { font-size: 20px; }
+    .scenario-pill-title { font-weight: 600; font-size: 13px; }
+    .scenario-pill-cat {
+      font-size: 10px; font-family: var(--mono); letter-spacing: 0.06em;
+      color: var(--text3); margin-top: 2px;
+    }
+    .scenario-pill.active .scenario-pill-title { color: #f5f3ee; }
+
+    .demo-custom {
+      margin-top: 12px; padding: 12px 16px; border-radius: 10px;
+      border: 1px dashed rgba(224,90,51,0.2); background: var(--accent3);
+      font-size: 12px; color: var(--accent); font-family: var(--mono);
+      text-align: center;
+    }
+
+    .demo-content {
+      flex: 1; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    }
+    .demo-header {
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface2);
+    }
+    .demo-header-icon { font-size: 22px; }
+    .demo-header-title { font-size: 15px; font-weight: 600; color: #f5f3ee; }
+    .demo-header-meta {
+      font-size: 10px; font-family: var(--mono); color: var(--text3);
+      letter-spacing: 0.06em; margin-top: 1px;
+    }
+    .demo-tabs {
+      display: flex; border-bottom: 1px solid var(--border);
+    }
+    .demo-tab {
+      padding: 11px 18px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      font-family: var(--mono); background: transparent;
+      color: var(--text3); border-bottom: 2px solid transparent;
+      transition: all 0.25s;
+    }
+    .demo-tab:hover { color: var(--text2); }
+    .demo-tab.active {
+      color: var(--accent); border-bottom-color: var(--accent);
+      background: var(--accent3);
+    }
+    .demo-body { padding: 24px 28px; min-height: 220px; }
+    .demo-section-label {
+      font-size: 10px; font-family: var(--mono); color: var(--accent);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 12px; font-weight: 600;
+    }
+    .demo-text { font-size: 14.5px; line-height: 1.7; color: var(--text2); }
+
+    .impact-row {
+      padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-left: 3px solid rgba(224,90,51,0.2);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .impact-area { font-size: 14px; font-weight: 600; color: #f5f3ee; }
+    .impact-note { font-size: 12.5px; color: var(--text2); margin-top: 3px; }
+    .dir-up { color: #10b981; font-weight: 700; font-family: var(--mono); font-size: 13px; }
+    .dir-down { color: #ef4444; font-weight: 700; font-family: var(--mono); font-size: 13px; }
+    .dir-mixed { color: #f59e0b; font-weight: 700; font-family: var(--mono); font-size: 13px; }
+
+    .script-box {
+      padding: 18px 22px; border-radius: 12px;
+      background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);
+      font-size: 14px; line-height: 1.75; color: rgba(226,224,219,0.7);
+      font-style: italic;
+    }
+
+    /* ── FEATURES ── */
+    .features { padding: 100px 40px; }
+    .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .feature-card {
+      padding: 32px; border-radius: 16px;
+      border: 1px solid var(--border); background: var(--surface);
+      transition: all 0.35s;
+    }
+    .feature-card:hover {
+      border-color: rgba(224,90,51,0.2); background: var(--surface2);
+      transform: translateY(-2px);
+    }
+    .feature-num {
+      font-size: 11px; font-family: var(--mono); color: var(--accent);
+      font-weight: 700; letter-spacing: 0.06em; margin-bottom: 14px;
+    }
+    .feature-title {
+      font-size: 20px; font-weight: 600; color: #f5f3ee; margin-bottom: 10px;
+    }
+    .feature-desc { font-size: 14px; line-height: 1.65; color: var(--text2); margin-bottom: 14px; }
+    .feature-detail { font-size: 12.5px; line-height: 1.6; color: var(--text3); }
+
+    /* ── PRACTICE ── */
+    .practice {
+      padding: 80px 40px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .persona-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    .persona-card {
+      flex: 1 1 200px; padding: 20px 24px; border-radius: 14px;
+      border: 1px solid var(--border); background: var(--surface2);
+    }
+    .persona-name { font-size: 16px; font-weight: 600; color: #f5f3ee; margin-bottom: 8px; }
+    .persona-traits { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+    .persona-diff {
+      display: inline-block; padding: 3px 10px; border-radius: 4px;
+      font-size: 10px; font-weight: 700; font-family: var(--mono);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .diff-hard { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .diff-medium { background: rgba(245,158,11,0.1); color: #f59e0b; }
+
+    .scenarios-bar {
+      margin-top: 32px; padding: 20px 28px; border-radius: 14px;
+      border: 1px solid var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .scenarios-bar-title { font-size: 14px; font-weight: 600; color: #f5f3ee; }
+    .scenarios-bar-list { font-size: 12.5px; color: var(--text3); margin-top: 4px; }
+
+    /* ── BOOK ── */
+    .book-section { padding: 100px 40px; }
+    .book-layout {
+      display: flex; gap: 48px; align-items: center; flex-wrap: wrap;
+    }
+    .book-text { flex: 1 1 300px; }
+    .book-desc {
+      font-size: 15px; line-height: 1.7; color: var(--text2); margin-top: 20px; max-width: 480px;
+    }
+    .book-callout {
+      margin-top: 28px; padding: 16px 20px; border-radius: 12px;
+      background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);
+      font-size: 13px; color: var(--text2); line-height: 1.6;
+    }
+    .book-card {
+      flex: 0 0 300px; height: 380px; border-radius: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 32px; text-align: center;
+    }
+    .book-card-icon { font-size: 48px; margin-bottom: 20px; }
+    .book-card-title {
+      font-family: var(--heading); font-size: 22px; font-style: italic;
+      color: #f5f3ee; margin-bottom: 8px;
+    }
+    .book-card-sub {
+      font-size: 13px; color: var(--text3); line-height: 1.5; margin-bottom: 20px;
+    }
+    .book-card-badge {
+      padding: 8px 16px; border-radius: 6px;
+      background: var(--accent2); color: var(--accent);
+      font-size: 11px; font-weight: 600; font-family: var(--mono);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px 40px;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    }
+    .cta-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+    .cta-desc {
+      font-size: 16px; color: var(--text2); margin-bottom: 40px; line-height: 1.65;
+    }
+    .cta-form {
+      display: flex; gap: 10px; max-width: 480px; margin: 0 auto;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .cta-input {
+      flex: 1; min-width: 240px; padding: 14px 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: var(--text); font-size: 15px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .cta-input:focus { border-color: rgba(224,90,51,0.4); }
+    .cta-input::placeholder { color: var(--text3); }
+    .cta-btn {
+      padding: 14px 32px; background: var(--accent); color: #fff;
+      border-radius: 10px; font-size: 14px; font-weight: 700;
+      font-family: var(--mono); letter-spacing: 0.03em;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .cta-btn:hover { background: #c94e2b; }
+    .cta-success {
+      padding: 20px 32px; border-radius: 14px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.2);
+      max-width: 480px; margin: 0 auto; display: none;
+    }
+    .cta-success.show { display: block; }
+    .cta-success-title { font-size: 18px; font-weight: 600; color: #10b981; margin-bottom: 6px; }
+    .cta-success-text { font-size: 14px; color: var(--text2); }
+    .cta-note {
+      font-size: 11px; color: var(--text3); margin-top: 20px;
+      font-family: var(--mono); letter-spacing: 0.02em;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: 32px 40px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .footer-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); opacity: 0.5;
+    }
+    .footer-name { font-size: 14px; font-weight: 600; color: var(--text3); }
+    .footer-tagline { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav { padding: 14px 20px; }
+      .hero, .demo, .features, .book-section { padding-left: 20px; padding-right: 20px; }
+      .problem, .practice, .cta-section { padding-left: 20px; padding-right: 20px; }
+      .demo-layout { flex-direction: column; }
+      .demo-sidebar { width: 100%; flex-direction: row; overflow-x: auto; gap: 8px; }
+      .scenario-pill { min-width: 200px; flex-shrink: 0; }
+      .features-grid { grid-template-columns: 1fr; }
+      .book-layout { flex-direction: column; }
+      .book-card { flex: 1 1 auto; width: 100%; height: auto; min-height: 280px; }
+      .cta-form { flex-direction: column; }
+      .cta-input { min-width: auto; }
+      .hero h1 { font-size: clamp(32px, 8vw, 56px); }
+      .hero-proof { gap: 24px; }
+      .footer { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <!-- ═══ NAV ═══ -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-dot"></div>
+      <span class="nav-name">primed</span>
+      <span class="nav-tld">.today</span>
+    </div>
+    <a href="#early-access" class="nav-cta">GET EARLY ACCESS</a>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="container">
+      <div class="section-label fade-up">
+        <span class="dot">●</span>
+        For real estate agents who refuse to freeze
+      </div>
+      <h1 class="section-heading fade-up-d1">
+        Know what to say.<br><i class="accent">Always.</i>
+      </h1>
+      <p class="hero-desc fade-up-d2">
+        When the headlines hit and your client calls asking what it means for
+        their deal — Primed gives you the briefing, the talk track, and the
+        script. Then lets you practice the conversation before it happens.
+      </p>
+      <div class="hero-actions fade-up-d3">
+        <a href="#demo" class="btn-primary">Try the Demo ↓</a>
+        <a href="#early-access" class="btn-secondary">Get Early Access</a>
+      </div>
+      <div class="hero-proof fade-up-d3">
+        <div>
+          <div class="proof-item-label">Companion to</div>
+          <div class="proof-item-value">The CLEAR Method™</div>
+        </div>
+        <div>
+          <div class="proof-item-label">Built for</div>
+          <div class="proof-item-value">Real estate agents</div>
+        </div>
+        <div>
+          <div class="proof-item-label">Powered by</div>
+          <div class="proof-item-value">AI scenario intelligence</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROBLEM ═══ -->
+  <section class="problem reveal" data-reveal>
+    <p class="problem-text">
+      "A seller says Zillow values their home $80K higher. A buyer asks if the market is about to crash.
+      Someone tells you another agent charges less. <span class="accent">You
+      have six seconds before silence becomes doubt.</span>"
+    </p>
+    <p class="problem-sub">Primed makes sure you never freeze again.</p>
+  </section>
+
+  <!-- ═══ DEMO ═══ -->
+  <section id="demo" class="demo reveal" data-reveal>
+    <div class="container">
+      <div style="margin-bottom: 48px;">
+        <div class="section-label">Live Demo</div>
+        <h2 class="section-heading" style="font-size: clamp(28px, 4vw, 44px);">
+          Try it. <i>Right now.</i>
+        </h2>
+        <p style="font-size: 15px; color: var(--text2); margin-top: 12px; max-width: 500px;">
+          Pick a scenario. See exactly what Primed delivers.
+        </p>
+      </div>
+
+      <div class="demo-layout">
+        <div class="demo-sidebar" id="demoSidebar">
+          <!-- Populated by JS -->
+        </div>
+        <div class="demo-content">
+          <div class="demo-header" id="demoHeader"></div>
+          <div class="demo-tabs" id="demoTabs"></div>
+          <div class="demo-body" id="demoBody"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section class="features reveal" data-reveal>
+    <div class="container">
+      <div style="margin-bottom: 56px;">
+        <div class="section-label">What You Get</div>
+        <h2 class="section-heading" style="font-size: clamp(28px, 4vw, 44px);">
+          Five modes. <i>Zero hesitation.</i>
+        </h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-num">01</div>
+          <div class="feature-title">Scenario Intelligence</div>
+          <div class="feature-desc">When headlines break, get an instant briefing on the real estate impact — before your clients call asking what it means.</div>
+          <div class="feature-detail">Pre-built scenarios for market events, industry shifts, rate changes, and regulatory moves. Or generate a custom briefing on any topic in seconds.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">02</div>
+          <div class="feature-title">Talk Tracks & Scripts</div>
+          <div class="feature-desc">Ready-to-use conversation guides for your team, your brokerage, and your clients — with buyer, seller, and investor variations.</div>
+          <div class="feature-detail">Every scenario includes team talking points, brokerage discussion guides, and client scripts customizable to your voice and market.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">03</div>
+          <div class="feature-title">Practice Simulations</div>
+          <div class="feature-desc">Role-play tough conversations with AI clients before the real call. Get scored on Clarity, Empathy, Persuasion, and Confidence.</div>
+          <div class="feature-detail">Choose a scenario, pick a client personality, set the difficulty, and practice until the conversation feels natural. AI coaching tells you exactly what to improve.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">04</div>
+          <div class="feature-title">Call Prep in 60 Seconds</div>
+          <div class="feature-desc">Open the app before any call or meeting. Describe your situation and get your opening line, likely objections, and suggested responses — instantly.</div>
+          <div class="feature-detail">Listing appointments, pricing discussions, expired listings, FSBO calls, buyer hesitation, offer negotiations. Every high-stakes conversation, covered.</div>
+        </div>
+        <div class="feature-card" style="grid-column: 1 / -1;">
+          <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1 1 300px;">
+              <div class="feature-num">05</div>
+              <div class="feature-title">Challenge Mode</div>
+              <div class="feature-desc">Get a tough client objection. You have 60 seconds to respond. AI scores your answer and you challenge other agents to beat your score.</div>
+              <div class="feature-detail">The fastest way to sharpen your skills — and the most shareable feature in your brokerage group chat. Short, competitive, addictive.</div>
+            </div>
+            <div style="flex: 0 0 280px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-size: 10px; font-family: var(--mono); color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Scored On</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="padding: 10px 14px; border-radius: 8px; background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);">
+                  <div style="font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--mono);">C</div>
+                  <div style="font-size: 11px; color: var(--text2); margin-top: 2px;">Clarity</div>
+                </div>
+                <div style="padding: 10px 14px; border-radius: 8px; background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);">
+                  <div style="font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--mono);">E</div>
+                  <div style="font-size: 11px; color: var(--text2); margin-top: 2px;">Empathy</div>
+                </div>
+                <div style="padding: 10px 14px; border-radius: 8px; background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);">
+                  <div style="font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--mono);">P</div>
+                  <div style="font-size: 11px; color: var(--text2); margin-top: 2px;">Persuasion</div>
+                </div>
+                <div style="padding: 10px 14px; border-radius: 8px; background: var(--accent3); border: 1px solid rgba(224,90,51,0.1);">
+                  <div style="font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--mono);">C</div>
+                  <div style="font-size: 11px; color: var(--text2); margin-top: 2px;">Confidence</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRACTICE ═══ -->
+  <section class="practice reveal" data-reveal>
+    <div class="container">
+      <div style="margin-bottom: 48px;">
+        <div class="section-label">Practice Mode</div>
+        <h2 class="section-heading" style="font-size: clamp(28px, 4vw, 40px);">
+          Role-play before the <i>real</i> call.
+        </h2>
+        <p style="font-size: 15px; color: var(--text2); margin-top: 12px; max-width: 520px;">
+          Practice tough conversations with AI clients who push back, ask hard questions, and don't agree easily.
+        </p>
+      </div>
+      <div class="persona-grid">
+        <div class="persona-card">
+          <div class="persona-name">The Analytical Seller</div>
+          <div class="persona-traits">Wants data, asks detailed questions, compares agents on metrics</div>
+          <span class="persona-diff diff-medium">Medium</span>
+        </div>
+        <div class="persona-card">
+          <div class="persona-name">The Emotional Seller</div>
+          <div class="persona-traits">Attached to property, reacts emotionally to pricing conversations</div>
+          <span class="persona-diff diff-hard">Hard</span>
+        </div>
+        <div class="persona-card">
+          <div class="persona-name">The Distrustful Buyer</div>
+          <div class="persona-traits">Skeptical of agents, questions every recommendation</div>
+          <span class="persona-diff diff-hard">Hard</span>
+        </div>
+        <div class="persona-card">
+          <div class="persona-name">The Nervous First-Timer</div>
+          <div class="persona-traits">Overwhelmed by the process, needs reassurance at every step</div>
+          <span class="persona-diff diff-medium">Medium</span>
+        </div>
+        <div class="persona-card">
+          <div class="persona-name">The Impatient Investor</div>
+          <div class="persona-traits">Numbers-driven, time-sensitive, challenges your ROI projections</div>
+          <span class="persona-diff diff-hard">Hard</span>
+        </div>
+      </div>
+      <div class="scenarios-bar">
+        <div>
+          <div class="scenarios-bar-title">12 core scenarios at launch</div>
+          <div class="scenarios-bar-list">Listing appointments • Pricing discussions • Expired listings • FSBO calls • Buyer hesitation • Offer negotiation • and more</div>
+        </div>
+        <a href="#early-access" class="btn-primary" style="font-size: 12px; padding: 10px 22px;">Get Access</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ BOOK ═══ -->
+  <section class="book-section reveal" data-reveal>
+    <div class="container">
+      <div class="book-layout">
+        <div class="book-text">
+          <div class="section-label">Book + App Ecosystem</div>
+          <h2 class="section-heading" style="font-size: clamp(26px, 3.5vw, 38px); line-height: 1.2;">
+            The CLEAR Method™ teaches <i>how to think.</i><br>
+            Primed teaches <i class="accent">what to say.</i>
+          </h2>
+          <p class="book-desc">
+            The CLEAR Method™ book gives you the framework — Connection, Leadership, Empathy, Action, and Resilience. Primed is the living companion that puts that framework into practice every single day.
+          </p>
+          <div class="book-callout">
+            <span class="accent" style="font-weight: 600;">Book buyers get priority access</span> — your copy of The CLEAR Method™ includes an access code to Primed.
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-card-icon">📖</div>
+          <div class="book-card-title">The CLEAR Method™</div>
+          <div class="book-card-sub">How to Attract Clients Through<br>Warmth, Clarity & Community</div>
+          <div class="book-card-badge">COMING SOON</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section id="early-access" class="cta-section reveal" data-reveal>
+    <div class="cta-inner">
+      <h2 class="section-heading" style="font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 16px;">
+        Never freeze <i class="accent">again.</i>
+      </h2>
+      <p class="cta-desc">
+        Get early access to Primed. Be the first to know when we launch — and the first agent in your market who always knows what to say.
+      </p>
+      <div class="cta-form" id="ctaForm">
+        <input type="email" placeholder="your@email.com" class="cta-input" id="ctaEmail">
+        <button class="cta-btn" id="ctaBtn" onclick="handleSignup()">Get Primed</button>
+      </div>
+      <div class="cta-success" id="ctaSuccess">
+        <div class="cta-success-title">You're on the list.</div>
+        <div class="cta-success-text">We'll reach out when Primed is ready. You'll never freeze again.</div>
+      </div>
+      <p class="cta-note">No spam. Just one email when we launch.</p>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <div class="footer-dot"></div>
+      <span class="footer-name">primed.today</span>
+    </div>
+    <div class="footer-tagline">A companion to The CLEAR Method™</div>
+  </footer>
+
+  <!-- ═══ JAVASCRIPT ═══ -->
+  <script>
+    // ── SCENARIO DATA ──
+    const scenarios = [
+      {
+        id: "zillow-price",
+        title: "\"Zillow Says My Home Is Worth More\"",
+        cat: "Pricing",
+        heat: "High",
+        icon: "🏷️",
+        brief: "Your seller pulled up a Zillow Zestimate that's $80K higher than your suggested list price. They're questioning your expertise and considering listing with an agent who 'agrees' with the online number. This is one of the most common — and most dangerous — conversations in real estate. Handle it wrong and you lose the listing. Handle it right and you cement yourself as the trusted expert.",
+        impacts: [
+          { area: "Days on Market", dir: "up", note: "Overpriced homes sit 3–5x longer, then sell below market value" },
+          { area: "Agent Credibility", dir: "mixed", note: "Agents who cave to inflated prices lose twice — the listing and their reputation" },
+          { area: "Seller Net Proceeds", dir: "down", note: "Price reductions after sitting signal desperation to buyers" }
+        ],
+        talk: "Never attack the Zestimate directly — it makes the seller defensive. Instead, acknowledge the tool, then redirect to what it can't account for: condition, updates, neighborhood micro-trends, and actual buyer behavior. Bring three comparable sales within a half-mile, closed in the last 60 days. Data wins this conversation, but only if delivered with empathy first.",
+        script: "\"I'm glad you looked that up — it shows you're doing your homework and that's exactly the kind of seller I love working with. Here's what I've found about those online estimates: they're based on public data and algorithms that can't see inside your home. They don't know about your new kitchen, your neighbor's barking dog, or that three similar homes just closed below that number. Let me show you what actual buyers in this market are paying right now — because that's what determines your price, not an algorithm.\""
+      },
+      {
+        id: "commission-objection",
+        title: "\"Another Agent Charges Less\"",
+        cat: "Negotiation",
+        heat: "Critical",
+        icon: "💰",
+        brief: "A seller tells you they've spoken with another agent who offered a lower commission. This conversation has become even more common post-NAR settlement, as commission structures are increasingly negotiable. The wrong response — immediately discounting your rate — destroys your value proposition. The right response turns this into your strongest differentiator.",
+        impacts: [
+          { area: "Commission Rates", dir: "down", note: "Industry trend toward negotiable, unbundled commissions accelerating" },
+          { area: "Agent Value Perception", dir: "mixed", note: "Agents who articulate their value thrive; those who compete on price erode" },
+          { area: "Sale Price Outcomes", dir: "mixed", note: "Discount agents statistically net sellers less after lower marketing spend" }
+        ],
+        talk: "Never lead with defending your rate. Start by acknowledging the seller's right to compare — then shift the conversation from cost to return on investment. The question isn't 'what do you pay?' It's 'what do you net?' Prepare specific examples of how your marketing, negotiation, and network have produced measurably better outcomes than discount alternatives.",
+        script: "\"That's a completely fair question, and I'd be surprised if you weren't comparing. Here's how I think about it: my commission isn't a cost — it's an investment in the outcome. The question I'd ask is: will that agent's marketing, negotiation skills, and network get you the same sale price I will? In my last ten transactions, my average sale-to-list ratio was 99.2%. I'd rather earn my full fee and net you $30,000 more than discount my rate and cost you the difference.\""
+      },
+      {
+        id: "market-crash",
+        title: "\"Is the Market Going to Crash?\"",
+        cat: "Market",
+        heat: "High",
+        icon: "📊",
+        brief: "Your buyer or seller has been watching the news, scrolling social media, and listening to friends who 'know someone in real estate.' They're convinced a crash is coming and want to either pull out of their purchase or delay listing. Fear-based inaction is the most expensive decision your client can make — and the hardest to overcome conversationally.",
+        impacts: [
+          { area: "Buyer Confidence", dir: "down", note: "Fear-driven buyers miss opportunities while waiting for a crash that may never come" },
+          { area: "Seller Urgency", dir: "down", note: "Sellers who wait often list into worse conditions than they avoided" },
+          { area: "Transaction Volume", dir: "down", note: "Market fear is contagious — one hesitant client can stall a whole pipeline" }
+        ],
+        talk: "Don't dismiss the fear — validate it, then redirect with data. The 2008 crash was caused by specific lending conditions that don't exist today. Current inventory levels, lending standards, and demographic demand paint a different picture. Your job isn't to predict the future — it's to give them the context to make a confident decision based on their personal timeline and goals, not headlines.",
+        script: "\"I completely understand that concern — you're hearing a lot of noise right now and it's smart to ask. Here's what I can tell you based on the actual data: today's market is fundamentally different from 2008. Lending standards are significantly tighter, inventory is still historically low, and demographic demand from millennials is sustaining buyer activity. Could prices soften? Possibly. But the question isn't 'what will the market do?' — it's 'what's the cost of waiting versus acting on your timeline?' Let me show you the numbers for your specific situation.\""
+      },
+      {
+        id: "low-offer",
+        title: "\"That Offer Is Insulting\"",
+        cat: "Negotiation",
+        heat: "Critical",
+        icon: "😤",
+        brief: "Your seller just received an offer $50K below asking price and they're furious. They want to reject it outright without countering. This is a pure emotional response — and one of the highest-stakes moments in any transaction. Your job is to de-escalate, reframe the offer as a starting point, and keep the negotiation alive without dismissing the seller's feelings.",
+        impacts: [
+          { area: "Deal Survival", dir: "down", note: "Outright rejections kill deals that counteroffers could have saved" },
+          { area: "Seller Emotions", dir: "up", note: "Sellers personalize offers — they hear 'your home isn't worth it'" },
+          { area: "Negotiation Leverage", dir: "mixed", note: "A low offer still reveals a motivated buyer — that's information you can use" }
+        ],
+        talk: "Never agree that the offer is insulting — and never dismiss the seller's reaction. Validate the emotion, then shift to strategy. The buyer made an offer, which means they want the home. A low starting offer is an invitation to negotiate, not a statement of value. Walk the seller through the counter-offer math and remind them that the goal is the best possible outcome, not winning an emotional argument.",
+        script: "\"I hear you — that number isn't what we expected and I understand your frustration. But let me reframe this for a second: this buyer took the time to write an offer, get pre-approved, and put earnest money on the table. That tells me they want YOUR home. A low opening offer is a negotiation tactic, not a reflection of your home's value. Here's what I'd recommend: let's counter at [X] with [terms]. If they come up — and in my experience they almost always do — we're in a much stronger position than if we reject and start from zero with the next buyer.\""
+      }
+    ];
+
+    let activeScenario = 0;
+    let activeTab = "brief";
+
+    // ── RENDER DEMO ──
+    function renderDemo() {
+      const s = scenarios[activeScenario];
+
+      // Sidebar
+      document.getElementById("demoSidebar").innerHTML = scenarios.map((sc, i) => `
+        <button class="scenario-pill ${i === activeScenario ? 'active' : ''}" onclick="selectScenario(${i})">
+          <span class="scenario-pill-icon">${sc.icon}</span>
+          <div>
+            <div class="scenario-pill-title">${sc.title}</div>
+            <div class="scenario-pill-cat">${sc.cat}</div>
+          </div>
+        </button>
+      `).join("") + `<div class="demo-custom">⚡ Custom scenarios in full version</div>`;
+
+      // Header
+      document.getElementById("demoHeader").innerHTML = `
+        <span class="demo-header-icon">${s.icon}</span>
+        <div>
+          <div class="demo-header-title">${s.title}</div>
+          <div class="demo-header-meta">${s.cat} • ${s.heat}</div>
+        </div>
+      `;
+
+      // Tabs
+      const tabs = [
+        { id: "brief", label: "Briefing" },
+        { id: "impact", label: "Impact" },
+        { id: "talk", label: "Talk Track" },
+        { id: "script", label: "Script" }
+      ];
+      document.getElementById("demoTabs").innerHTML = tabs.map(t =>
+        `<button class="demo-tab ${activeTab === t.id ? 'active' : ''}" onclick="selectTab('${t.id}')">${t.label}</button>`
+      ).join("");
+
+      // Body
+      const dirMap = { up: ["↑", "dir-up"], down: ["↓", "dir-down"], mixed: ["↕", "dir-mixed"] };
+      let body = "";
+      if (activeTab === "brief") {
+        body = `<div class="demo-section-label">Scenario Briefing</div><p class="demo-text">${s.brief}</p>`;
+      } else if (activeTab === "impact") {
+        body = `<div class="demo-section-label">Market Impact</div>` + s.impacts.map(imp => `
+          <div class="impact-row">
+            <div><div class="impact-area">${imp.area}</div><div class="impact-note">${imp.note}</div></div>
+            <span class="${dirMap[imp.dir][1]}">${dirMap[imp.dir][0]}</span>
+          </div>
+        `).join("");
+      } else if (activeTab === "talk") {
+        body = `<div class="demo-section-label">Team Talk Track</div><p class="demo-text">${s.talk}</p>`;
+      } else if (activeTab === "script") {
+        body = `<div class="demo-section-label">Client Script</div><div class="script-box">${s.script}</div>`;
+      }
+      document.getElementById("demoBody").innerHTML = body;
+    }
+
+    function selectScenario(i) {
+      activeScenario = i;
+      activeTab = "brief";
+      renderDemo();
+    }
+
+    function selectTab(tab) {
+      activeTab = tab;
+      renderDemo();
+    }
+
+    // ── EMAIL SIGNUP ──
+    function handleSignup() {
+      const email = document.getElementById("ctaEmail").value.trim();
+      if (email && email.includes("@") && email.includes(".")) {
+        fetch("https://api.convertkit.com/v3/forms/9169545/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ api_key: "enaZb8MG05uHwGht5I-kyg", email: email })
+        }).then(() => {
+          document.getElementById("ctaForm").style.display = "none";
+          document.getElementById("ctaSuccess").classList.add("show");
+        }).catch(() => {
+          document.getElementById("ctaForm").style.display = "none";
+          document.getElementById("ctaSuccess").classList.add("show");
+        });
+      }
+    }
+
+    // Enter key on email input
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("ctaEmail").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") handleSignup();
+      });
+    });
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("visible");
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+    // ── INIT ──
+    renderDemo();
+  </script>
+
+</body>
+</html>
