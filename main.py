@@ -40,7 +40,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def root():
-    return FileResponse(os.path.join("static", "landing.html"))
+    return {"app": "Primed API", "version": "1.0.0", "docs": "/docs", "status": "running"}
 
 
 @app.get("/health")
