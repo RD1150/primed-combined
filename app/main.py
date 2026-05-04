@@ -73,6 +73,21 @@ async def privacy():
     return FileResponse(os.path.join("static", "privacy.html"))
 
 
+@app.get("/terms")
+async def terms():
+    return FileResponse(os.path.join("static", "terms.html"))
+
+
+@app.get("/disclaimer")
+async def disclaimer():
+    return FileResponse(os.path.join("static", "disclaimer.html"))
+
+
+@app.get("/refund")
+async def refund():
+    return FileResponse(os.path.join("static", "refund.html"))
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
