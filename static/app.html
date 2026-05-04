@@ -2181,9 +2181,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     filterRow: { display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" },
     filterBtn: (active) => ({
       padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 500,
-      border: "1px solid", borderColor: active ? "rgba(224,90,51,0.5)" : "rgba(0,0,0,0.1)",
-      background: active ? "rgba(224,90,51,0.08)" : "transparent",
-      color: active ? "#e05a33" : "rgba(0,0,0,0.45)",
+      border: "1px solid", borderColor: active ? "#0F172A" : "rgba(0,0,0,0.1)",
+      background: active ? "#0F172A" : "transparent",
+      color: active ? "#F5F0E8" : "rgba(0,0,0,0.45)",
       cursor: "pointer", transition: "all 0.2s",
       fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.02em"
     }),
@@ -2207,8 +2207,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     generateBtn: {
       margin: "10px 10px 14px", padding: "12px 16px", borderRadius: 12,
-      border: "1px solid rgba(224,90,51,0.25)", background: "rgba(224,90,51,0.06)",
-      color: "#e05a33", fontSize: 13, fontWeight: 600, cursor: "pointer",
+      border: "1px dashed rgba(0,0,0,0.22)", background: "#fff",
+      color: "#1a1a1a", fontSize: 13, fontWeight: 600, cursor: "pointer",
       textAlign: "center", transition: "all 160ms ease-out", fontFamily: "'IBM Plex Mono', monospace",
       letterSpacing: "0.04em", textTransform: "uppercase",
       flexShrink: 0
@@ -2220,10 +2220,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     tab: (active) => ({
       padding: "10px 16px", fontSize: 11, fontWeight: 700,
-      color: active ? "#e05a33" : "rgba(0,0,0,0.45)", cursor: "pointer",
+      color: active ? "#F5F0E8" : "rgba(0,0,0,0.45)", cursor: "pointer",
       transition: "all 0.2s",
-      background: active ? "rgba(224,90,51,0.1)" : "transparent",
-      border: `1px solid ${active ? "rgba(224,90,51,0.25)" : "rgba(0,0,0,0.08)"}`,
+      background: active ? "#0F172A" : "transparent",
+      border: `1px solid ${active ? "#0F172A" : "rgba(0,0,0,0.08)"}`,
       borderRadius: 999,
       fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em",
       textTransform: "uppercase", display: "flex", alignItems: "center", gap: 7
@@ -2236,7 +2236,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     },
     impactCard: {
       background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
-      padding: "18px 20px", marginBottom: 12, borderLeft: "3px solid rgba(224,90,51,0.3)"
+      padding: "18px 20px", marginBottom: 12, borderLeft: "3px solid rgba(15,23,42,0.85)"
     },
     impactTitle: {
       fontSize: 15, fontWeight: 600, color: "#1a1a1a",
@@ -2245,21 +2245,21 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     impactDetail: { fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 },
     talkingPoint: { display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" },
     talkingPointNum: {
-      width: 26, height: 26, borderRadius: 6, background: "rgba(224,90,51,0.06)",
-      color: "#e05a33", display: "flex", alignItems: "center", justifyContent: "center",
+      width: 26, height: 26, borderRadius: 6, background: "#0F172A",
+      color: "#F5F0E8", display: "flex", alignItems: "center", justifyContent: "center",
       fontSize: 11, fontWeight: 700, flexShrink: 0, fontFamily: "'IBM Plex Mono', monospace"
     },
     talkingPointText: { fontSize: 14, color: "rgba(0,0,0,0.7)", lineHeight: 1.6, paddingTop: 3 },
     scriptBox: {
-      background: "#fff", border: "1px solid rgba(224,90,51,0.15)", borderRadius: 14,
+      background: "#fff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 14,
       padding: "24px 28px", fontSize: 14.5, lineHeight: 1.75,
-      color: "rgba(0,0,0,0.75)", whiteSpace: "pre-wrap", position: "relative"
+      color: "rgba(0,0,0,0.85)", whiteSpace: "pre-wrap", position: "relative"
     },
     copyBtn: (copied) => ({
       position: "absolute", top: 12, right: 12, padding: "6px 14px", borderRadius: 6,
-      border: "1px solid", borderColor: copied ? "rgba(16,185,129,0.3)" : "rgba(224,90,51,0.2)",
-      background: copied ? "rgba(16,185,129,0.06)" : "rgba(224,90,51,0.04)",
-      color: copied ? "#10b981" : "#e05a33", fontSize: 11, fontWeight: 600,
+      border: "1px solid", borderColor: copied ? "rgba(4,120,87,0.4)" : "rgba(0,0,0,0.15)",
+      background: copied ? "rgba(4,120,87,0.08)" : "#fff",
+      color: copied ? "#047857" : "#1a1a1a", fontSize: 11, fontWeight: 600,
       cursor: "pointer", transition: "all 0.2s", fontFamily: "'IBM Plex Mono', monospace"
     }),
     emptyState: {
@@ -2267,8 +2267,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       justifyContent: "center", height: "100%", textAlign: "center", padding: 40
     },
     emptyIcon: {
-      width: 64, height: 64, borderRadius: "50%", background: "rgba(224,90,51,0.06)",
-      border: "1px solid rgba(224,90,51,0.12)", display: "flex",
+      width: 64, height: 64, borderRadius: "50%", background: "rgba(15,23,42,0.06)",
+      border: "1px solid rgba(15,23,42,0.12)", display: "flex",
       alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 20
     },
     emptyTitle: {
@@ -2546,9 +2546,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600,
               border: "1px solid", cursor: "pointer", transition: "all 0.2s",
               fontFamily: "'IBM Plex Mono', monospace",
-              borderColor: scriptFormat === f.id ? "#e05a33" : "rgba(0,0,0,0.1)",
-              background: scriptFormat === f.id ? "rgba(224,90,51,0.06)" : "#fff",
-              color: scriptFormat === f.id ? "#e05a33" : "rgba(0,0,0,0.5)"
+              borderColor: scriptFormat === f.id ? "#0F172A" : "rgba(0,0,0,0.1)",
+              background: scriptFormat === f.id ? "#0F172A" : "#fff",
+              color: scriptFormat === f.id ? "#F5F0E8" : "rgba(0,0,0,0.5)"
             }}>
               {f.label}
             </button>
@@ -2805,8 +2805,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
               flex: 1, padding: "13px 0", textAlign: "center",
               fontSize: 12, fontWeight: appMode === m.id ? 700 : 600, fontFamily: "'DM Mono', monospace",
               letterSpacing: "0.08em", textTransform: "uppercase",
-              background: appMode === m.id ? "rgba(224,90,51,0.07)" : "transparent",
-              color: appMode === m.id ? "#e05a33" : "rgba(0,0,0,0.45)",
+              background: "transparent",
+              color: appMode === m.id ? "#0F172A" : "rgba(0,0,0,0.45)",
               border: "none", borderBottom: `2px solid ${appMode === m.id ? "#e05a33" : "transparent"}`,
               cursor: "pointer", transition: "all 180ms ease",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8
@@ -3016,8 +3016,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             <button
               style={S.generateBtn}
               onClick={() => setShowCustom(true)}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(224,90,51,0.1)"}
-              onMouseLeave={e => e.currentTarget.style.background = "rgba(224,90,51,0.04)"}
+              onMouseEnter={e => { e.currentTarget.style.background = "#f8f7f4"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.22)"; }}
             >
               ⚡ Generate Custom Scenario
             </button>
