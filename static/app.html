@@ -3215,14 +3215,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     return (
                     <div key={i} onClick={() => setSelectedQuickStart(qs)} className={"icard" + (isSelected ? " is-selected" : "")} style={{
                       padding: "18px 20px", borderRadius: 14, cursor: "pointer",
-                      border: `1px solid ${isSelected ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
-                      background: isSelected ? "rgba(224,90,51,0.06)" : "#fff",
-                      borderLeft: `3px solid ${isSelected ? "#e05a33" : "transparent"}`,
-                      boxShadow: isSelected ? "0 6px 20px rgba(224,90,51,0.12)" : "0 8px 24px rgba(0,0,0,0.04)"
+                      border: `1px solid ${isSelected ? "rgba(15,23,42,0.4)" : "rgba(0,0,0,0.06)"}`,
+                      background: "#fff",
+                      borderLeft: `3px solid ${isSelected ? "#0F172A" : "transparent"}`,
+                      boxShadow: isSelected ? "0 6px 20px rgba(15,23,42,0.08)" : "0 8px 24px rgba(0,0,0,0.04)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 22 }}>{qs.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: isSelected ? 700 : 600, color: isSelected ? "#e05a33" : "#1a1a1a", letterSpacing: "-0.005em" }}>{qs.label}</span>
+                        <span style={{ fontSize: 14, fontWeight: isSelected ? 700 : 600, color: "#1a1a1a", letterSpacing: "-0.005em" }}>{qs.label}</span>
                       </div>
                       <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{qs.desc}</div>
                     </div>
@@ -3245,14 +3245,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     return (
                     <div key={s.id} onClick={() => setPracticeScenario(s.id)} className={"icard" + (isActive ? " is-selected" : "")} style={{
                       padding: "16px 20px", borderRadius: 14, cursor: "pointer",
-                      border: `1px solid ${isActive ? "rgba(224,90,51,0.4)" : "rgba(0,0,0,0.06)"}`,
-                      background: isActive ? "rgba(224,90,51,0.06)" : "#fff",
-                      borderLeft: `3px solid ${isActive ? "#e05a33" : "transparent"}`,
-                      boxShadow: isActive ? "0 6px 20px rgba(224,90,51,0.1)" : "0 8px 24px rgba(0,0,0,0.04)"
+                      border: `1px solid ${isActive ? "rgba(15,23,42,0.4)" : "rgba(0,0,0,0.06)"}`,
+                      background: "#fff",
+                      borderLeft: `3px solid ${isActive ? "#0F172A" : "transparent"}`,
+                      boxShadow: isActive ? "0 6px 20px rgba(15,23,42,0.08)" : "0 8px 24px rgba(0,0,0,0.04)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
-                        <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 600, color: isActive ? "#e05a33" : "#1a1a1a", letterSpacing: "-0.005em" }}>{s.title}</span>
+                        <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 600, color: "#1a1a1a", letterSpacing: "-0.005em" }}>{s.title}</span>
                       </div>
                       <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.5)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
@@ -3293,9 +3293,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         <button key={d} onClick={() => setPracticeDifficulty(d)} style={{
                           padding: "8px 20px", borderRadius: 8, fontSize: 12, fontWeight: 600,
                           fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase",
-                          border: `1px solid ${practiceDifficulty === d ? "rgba(224,90,51,0.3)" : "rgba(255,255,255,0.08)"}`,
-                          background: practiceDifficulty === d ? "rgba(224,90,51,0.1)" : "transparent",
-                          color: practiceDifficulty === d ? "#e05a33" : "rgba(226,224,219,0.4)",
+                          border: `1px solid ${practiceDifficulty === d ? "#0F172A" : "rgba(0,0,0,0.1)"}`,
+                          background: practiceDifficulty === d ? "#0F172A" : "transparent",
+                          color: practiceDifficulty === d ? "#F5F0E8" : "rgba(0,0,0,0.45)",
                           cursor: "pointer", transition: "all 0.2s"
                         }}>{d}</button>
                       ))}
@@ -3414,9 +3414,9 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600,
                     border: "1px solid", cursor: "pointer", transition: "all 0.2s",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    borderColor: voiceEnabled ? "#e05a33" : "rgba(0,0,0,0.1)",
-                    background: voiceEnabled ? "rgba(224,90,51,0.06)" : "transparent",
-                    color: voiceEnabled ? "#e05a33" : "rgba(0,0,0,0.4)"
+                    borderColor: voiceEnabled ? "#0F172A" : "rgba(0,0,0,0.1)",
+                    background: voiceEnabled ? "#0F172A" : "transparent",
+                    color: voiceEnabled ? "#F5F0E8" : "rgba(0,0,0,0.4)"
                   }}>
                     {voiceEnabled ? "🎙 Voice On" : "🔇 Voice Off"}
                   </button>
