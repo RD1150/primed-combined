@@ -68,6 +68,11 @@ async def root():
     return FileResponse(os.path.join("static", "landing.html"))
 
 
+@app.get("/privacy")
+async def privacy():
+    return FileResponse(os.path.join("static", "privacy.html"))
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
