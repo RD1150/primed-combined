@@ -2662,6 +2662,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 {authLoading ? "..." : authScreen === "login" ? "Log In" : "Create Account"}
               </button>
             )}
+            {authScreen === "signup" && (
+              <p style={{ fontSize: 11, color: "rgba(0,0,0,0.5)", textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
+                By creating an account, you agree to our{" "}
+                <a href="/terms" target="_blank" rel="noopener" style={{ color: "rgba(0,0,0,0.7)", textDecoration: "underline" }}>Terms</a>
+                {" "}and{" "}
+                <a href="/privacy" target="_blank" rel="noopener" style={{ color: "rgba(0,0,0,0.7)", textDecoration: "underline" }}>Privacy Policy</a>.
+              </p>
+            )}
             {authScreen === "forgot" && (
               <button className="pcta" onClick={handleForgot} disabled={authLoading}
                 style={{ width: "100%", padding: "16px", borderRadius: 14, border: "none", background: authLoading ? "rgba(224,90,51,0.3)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: authLoading ? "not-allowed" : "pointer" }}>

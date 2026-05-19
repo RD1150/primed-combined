@@ -85,7 +85,7 @@
       <li><strong>Waitlist Registrations.</strong> If you submit your email through our pre-launch waitlist form, we collect your email address and process it through our marketing email provider, ConvertKit (Kit, Inc.).</li>
       <li><strong>Subscription and Payment Information.</strong> Subscription payments are processed by Stripe, Inc. Stripe collects your payment card details, billing address, and related information directly. Primed receives only a Stripe customer identifier, the subscription status, and the last four digits of your payment card.</li>
       <li><strong>User-Generated Content.</strong> We collect the custom scenarios, prompts, notes, and other content you submit to the Service.</li>
-      <li><strong>Audio Inputs.</strong> If you elect to use the voice practice feature, your audio is transmitted to ElevenLabs, Inc. for the purpose of generating AI voice responses. Audio is not retained by Primed beyond the active practice session.</li>
+      <li><strong>Voice Practice Feature.</strong> If you elect to use the voice practice feature, your spoken input is transcribed to text by your web browser's built-in speech recognition service (in Chrome, this routes audio through Google's speech-to-text infrastructure). Primed does not record, store, or have access to your raw audio. Only the resulting text transcript is transmitted to Primed and our AI providers. ElevenLabs is used to synthesize the AI's spoken responses from text; we do not send your audio to ElevenLabs.</li>
       <li><strong>Communications.</strong> If you contact us, we retain the contents of those communications and our responses.</li>
     </ul>
 
@@ -155,7 +155,12 @@
         <tr>
           <td><strong>ElevenLabs, Inc.</strong></td>
           <td>AI voice synthesis for the practice feature</td>
-          <td>Practice prompts and short audio inputs</td>
+          <td>Text of AI-generated responses (for voice synthesis only)</td>
+        </tr>
+        <tr>
+          <td><strong>Google LLC</strong></td>
+          <td>In-browser speech-to-text transcription via the Web Speech API (only when you enable voice practice in Chrome or other Chromium-based browsers)</td>
+          <td>Audio captured locally in your browser; transmitted directly from your browser to Google. Primed does not receive your raw audio.</td>
         </tr>
       </tbody>
     </table>

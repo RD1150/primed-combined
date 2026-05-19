@@ -409,6 +409,14 @@
     }
     .footer-name { font-size: 14px; font-weight: 600; color: var(--text3); }
     .footer-tagline { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+    .footer-links {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 11px; font-family: var(--mono); letter-spacing: 0.02em;
+    }
+    .footer-links a {
+      color: var(--text3); text-decoration: none; transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--text1); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -687,6 +695,12 @@
       <div class="footer-dot"></div>
       <span class="footer-name">primed.today</span>
     </div>
+    <nav class="footer-links" aria-label="Legal">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/disclaimer">Disclaimer</a>
+      <a href="/refund">Refund</a>
+    </nav>
     <div class="footer-tagline">A companion to The CLEAR Method™</div>
   </footer>
 
