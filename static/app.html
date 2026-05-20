@@ -2341,20 +2341,24 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
       cursor: "pointer", transition: "all 0.2s",
       fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.02em"
     }),
-    scenarioList: { flex: 1, overflowY: "auto", padding: "8px" },
+    scenarioList: { flex: 1, overflowY: "auto", padding: "8px 6px" },
     scenarioCard: (active) => ({
-      padding: "14px 16px 14px 13px", borderRadius: 10, marginBottom: 4, cursor: "pointer",
+      padding: "7px 10px 7px 8px", borderRadius: 6, marginBottom: 1, cursor: "pointer",
       background: active ? "#fff" : "transparent",
-      borderLeft: `3px solid ${active ? "#e05a33" : "transparent"}`,
-      boxShadow: active ? "0 4px 14px rgba(0,0,0,0.06)" : "none",
-      transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)"
+      borderLeft: `2px solid ${active ? "#e05a33" : "transparent"}`,
+      boxShadow: active ? "0 1px 3px rgba(0,0,0,0.05)" : "none",
+      transition: "background 160ms ease, box-shadow 160ms ease"
     }),
     cardTitle: (active) => ({
-      fontSize: 14.5, fontWeight: active ? 700 : 550, color: "#1a1a1a",
+      fontSize: 13, fontWeight: active ? 700 : 500, color: "#1a1a1a",
       display: "flex", alignItems: "center", gap: 8,
       lineHeight: 1.3
     }),
-    cardMeta: { display: "flex", alignItems: "center", gap: 8, marginTop: 6 },
+    cardIconBox: {
+      width: 18, display: "inline-flex", justifyContent: "center",
+      fontSize: 14, flexShrink: 0
+    },
+    cardMeta: { display: "flex", alignItems: "center", gap: 8, marginTop: 3, paddingLeft: 26 },
     categoryTag: {
       fontSize: 10, color: "rgba(0,0,0,0.55)", letterSpacing: "0.08em",
       textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace"
@@ -3025,15 +3029,16 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       }}
                     >
                       <div style={S.cardTitle(selectedScenario === scenario.id)}>
-                        <span>{scenario.icon}</span>
-                        <span>{scenario.title}</span>
+                        <span style={S.cardIconBox}>{scenario.icon}</span>
+                        <span style={{ flex: 1, minWidth: 0 }}>{scenario.title}</span>
                         {isForecasted && (
                           <span style={{
-                            marginLeft: 6, fontSize: 8.5, fontWeight: 700,
-                            color: "rgba(0,0,0,0.4)",
+                            fontSize: 8, fontWeight: 700,
+                            color: "rgba(0,0,0,0.32)",
                             fontFamily: "'IBM Plex Mono', monospace",
-                            letterSpacing: "0.1em", textTransform: "uppercase"
-                          }}>· fcst</span>
+                            letterSpacing: "0.1em", textTransform: "uppercase",
+                            flexShrink: 0
+                          }}>fcst</span>
                         )}
                       </div>
                       {!scenario.phase && scenario.category && (
@@ -3058,30 +3063,33 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
 
                 const sectionHeader = (label, count) => (
                   <div style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    padding: "0 6px 8px",
-                    fontSize: 10.5, fontWeight: 700,
-                    color: "rgba(0,0,0,0.55)",
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    letterSpacing: "0.12em", textTransform: "uppercase"
+                    display: "flex", alignItems: "baseline", gap: 8,
+                    padding: "0 8px 4px",
+                    fontSize: 11, fontWeight: 700,
+                    color: "#1a1a1a",
+                    fontFamily: "'Outfit', sans-serif",
+                    letterSpacing: "-0.005em"
                   }}>
                     <span>{label}</span>
-                    <span style={{ fontWeight: 600, color: "rgba(0,0,0,0.35)" }}>{count}</span>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, color: "rgba(0,0,0,0.35)",
+                      fontFamily: "'IBM Plex Mono', monospace"
+                    }}>{count}</span>
                   </div>
                 );
 
                 const subHeader = (label, count, isFirst) => (
                   <div style={{
-                    padding: isFirst ? "2px 6px 6px" : "10px 6px 6px",
-                    fontSize: 10, fontWeight: 600,
+                    padding: isFirst ? "0 8px 2px 18px" : "8px 8px 2px 18px",
+                    fontSize: 9, fontWeight: 600,
                     color: "rgba(0,0,0,0.4)",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    letterSpacing: "0.08em", textTransform: "uppercase",
+                    letterSpacing: "0.1em", textTransform: "uppercase",
                     display: "flex", alignItems: "center", gap: 8
                   }}>
                     <span>{label}</span>
                     <div style={{ flex: 1 }} />
-                    <span style={{ color: "rgba(0,0,0,0.3)" }}>{count}</span>
+                    <span style={{ color: "rgba(0,0,0,0.28)" }}>{count}</span>
                   </div>
                 );
 
