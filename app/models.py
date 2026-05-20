@@ -23,6 +23,7 @@ class User(Base):
     sessions = relationship("PracticeSession", back_populates="user")
     value_scripts = relationship("ValueScript", back_populates="user")
     custom_scenarios = relationship("CustomScenario", back_populates="user")
+    saved_phrases = relationship("SavedPhrase", back_populates="user")
 
 class PracticeSession(Base):
     __tablename__ = "practice_sessions"
@@ -79,3 +80,17 @@ class CustomScenario(Base):
     generated_data = Column(JSON, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", back_populates="custom_scenarios")
+
+
+class SavedPhrase(Base):
+    __tablename__ = "saved_phrases"
+    id = Column(String, primary_key=True, default=gen_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    session_id = Column(String, ForeignKey("practice_sessions.id"), nullable=True)
+    phrase = Column(Text, nullable=False)
+    client_context = Column(Text, nullable=True)  # the client turn that preceded this phrase
+    scenario_title = Column(String, nullable=True)
+    persona_name = Column(String, nullable=True)
+    tag = Column(String, nullable=True)  # user-applied category (objection, opener, close, etc.)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship("User", back_populates="saved_phrases")

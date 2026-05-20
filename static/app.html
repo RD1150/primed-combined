@@ -1676,6 +1676,64 @@ function Primed() {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [coachHint, setCoachHint] = useState(null);
   const [coachLoading, setCoachLoading] = useState(false);
+  const [savedPhrases, setSavedPhrases] = useState([]);
+  const [savedPhrasesLoading, setSavedPhrasesLoading] = useState(false);
+  const [savedThisSession, setSavedThisSession] = useState(new Set()); // indices of agent turns saved in current review
+
+  const savePhraseFromTranscript = useCallback(async (turnIndex) => {
+    if (savedThisSession.has(turnIndex)) return;
+    const turn = practiceMessages[turnIndex];
+    if (!turn || turn.role !== "agent") return;
+    const prevTurn = turnIndex > 0 ? practiceMessages[turnIndex - 1] : null;
+    const personaName = PERSONAS.find(p => p.id === practicePersona)?.name || null;
+    const scenarioTitle = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario)?.title
+      || (selectedQuickStart && selectedQuickStart.label) || null;
+    try {
+      const res = await fetch(API_URL + "/saved-phrases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          phrase: turn.content,
+          client_context: prevTurn && prevTurn.role === "client" ? prevTurn.content : null,
+          scenario_title: scenarioTitle,
+          persona_name: personaName
+        })
+      });
+      if (!res.ok) throw new Error("save failed");
+      setSavedThisSession(prev => new Set(prev).add(turnIndex));
+    } catch (err) {
+      console.error("Save phrase error:", err);
+      alert("Couldn't save that one — try again in a moment.");
+    }
+  }, [practiceMessages, practicePersona, practiceScenario, selectedQuickStart, savedThisSession]);
+
+  const loadSavedPhrases = useCallback(async () => {
+    setSavedPhrasesLoading(true);
+    try {
+      const res = await fetch(API_URL + "/saved-phrases", {
+        headers: { "Authorization": "Bearer " + getToken() }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSavedPhrases(data || []);
+      }
+    } catch (err) {
+      console.error("Load phrases error:", err);
+    }
+    setSavedPhrasesLoading(false);
+  }, []);
+
+  const deleteSavedPhrase = useCallback(async (id) => {
+    try {
+      await fetch(API_URL + "/saved-phrases/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + getToken() }
+      });
+      setSavedPhrases(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("Delete phrase error:", err);
+    }
+  }, []);
 
   const fetchCoachHint = useCallback(async () => {
     if (coachLoading) return;
@@ -2903,9 +2961,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
           {[
             { id: "intelligence", label: "Market Scenarios", icon: "◈" },
             { id: "practice", label: "Practice", icon: "◎" },
-            { id: "myscript", label: "My Script", icon: "◆" }
+            { id: "myscript", label: "My Script", icon: "◆" },
+            { id: "library", label: "Library", icon: "★" }
           ].map(m => (
-            <button key={m.id} onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); }} style={{
+            <button key={m.id} onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); if (m.id === "library") loadSavedPhrases(); }} style={{
               flex: 1, padding: "13px 0", textAlign: "center",
               fontSize: 12, fontWeight: appMode === m.id ? 700 : 600, fontFamily: "'DM Mono', monospace",
               letterSpacing: "0.08em", textTransform: "uppercase",
@@ -3683,15 +3742,58 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 }}>{practiceFeedback.nextFocus}</div>
                     </div>
 
+                    {/* Conversation Review with Save Phrase */}
+                    {practiceMessages.length > 0 && (
+                      <div style={{ marginBottom: 32 }}>
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.55)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
+                          Conversation Review
+                        </div>
+                        <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.45)", marginBottom: 16, lineHeight: 1.5 }}>
+                          Save any of your turns to your phrase Library — build up what works over time.
+                        </div>
+                        {practiceMessages.map((msg, i) => {
+                          const isAgent = msg.role === "agent";
+                          const isSaved = savedThisSession.has(i);
+                          return (
+                            <div key={i} style={{ marginBottom: 10, padding: "12px 14px", borderRadius: 10, background: isAgent ? "rgba(224,90,51,0.04)" : "rgba(0,0,0,0.025)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 6 }}>
+                                <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, color: isAgent ? "#e05a33" : "rgba(0,0,0,0.4)" }}>
+                                  {isAgent ? "You" : PERSONAS.find(p => p.id === practicePersona)?.name || "Client"}
+                                </div>
+                                {isAgent && (
+                                  <button
+                                    onClick={() => savePhraseFromTranscript(i)}
+                                    disabled={isSaved}
+                                    style={{
+                                      padding: "2px 10px", borderRadius: 4, fontSize: 9,
+                                      fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase",
+                                      fontWeight: 700,
+                                      border: "1px solid " + (isSaved ? "#047857" : "rgba(0,0,0,0.15)"),
+                                      background: isSaved ? "#047857" : "transparent",
+                                      color: isSaved ? "#F5F0E8" : "rgba(0,0,0,0.55)",
+                                      cursor: isSaved ? "default" : "pointer",
+                                      transition: "all 0.15s"
+                                    }}>
+                                    {isSaved ? "✓ Saved" : "+ Save"}
+                                  </button>
+                                )}
+                              </div>
+                              <div style={{ fontSize: 13, lineHeight: 1.55, color: "rgba(0,0,0,0.75)", whiteSpace: "pre-wrap" }}>{msg.content}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     <div style={{ display: "flex", gap: 12 }}>
-                      <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); }} style={{
+                      <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); }} style={{
                         padding: "12px 28px", borderRadius: 10, border: "none",
                         background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700,
                         fontFamily: "'DM Mono', monospace", cursor: "pointer"
                       }}>
                         Practice Again
                       </button>
-                      <button onClick={() => { setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); }} style={{
+                      <button onClick={() => { setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); }} style={{
                         padding: "12px 28px", borderRadius: 10,
                         border: "1px solid rgba(255,255,255,0.1)",
                         background: "transparent", color: "rgba(0,0,0,0.45)",
@@ -3823,6 +3925,84 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   <button onClick={() => { setVsStep(1); setVsGeneratedScript(null); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Start Over</button>
                   <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice Delivering It →</button>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+        )}
+
+        {appMode === "library" && (
+        <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+          <div style={{ maxWidth: 760, margin: "0 auto" }}>
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Phrase Library</div>
+              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#0d0d0d", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
+                What's working for you
+              </h2>
+              <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>
+                Every phrase you save from a practice review lands here. Build your own personal playbook over time — the moves and language that consistently land.
+              </p>
+            </div>
+
+            {savedPhrasesLoading && (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(0,0,0,0.45)", fontSize: 13 }}>
+                Loading your phrases...
+              </div>
+            )}
+
+            {!savedPhrasesLoading && savedPhrases.length === 0 && (
+              <div style={{
+                textAlign: "center", padding: "60px 30px", borderRadius: 14,
+                background: "#fff", border: "1px dashed rgba(0,0,0,0.12)"
+              }}>
+                <div style={{ fontSize: 36, marginBottom: 16, opacity: 0.5 }}>★</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 8 }}>Your Library is empty</div>
+                <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+                  After each practice session, save the turns that felt good. They'll appear here so you can revisit them — or use them as openers in your next conversation.
+                </div>
+                <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{
+                  marginTop: 22, padding: "10px 22px", borderRadius: 10, border: "none",
+                  background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700,
+                  fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
+                  cursor: "pointer"
+                }}>Start Practicing</button>
+              </div>
+            )}
+
+            {!savedPhrasesLoading && savedPhrases.length > 0 && (
+              <div>
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
+                  {savedPhrases.length} {savedPhrases.length === 1 ? "Phrase" : "Phrases"} Saved
+                </div>
+                {savedPhrases.map(p => (
+                  <div key={p.id} style={{
+                    marginBottom: 14, padding: "18px 20px", borderRadius: 12,
+                    background: "#fff", border: "1px solid rgba(0,0,0,0.08)"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
+                      <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(0,0,0,0.45)", fontWeight: 600, lineHeight: 1.5 }}>
+                        {[p.scenario_title, p.persona_name].filter(Boolean).join(" · ") || "Practice"}
+                        {p.created_at && <span style={{ marginLeft: 8, opacity: 0.6 }}>· {new Date(p.created_at).toLocaleDateString()}</span>}
+                      </div>
+                      <button onClick={() => deleteSavedPhrase(p.id)} aria-label="Delete phrase" style={{
+                        background: "transparent", border: "none", color: "rgba(0,0,0,0.3)",
+                        cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 4
+                      }}>×</button>
+                    </div>
+                    {p.client_context && (
+                      <div style={{
+                        fontSize: 12, color: "rgba(0,0,0,0.45)", lineHeight: 1.55,
+                        marginBottom: 10, paddingLeft: 12,
+                        borderLeft: "2px solid rgba(0,0,0,0.1)", fontStyle: "italic"
+                      }}>
+                        Client: "{p.client_context.length > 200 ? p.client_context.slice(0, 200) + "…" : p.client_context}"
+                      </div>
+                    )}
+                    <div style={{ fontSize: 14.5, color: "#1a1a1a", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
+                      {p.phrase}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

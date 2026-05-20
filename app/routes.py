@@ -9,7 +9,7 @@ import httpx
 from app.database import get_db
 from app.config import get_settings
 from app.auth import UserCreate, UserLogin, TokenResponse, register_user, login_user, get_current_user, UserResponse, ForgotPasswordRequest, ResetPasswordRequest, request_password_reset, reset_password
-from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario
+from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario, SavedPhrase
 
 settings = get_settings()
 router = APIRouter()
@@ -222,6 +222,53 @@ async def save_custom_scenario(data: CustomScenarioCreate, user: User = Depends(
     await db.commit()
     await db.refresh(scenario)
     return {"id": scenario.id, "created_at": scenario.created_at}
+
+# ════════════════════════════════════════
+# SAVED PHRASE LIBRARY
+# ════════════════════════════════════════
+
+class SavedPhraseCreate(BaseModel):
+    phrase: str
+    client_context: Optional[str] = None
+    scenario_title: Optional[str] = None
+    persona_name: Optional[str] = None
+    session_id: Optional[str] = None
+    tag: Optional[str] = None
+
+@router.post("/saved-phrases")
+async def save_phrase(data: SavedPhraseCreate, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if not data.phrase or not data.phrase.strip():
+        raise HTTPException(status_code=400, detail="Phrase cannot be empty")
+    sp = SavedPhrase(
+        user_id=user.id,
+        session_id=data.session_id,
+        phrase=data.phrase.strip(),
+        client_context=data.client_context,
+        scenario_title=data.scenario_title,
+        persona_name=data.persona_name,
+        tag=data.tag
+    )
+    db.add(sp)
+    await db.commit()
+    await db.refresh(sp)
+    return {"id": sp.id, "phrase": sp.phrase, "client_context": sp.client_context, "scenario_title": sp.scenario_title, "persona_name": sp.persona_name, "tag": sp.tag, "session_id": sp.session_id, "created_at": sp.created_at}
+
+@router.get("/saved-phrases")
+async def list_saved_phrases(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(SavedPhrase).where(SavedPhrase.user_id == user.id).order_by(SavedPhrase.created_at.desc()))
+    rows = result.scalars().all()
+    return [{"id": r.id, "phrase": r.phrase, "client_context": r.client_context, "scenario_title": r.scenario_title, "persona_name": r.persona_name, "tag": r.tag, "session_id": r.session_id, "created_at": r.created_at} for r in rows]
+
+@router.delete("/saved-phrases/{phrase_id}")
+async def delete_saved_phrase(phrase_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(SavedPhrase).where(SavedPhrase.id == phrase_id, SavedPhrase.user_id == user.id))
+    sp = result.scalar_one_or_none()
+    if not sp:
+        raise HTTPException(status_code=404, detail="Saved phrase not found")
+    await db.delete(sp)
+    await db.commit()
+    return {"ok": True}
+
 
 @router.get("/stats")
 async def user_stats(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
