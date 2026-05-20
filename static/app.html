@@ -1674,6 +1674,34 @@ function Primed() {
   const [practiceLoading, setPracticeLoading] = useState(false);
   const [practiceFeedback, setPracticeFeedback] = useState(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [coachHint, setCoachHint] = useState(null);
+  const [coachLoading, setCoachLoading] = useState(false);
+
+  const fetchCoachHint = useCallback(async () => {
+    if (coachLoading) return;
+    setCoachLoading(true);
+    try {
+      const personaName = PERSONAS.find(p => p.id === practicePersona)?.name;
+      const scenarioTitle = (selectedQuickStart && selectedQuickStart.title) || (practiceScenario && practiceScenario.title) || null;
+      const res = await fetch(API_URL + "/coach-hint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          transcript: practiceMessages,
+          scenario_title: scenarioTitle,
+          persona_name: personaName,
+          difficulty: practiceDifficulty
+        })
+      });
+      if (!res.ok) throw new Error("hint request failed");
+      const data = await res.json();
+      setCoachHint(data.hint || null);
+    } catch (err) {
+      console.error("Coach hint error:", err);
+      setCoachHint("Coach unavailable right now. Trust your instincts on this one.");
+    }
+    setCoachLoading(false);
+  }, [practiceMessages, practicePersona, practiceScenario, selectedQuickStart, practiceDifficulty, coachLoading]);
 
   // Value Script Builder state
   const [vsStep, setVsStep] = useState(1);
@@ -3416,7 +3444,28 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 padding: "16px 24px", borderTop: "1px solid rgba(0,0,0,0.08)",
                 background: "#fff", flexShrink: 0
               }}>
-                {/* Voice Toggle */}
+                {/* Coach Hint Card */}
+                {coachHint && (
+                  <div style={{
+                    marginBottom: 10, padding: "10px 14px",
+                    background: "#0F172A", color: "#F5F0E8",
+                    borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12,
+                    border: "1px solid #0F172A"
+                  }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(245,240,232,0.55)", marginBottom: 4, fontWeight: 600 }}>
+                        Coach
+                      </div>
+                      <div style={{ fontSize: 13, lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{coachHint}</div>
+                    </div>
+                    <button onClick={() => setCoachHint(null)} aria-label="Dismiss coach hint" style={{
+                      background: "transparent", border: "none", color: "rgba(245,240,232,0.55)",
+                      cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 4, marginTop: -2
+                    }}>×</button>
+                  </div>
+                )}
+
+                {/* Voice Toggle + Coach Hint button */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <button onClick={() => setVoiceEnabled(!voiceEnabled)} style={{
                     padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600,
@@ -3427,6 +3476,21 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                     color: voiceEnabled ? "#F5F0E8" : "rgba(0,0,0,0.4)"
                   }}>
                     {voiceEnabled ? "🎙 Voice On" : "🔇 Voice Off"}
+                  </button>
+                  <button
+                    onClick={fetchCoachHint}
+                    disabled={coachLoading || practiceLoading}
+                    title="Get a tactical suggestion based on the conversation so far"
+                    style={{
+                      padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                      border: "1px solid rgba(0,0,0,0.1)",
+                      background: "transparent",
+                      color: coachLoading ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.55)",
+                      cursor: coachLoading || practiceLoading ? "not-allowed" : "pointer",
+                      transition: "all 0.2s",
+                      fontFamily: "'IBM Plex Mono', monospace"
+                    }}>
+                    {coachLoading ? "..." : "💡 Coach Hint"}
                   </button>
                   {isPlaying && <span style={{ fontSize: 11, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace" }}>🔊 Client speaking...</span>}
                 </div>

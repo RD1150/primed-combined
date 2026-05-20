@@ -61,6 +61,50 @@ async def ai_proxy(data: AIRequest, user: User = Depends(get_current_user)):
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"AI service error: {str(e)}")
 
+class CoachHintRequest(BaseModel):
+    transcript: list  # [{role: "agent"|"client", content: str}, ...]
+    scenario_title: Optional[str] = None
+    persona_name: Optional[str] = None
+    difficulty: Optional[str] = None
+
+@router.post("/coach-hint")
+async def coach_hint(data: CoachHintRequest, user: User = Depends(get_current_user)):
+    """Return one tactical move suggestion for what the agent should try next."""
+    if not data.transcript:
+        return {"hint": "Open with empathy before going into your value. Acknowledge what they said first."}
+    convo = "\n".join([f"{'AGENT' if t.get('role') == 'agent' else 'CLIENT'}: {t.get('content','')}" for t in data.transcript])
+    context_bits = []
+    if data.scenario_title: context_bits.append(f"Scenario: {data.scenario_title}")
+    if data.persona_name: context_bits.append(f"Client persona: {data.persona_name}")
+    if data.difficulty: context_bits.append(f"Difficulty: {data.difficulty}")
+    context_line = " · ".join(context_bits) if context_bits else ""
+    system = (
+        "You are an elite real estate sales coach watching an agent practice in real time. "
+        "Look at the conversation so far and give ONE specific tactical suggestion for the agent's next move. "
+        "Be direct and concrete — name the move (anchor, validate, reframe, isolate, mirror, ask a closing question, etc.). "
+        "1–2 sentences max. Don't repeat advice the agent already followed. Don't be generic. Don't preach. "
+        "Format: start with the move in CAPS, then the specific phrasing. "
+        "Example: 'ANCHOR FIRST. Try: \"Most homes in this market are selling within 2% of list — let's set a number that lets us play offense.\"'"
+    )
+    user_msg = f"{context_line}\n\nConversation so far:\n{convo}\n\nWhat's the single best move the agent should make next?".strip()
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={"Content-Type": "application/json", "x-api-key": settings.anthropic_api_key, "anthropic-version": "2023-06-01"},
+                json={"model": settings.anthropic_model, "max_tokens": 250, "system": system, "messages": [{"role": "user", "content": user_msg}]}
+            )
+            payload = response.json()
+            hint = "".join(b.get("text", "") for b in payload.get("content", [])).strip()
+            if not hint:
+                raise HTTPException(status_code=502, detail="Empty coach response")
+            return {"hint": hint}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Coach service error: {str(e)}")
+
+
 class SessionCreate(BaseModel):
     scenario_id: str
     scenario_title: str
