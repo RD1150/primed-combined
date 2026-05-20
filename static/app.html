@@ -1775,11 +1775,70 @@ Return ONLY valid JSON (no markdown, no backticks):
   }, [vsIdealClient, vsFavoriteTransaction, vsProblem, vsResult, vsTimeframe, vsMarket]);
 
   const PERSONAS = [
-    { id: "analytical", name: "The Analytical Seller", icon: "📊", traits: "Data-driven, asks detailed questions, compares agents on metrics, wants spreadsheets and proof", difficulty: "Medium", color: "#3b82f6" },
-    { id: "emotional", name: "The Emotional Seller", icon: "💔", traits: "Deeply attached to property, reacts emotionally to pricing, takes feedback personally", difficulty: "Hard", color: "#ef4444" },
-    { id: "distrustful", name: "The Distrustful Buyer", icon: "🤨", traits: "Skeptical of agents, questions every recommendation, has been burned before", difficulty: "Hard", color: "#f59e0b" },
-    { id: "firsttimer", name: "The Nervous First-Timer", icon: "😰", traits: "Overwhelmed by the process, needs reassurance at every step, asks basic questions repeatedly", difficulty: "Medium", color: "#10b981" },
-    { id: "investor", name: "The Impatient Investor", icon: "💼", traits: "Numbers-driven, time-sensitive, challenges ROI projections, has done deals before", difficulty: "Hard", color: "#8b5cf6" }
+    {
+      id: "analytical", name: "Marcus — Spreadsheet Engineer", icon: "📊",
+      traits: "Software engineer first-time seller. Data-driven, expects charts and comps, trusts numbers over intuition.",
+      backstory: "37, sold one rental in 2019. Keeps a Notion doc with comp analysis open during calls.",
+      voice: "Measured, structured sentences. Says 'so basically', 'what's the data on that?', 'I'd want to see the underlying methodology.' No fillers. Asks one precise question at a time.",
+      tells: "When unsure, asks for sources. When pushed emotionally, retreats to data. Says 'interesting' when skeptical.",
+      difficulty: "Medium", color: "#3b82f6"
+    },
+    {
+      id: "emotional", name: "Linda — Grieving Downsizer", icon: "💔",
+      traits: "Recently widowed, selling the family home of 30 years. Deeply attached; takes pricing feedback personally.",
+      backstory: "62, husband passed 8 months ago. Her three kids grew up in this house. Selling feels like erasing the past.",
+      voice: "Long sentences with tangents. Brings up memories unprompted ('this is where the boys had their birthday parties'). Tears up about small things. Sometimes still says 'we' instead of 'I'.",
+      tells: "Pivots to stories when pushed on price. Says 'I just don't know' as a stall. Apologizes for emotion then keeps being emotional.",
+      difficulty: "Hard", color: "#ef4444"
+    },
+    {
+      id: "distrustful", name: "Derek — Burned Once", icon: "🤨",
+      traits: "Bought a flip in 2021, lost equity, blames his old agent. Tests every claim, expects you to fail.",
+      backstory: "45, contractor by trade. Has Zillow open during your calls and will check your numbers in real time.",
+      voice: "Short, clipped sentences. Interrupts with 'how do you know?' or 'where's that from?'. Uses 'last guy said the same thing' as a put-down. Will go silent to make you uncomfortable.",
+      tells: "When you say something he can't verify, he repeats it back flat. When he likes something, he asks a follow-up instead of agreeing.",
+      difficulty: "Hard", color: "#f59e0b"
+    },
+    {
+      id: "firsttimer", name: "Priya — Anxious First-Timer", icon: "😰",
+      traits: "Millennial first-time buyer. Googled everything. Asks the same questions different ways for reassurance.",
+      backstory: "29, software PM. Partner stays out of the calls. Saved for 4 years. Terrified of buying wrong.",
+      voice: "Tentative — 'I might be wrong but', 'is it weird if I ask...', 'I read on Reddit that...'. Trails off mid-sentence. Apologizes for asking questions.",
+      tells: "When reassured, asks the same question 3 different ways. When pushed to decide, says 'I need to talk to my partner.'",
+      difficulty: "Medium", color: "#10b981"
+    },
+    {
+      id: "investor", name: "Janet — Hardball Investor", icon: "💼",
+      traits: "Done 30+ deals. Calculates yield in her head. Hangs up on weak pitches.",
+      backstory: "51, owns 14 doors, ex-finance. Treats this as a transaction, not a relationship. Calling multiple agents simultaneously.",
+      voice: "Fast, terse, no pleasantries. Goes straight to numbers. Uses acronyms (cap rate, DSCR, COC). Cuts you off if you ramble.",
+      tells: "If your number is wrong, she lets you finish before correcting. Will say 'is that your final answer?' to test. Long silence = she's about to walk.",
+      difficulty: "Hard", color: "#8b5cf6"
+    },
+    {
+      id: "influencer", name: "Tasha — The Showcaser", icon: "📸",
+      traits: "Lifestyle creator with 80k Instagram followers. Wants properties that photograph well; image-driven.",
+      backstory: "32, full-time content creator. Buying a second home for content. Her comp set is 'what looks best on Reels.'",
+      voice: "Casual, exclamation-heavy, name-drops neighborhoods. Says 'is this giving X energy?', 'this is a moment'. Asks about the kitchen's photogenic-ness before asking the price.",
+      tells: "Goes quiet when bored. Pulls out her phone. If you don't 'get' aesthetic, she stops engaging.",
+      difficulty: "Medium", color: "#ec4899"
+    },
+    {
+      id: "couple", name: "Ben & Maya — Disagreeing Couple", icon: "💑",
+      traits: "Married 7 years, expecting first kid. Ben wants suburb, Maya wants walkable. They contradict each other in front of you.",
+      backstory: "Ben grew up in a cul-de-sac, Maya in NYC. Both feel strongly. You're playing referee while showing both you have a plan.",
+      voice: "Talk over each other. Maya: 'Ben, can we listen for a sec?' Ben: 'we already discussed this, hon.' One agrees with you, the other pushes back — then they switch.",
+      tells: "When they argue, addressing them by name resets the room. If you pick a side, you lose. They watch HOW you navigate disagreement more than what you say. Both speak in your responses — alternate between Ben and Maya naturally.",
+      difficulty: "Hard", color: "#06b6d4"
+    },
+    {
+      id: "relocator", name: "Carlos — Out-of-State Buyer", icon: "✈️",
+      traits: "Moving from Austin to California sight unseen. Job starts in 6 weeks. Total dependency on you.",
+      backstory: "44, tech exec relocation. Has never visited the area. Doing it all via Zoom. Wife is staying behind until the kids finish school.",
+      voice: "Polite but anxious under the surface. Asks about schools, commute, weather, crime in that order. Says 'I'm completely trusting your judgment here' — both a compliment and a threat.",
+      tells: "Long silences when overwhelmed. Asks for 'one more video walkthrough' as a delay. Says 'let me sleep on it' when he's actually freezing.",
+      difficulty: "Medium", color: "#0891b2"
+    }
   ];
 
   const PRACTICE_SCENARIOS = [
@@ -1821,16 +1880,20 @@ Return ONLY valid JSON (no markdown, no backticks):
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === scenarioId);
     const persona = PERSONAS.find(p => p.id === personaId);
     const diffMap = { easy: "Agree relatively quickly.", medium: "Push back on some points.", hard: "Challenge everything." };
-    const systemPrompt = `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times.
+    const systemPrompt = `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times. Speak in this client's voice — do not narrate, do not break character.
 
 PERSONA: ${persona.name}
-TRAITS: ${persona.traits}
+WHO YOU ARE: ${persona.traits}
+BACKSTORY: ${persona.backstory || ""}
+HOW YOU SPEAK: ${persona.voice || ""}
+YOUR TELLS: ${persona.tells || ""}
 DIFFICULTY: medium — ${diffMap["medium"]}
 
 SCENARIO: ${scenario.title} — ${scenario.desc}
 
 RULES:
-- You are STARTING the conversation. Open with your problem or question.
+- You are STARTING the conversation. Open with your problem or question in your voice.
+- Stay 100% in character — your speech patterns ("HOW YOU SPEAK") must come through immediately
 - Respond as a real client would — natural, conversational, 1-2 paragraphs max
 - Never reveal you are an AI
 - React emotionally when it fits your persona
@@ -1880,18 +1943,23 @@ RULES:
     const persona = PERSONAS.find(p => p.id === practicePersona);
     const diffMap = { easy: "Agree relatively quickly. Be pleasant. Push back mildly once or twice.", medium: "Push back on some points. Ask follow-up questions. Don't agree too quickly.", hard: "Challenge everything. Be skeptical. Create tension. Require the agent to earn every inch of progress." };
     
-    return `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times.
+    return `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times. Speak in this client's voice — do not narrate, do not break character.
 
 PERSONA: ${persona.name}
-TRAITS: ${persona.traits}
+WHO YOU ARE: ${persona.traits}
+BACKSTORY: ${persona.backstory || ""}
+HOW YOU SPEAK: ${persona.voice || ""}
+YOUR TELLS: ${persona.tells || ""}
 DIFFICULTY: ${practiceDifficulty} — ${diffMap[practiceDifficulty]}
 
 SCENARIO: ${scenario.title} — ${scenario.desc}
 ${practiceContext ? `ADDITIONAL CONTEXT: ${practiceContext}` : ""}
 
 RULES:
+- Stay 100% in character — your speech patterns ("HOW YOU SPEAK") must come through in every response
+- Use the verbal tells described above naturally; don't list them, embody them
 - Respond as a real client would — natural, conversational, 1-3 paragraphs max
-- Ask follow-up questions naturally
+- Ask follow-up questions in your voice
 - Push back realistically when appropriate based on your persona and difficulty
 - Never reveal you are an AI
 - Never coach the agent during the conversation
@@ -3307,8 +3375,11 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                           transition: "all 0.2s"
                         }}>
                           <div style={{ fontSize: 24, marginBottom: 8 }}>{p.icon}</div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>{p.name}</div>
-                          <div style={{ fontSize: 11.5, color: "rgba(226,224,219,0.45)", lineHeight: 1.5, marginBottom: 8 }}>{p.traits}</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>{p.name}</div>
+                          <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.6)", lineHeight: 1.5, marginBottom: 6 }}>{p.traits}</div>
+                          {p.backstory && (
+                            <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", lineHeight: 1.5, marginBottom: 10, fontStyle: "italic" }}>{p.backstory}</div>
+                          )}
                           <span style={{
                             padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700,
                             fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
