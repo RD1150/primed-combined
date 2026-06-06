@@ -1402,6 +1402,85 @@ const HeatBadge = ({ heat, size = "sm" }) => {
   );
 };
 
+// ── Profile capture / editor (P0) ──
+// Captured once at onboarding, editable anytime. Injected server-side into every
+// mode so no mode ever re-asks for the agent's market or voice.
+const ROLE_OPTIONS = ["buyer", "seller", "investor", "luxury", "first-time"];
+const TONE_OPTIONS = ["warm", "direct", "data-driven", "consultative"];
+
+function ProfileModal({ initial, onSaved, onClose, canClose }) {
+  const [market, setMarket] = useState((initial && initial.market) || "");
+  const [roleFocus, setRoleFocus] = useState((initial && initial.role_focus) || []);
+  const [brokerage, setBrokerage] = useState((initial && initial.brokerage) || "");
+  const [voiceSample, setVoiceSample] = useState((initial && initial.voice_sample) || "");
+  const [tone, setTone] = useState((initial && initial.tone) || "");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const toggleRole = (r) => setRoleFocus(prev => prev.includes(r) ? prev.filter(x => x !== r) : [...prev, r]);
+
+  const canSave = market.trim() && (voiceSample.trim() || tone);
+
+  const save = async () => {
+    if (!canSave) { setErr("Add your market and pick a tone (or paste a short voice sample)."); return; }
+    setSaving(true); setErr("");
+    try {
+      const res = await fetch(API_URL + "/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          market: market.trim(), role_focus: roleFocus,
+          brokerage: brokerage.trim() || null,
+          voice_sample: voiceSample.trim() || null, tone: tone || null
+        })
+      });
+      if (!res.ok) throw new Error("save failed");
+      const saved = await res.json();
+      onSaved(saved);
+    } catch (e) { setErr("Couldn't save — try again in a moment."); }
+    setSaving(false);
+  };
+
+  const ov = { position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 };
+  const card = { background: "#fff", borderRadius: 16, maxWidth: 540, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: "28px 28px 24px", fontFamily: "'Outfit', sans-serif", boxShadow: "0 24px 64px rgba(0,0,0,0.25)" };
+  const labelS = { fontSize: 12, fontWeight: 700, color: "#0F172A", marginBottom: 6, fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase" };
+  const inputS = { width: "100%", padding: "11px 13px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", fontSize: 14, fontFamily: "'Outfit', sans-serif", boxSizing: "border-box", marginBottom: 18 };
+  const chip = (on) => ({ padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.15)"}`, background: on ? "#e05a33" : "transparent", color: on ? "#fff" : "rgba(0,0,0,0.6)", transition: "all 140ms ease" });
+
+  return (
+    React.createElement("div", { style: ov, onClick: (e) => { if (canClose && e.target === e.currentTarget) onClose(); } },
+      React.createElement("div", { style: card },
+        React.createElement("h2", { style: { fontSize: 20, fontWeight: 800, color: "#0F172A", margin: "0 0 4px" } }, "Your agent profile"),
+        React.createElement("p", { style: { fontSize: 13, color: "rgba(0,0,0,0.55)", margin: "0 0 20px", lineHeight: 1.5 } }, "Set this once. Every mode — scenarios, scripts, practice — uses your market and voice automatically. You'll never be asked again."),
+
+        React.createElement("div", { style: labelS }, "Market / area *"),
+        React.createElement("input", { style: inputS, value: market, onChange: e => setMarket(e.target.value), placeholder: "e.g. Conejo Valley, CA" }),
+
+        React.createElement("div", { style: labelS }, "Who you focus on"),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 } },
+          ROLE_OPTIONS.map(r => React.createElement("span", { key: r, style: chip(roleFocus.includes(r)), onClick: () => toggleRole(r) }, r))),
+
+        React.createElement("div", { style: labelS }, "Brokerage (optional)"),
+        React.createElement("input", { style: inputS, value: brokerage, onChange: e => setBrokerage(e.target.value), placeholder: "e.g. Compass" }),
+
+        React.createElement("div", { style: labelS }, "Your tone"),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 } },
+          TONE_OPTIONS.map(t => React.createElement("span", { key: t, style: chip(tone === t), onClick: () => setTone(tone === t ? "" : t) }, t))),
+
+        React.createElement("div", { style: labelS }, "Voice sample (optional, makes it sound like you)"),
+        React.createElement("textarea", { style: { ...inputS, minHeight: 72, resize: "vertical" }, value: voiceSample, onChange: e => setVoiceSample(e.target.value), placeholder: "Paste 1–3 sentences of your own writing — a bio line, a text to a client, anything in your real voice." }),
+
+        err && React.createElement("div", { style: { color: "#dc2626", fontSize: 12, marginBottom: 12 } }, err),
+
+        React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } },
+          canClose && React.createElement("button", { onClick: onClose, style: { padding: "10px 18px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace" } }, "Cancel"),
+          React.createElement("button", { onClick: save, disabled: saving, style: { padding: "10px 22px", borderRadius: 9, border: "none", background: canSave ? "#e05a33" : "rgba(0,0,0,0.2)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "default" : "pointer", fontFamily: "'DM Mono', monospace" } }, saving ? "Saving…" : "Save profile")
+        )
+      )
+    )
+  );
+}
+
 function Primed() {
   // Auth state
   const initialResetToken = (() => {
@@ -1421,6 +1500,8 @@ function Primed() {
   const [resetToken, setResetToken] = useState(initialResetToken);
   const [user, setUser] = useState(getUser());
   const [billingStatus, setBillingStatus] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Fetch billing status after login
   useEffect(() => {
@@ -1428,6 +1509,19 @@ function Primed() {
       fetch(API_URL + "/billing/status", {
         headers: { "Authorization": "Bearer " + getToken() }
       }).then(r => r.json()).then(d => setBillingStatus(d)).catch(() => {});
+    }
+  }, [authScreen]);
+
+  // Load the agent profile after login. If it's incomplete, force onboarding
+  // so every mode has a market + voice to work from (P0 — captured once).
+  useEffect(() => {
+    if (!authScreen && getToken()) {
+      fetch(API_URL + "/profile", {
+        headers: { "Authorization": "Bearer " + getToken() }
+      }).then(r => r.json()).then(d => {
+        setProfile(d);
+        if (!d.complete) setShowProfile(true);
+      }).catch(() => {});
     }
   }, [authScreen]);
 
@@ -1558,6 +1652,7 @@ function Primed() {
   const [activeTab, setActiveTab] = useState("synopsis");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
+  const [collapsedSections, setCollapsedSections] = useState({ fcst: true, conv: true });
   const [animateIn, setAnimateIn] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -1617,18 +1712,16 @@ function Primed() {
   const sendVoiceMessage = useCallback(async (text) => {
     setPracticeLoading(true);
     try {
-      const transcript = [...practiceMessages, { role: "agent", content: text }].map(m =>
-        m.role === "agent" ? { role: "user", content: m.content } : { role: "assistant", content: m.content }
-      );
-      
-      // Get AI response
-      const response = await fetch(API_URL + "/ai/generate", {
+      const rawTranscript = [...practiceMessages, { role: "agent", content: text }].map(m => ({ role: m.role, content: m.content }));
+
+      // Get AI response (prompt locked server-side)
+      const response = await fetch(API_URL + "/practice/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-        body: JSON.stringify({ max_tokens: 1000, system: buildPracticePrompt(), messages: transcript })
+        body: JSON.stringify({ ...practicePayload(), transcript: rawTranscript })
       });
       const data = await response.json();
-      const reply = data.content.map(i => i.text || "").join("");
+      const reply = data.reply || "";
       setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
       
       // Play TTS
@@ -1776,40 +1869,23 @@ function Primed() {
   const generateValueScript = useCallback(async () => {
     setVsGenerating(true);
     try {
-      const response = await fetch(API_URL + "/ai/generate", {
+      const response = await fetch(API_URL + "/talk-tracks", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
         body: JSON.stringify({
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a real estate positioning expert. Create a powerful personal value script for a real estate agent based on these inputs:
-
-IDEAL CLIENT: ${vsIdealClient}
-FAVORITE TYPE OF TRANSACTION: ${vsFavoriteTransaction}
-BIGGEST PROBLEM THEY SOLVE: ${vsProblem}
-MEASURABLE RESULT: ${vsResult}
-TIMEFRAME: ${vsTimeframe}
-MARKET/AREA: ${vsMarket}
-
-Return ONLY valid JSON (no markdown, no backticks):
-{
-  "elevatorPitch": "A compelling 2-3 sentence value proposition the agent can use anywhere. Should feel natural and confident, not salesy.",
-  "listingOpener": "A 3-4 sentence opening for a listing appointment that weaves in their value proposition naturally.",
-  "socialBio": "A punchy 1-2 sentence bio for Instagram/LinkedIn that communicates their unique value.",
-  "coldCallHook": "A 2 sentence phone opener that leads with the problem they solve and the result they deliver.",
-  "objectionAnchor": "A 2-3 sentence response to 'why should I work with you?' that anchors on their specific results.",
-  "coachingNotes": "2-3 specific suggestions on how to make this script stronger — data to add, stories to prepare, ways to personalize."
-}`
-          }]
+          ideal_client: vsIdealClient,
+          favorite_transaction: vsFavoriteTransaction,
+          problem: vsProblem,
+          result: vsResult,
+          timeframe: vsTimeframe,
+          market: vsMarket
         })
       });
-      const data = await response.json();
-      const text = data.content.map(i => i.text || "").join("");
-      const clean = text.replace(/```json|```/g, "").trim();
-      setVsGeneratedScript(JSON.parse(clean));
+      if (!response.ok) throw new Error("generation failed");
+      const parsed = await response.json();
+      setVsGeneratedScript(parsed);
       setVsStep(4);
-      
+
       // Save to backend
       try {
         await fetch(API_URL + "/value-scripts", {
@@ -1822,7 +1898,7 @@ Return ONLY valid JSON (no markdown, no backticks):
             result: vsResult,
             timeframe: vsTimeframe,
             market: vsMarket,
-            generated_scripts: JSON.parse(clean)
+            generated_scripts: parsed
           })
         });
       } catch (saveErr) { console.error("Value script save error:", saveErr); }
@@ -1937,38 +2013,23 @@ Return ONLY valid JSON (no markdown, no backticks):
     setPracticeLoading(true);
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === scenarioId);
     const persona = PERSONAS.find(p => p.id === personaId);
-    const diffMap = { easy: "Agree relatively quickly.", medium: "Push back on some points.", hard: "Challenge everything." };
-    const systemPrompt = `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times. Speak in this client's voice — do not narrate, do not break character.
-
-PERSONA: ${persona.name}
-WHO YOU ARE: ${persona.traits}
-BACKSTORY: ${persona.backstory || ""}
-HOW YOU SPEAK: ${persona.voice || ""}
-YOUR TELLS: ${persona.tells || ""}
-DIFFICULTY: medium — ${diffMap["medium"]}
-
-SCENARIO: ${scenario.title} — ${scenario.desc}
-
-RULES:
-- You are STARTING the conversation. Open with your problem or question in your voice.
-- Stay 100% in character — your speech patterns ("HOW YOU SPEAK") must come through immediately
-- Respond as a real client would — natural, conversational, 1-2 paragraphs max
-- Never reveal you are an AI
-- React emotionally when it fits your persona
-- Keep it concise like a real conversation`;
 
     try {
-      const response = await fetch(API_URL + "/ai/generate", {
+      const response = await fetch(API_URL + "/practice/opener", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
         body: JSON.stringify({
-          max_tokens: 500,
-          system: systemPrompt,
-          messages: [{ role: "user", content: "Start the conversation. You are the client reaching out to the agent. Open with your situation or question." }]
+          persona: persona
+            ? { name: persona.name, traits: persona.traits || "", backstory: persona.backstory || "", voice: persona.voice || "", tells: persona.tells || "" }
+            : { name: "Client" },
+          difficulty: "medium",
+          scenario_title: scenario ? scenario.title : "",
+          scenario_desc: scenario ? scenario.desc : "",
+          context: ""
         })
       });
       const data = await response.json();
-      const reply = data.content.map(i => i.text || "").join("");
+      const reply = data.reply || "";
       setPracticeMessages([{ role: "client", content: reply }]);
       
       // Play TTS if voice is enabled
@@ -1996,33 +2057,20 @@ RULES:
     setPracticeLoading(false);
   }, [voiceEnabled]);
 
-  const buildPracticePrompt = () => {
+  // Structured payload for the server-side /practice/* endpoints. The prompt is
+  // built and locked server-side (app/prompts.py); the client sends only data.
+  const practicePayload = () => {
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
     const persona = PERSONAS.find(p => p.id === practicePersona);
-    const diffMap = { easy: "Agree relatively quickly. Be pleasant. Push back mildly once or twice.", medium: "Push back on some points. Ask follow-up questions. Don't agree too quickly.", hard: "Challenge everything. Be skeptical. Create tension. Require the agent to earn every inch of progress." };
-    
-    return `SYSTEM: You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times. Speak in this client's voice — do not narrate, do not break character.
-
-PERSONA: ${persona.name}
-WHO YOU ARE: ${persona.traits}
-BACKSTORY: ${persona.backstory || ""}
-HOW YOU SPEAK: ${persona.voice || ""}
-YOUR TELLS: ${persona.tells || ""}
-DIFFICULTY: ${practiceDifficulty} — ${diffMap[practiceDifficulty]}
-
-SCENARIO: ${scenario.title} — ${scenario.desc}
-${practiceContext ? `ADDITIONAL CONTEXT: ${practiceContext}` : ""}
-
-RULES:
-- Stay 100% in character — your speech patterns ("HOW YOU SPEAK") must come through in every response
-- Use the verbal tells described above naturally; don't list them, embody them
-- Respond as a real client would — natural, conversational, 1-3 paragraphs max
-- Ask follow-up questions in your voice
-- Push back realistically when appropriate based on your persona and difficulty
-- Never reveal you are an AI
-- Never coach the agent during the conversation
-- React emotionally when it fits your persona
-- Keep responses concise like a real conversation`;
+    return {
+      persona: persona
+        ? { name: persona.name, traits: persona.traits || "", backstory: persona.backstory || "", voice: persona.voice || "", tells: persona.tells || "" }
+        : { name: "Client" },
+      difficulty: practiceDifficulty,
+      scenario_title: scenario ? scenario.title : "",
+      scenario_desc: scenario ? scenario.desc : "",
+      context: practiceContext || null
+    };
   };
 
   const sendPracticeMessage = useCallback(async () => {
@@ -2034,21 +2082,15 @@ RULES:
     setPracticeLoading(true);
 
     try {
-      const transcript = newMessages.map(m => 
-        m.role === "agent" ? { role: "user", content: m.content } : { role: "assistant", content: m.content }
-      );
+      const rawTranscript = newMessages.map(m => ({ role: m.role, content: m.content }));
 
-      const response = await fetch(API_URL + "/ai/generate", {
+      const response = await fetch(API_URL + "/practice/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-        body: JSON.stringify({
-          max_tokens: 1000,
-          system: buildPracticePrompt(),
-          messages: transcript
-        })
+        body: JSON.stringify({ ...practicePayload(), transcript: rawTranscript })
       });
       const data = await response.json();
-      const reply = data.content.map(i => i.text || "").join("");
+      const reply = data.reply || "";
       setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
       // Play TTS if voice is enabled (text input path)
       if (voiceEnabled) {
@@ -2082,47 +2124,24 @@ RULES:
 
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
     const persona = PERSONAS.find(p => p.id === practicePersona);
-    const transcript = practiceMessages.map(m => `${m.role === "agent" ? "AGENT" : "CLIENT"}: ${m.content}`).join("\n\n");
 
     try {
-      const response = await fetch(API_URL + "/ai/generate", {
+      const response = await fetch(API_URL + "/practice/score", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
         body: JSON.stringify({
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a real estate conversation coach evaluating an agent's practice session. Be specific, constructive, and encouraging.
-
-SCENARIO: ${scenario.title}
-PERSONA: ${persona.name} (${persona.traits})
-DIFFICULTY: ${practiceDifficulty}
-
-TRANSCRIPT:
-${transcript}
-
-Return ONLY valid JSON (no markdown, no backticks):
-{
-  "clarity": 0-100,
-  "empathy": 0-100,
-  "persuasion": 0-100,
-  "confidence": 0-100,
-  "overall": 0-100,
-  "strengths": ["strength 1", "strength 2"],
-  "improvements": ["improvement 1", "improvement 2"],
-  "suggestedPhrasing": "One specific alternative phrase the agent could have used at a key moment",
-  "nextFocus": "What to practice next time"
-}`
-          }]
+          scenario_title: scenario.title,
+          persona_name: persona.name,
+          persona_traits: persona.traits || "",
+          difficulty: practiceDifficulty,
+          transcript: practiceMessages.map(m => ({ role: m.role, content: m.content }))
         })
       });
-      const data = await response.json();
-      const text = data.content.map(i => i.text || "").join("");
-      const clean = text.replace(/```json|```/g, "").trim();
-      setPracticeFeedback(JSON.parse(clean));
-      
+      if (!response.ok) throw new Error("scoring failed");
+      const fb = await response.json();
+      setPracticeFeedback(fb);
+
       // Save session + feedback to backend
-      const fb = JSON.parse(clean);
       try {
         const sessionRes = await fetch(API_URL + "/sessions", {
           method: "POST",
@@ -2213,37 +2232,13 @@ Return ONLY valid JSON (no markdown, no backticks):
     if (!customPrompt.trim()) return;
     setIsGenerating(true);
     try {
-      const response = await fetch(API_URL + "/ai/generate", {
+      const response = await fetch(API_URL + "/scenario", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-        body: JSON.stringify({
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a real estate scenario analyst for Primed, an intelligence tool for real estate agents. Given this scenario: "${customPrompt}"
-
-Return ONLY valid JSON (no markdown, no backticks) with this exact structure:
-{
-  "title": "Short title",
-  "category": "One of: Geopolitical, Industry, Economic, Technology, Regulatory",
-  "heat": "One of: Critical, High, Medium",
-  "synopsis": "2-3 paragraph analysis of the scenario",
-  "realEstateImpact": [
-    {"area": "Impact Area Name", "direction": "up/down/mixed", "detail": "Detailed explanation"}
-  ],
-  "teamTalkingPoints": ["point 1", "point 2", "point 3"],
-  "brokerageTalkingPoints": ["point 1", "point 2", "point 3"],
-  "clientScript": "A professional script for client conversations about this topic"
-}
-
-Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a detailed client script.`
-          }]
-        })
+        body: JSON.stringify({ topic: customPrompt })
       });
-      const data = await response.json();
-      const text = data.content.map(i => i.text || "").join("");
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
+      if (!response.ok) throw new Error("generation failed");
+      const parsed = await response.json();
       const newScenario = {
         ...parsed,
         id: "custom-" + Date.now(),
@@ -2345,8 +2340,8 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
     scenarioCard: (active) => ({
       padding: "7px 10px 7px 8px", borderRadius: 6, marginBottom: 1, cursor: "pointer",
       background: active ? "#fff" : "transparent",
-      borderLeft: `2px solid ${active ? "#e05a33" : "transparent"}`,
-      boxShadow: active ? "0 1px 3px rgba(0,0,0,0.05)" : "none",
+      borderLeft: `3px solid ${active ? "#e05a33" : "transparent"}`,
+      boxShadow: active ? "0 1px 4px rgba(0,0,0,0.10)" : "none",
       transition: "background 160ms ease, box-shadow 160ms ease"
     }),
     cardTitle: (active) => ({
@@ -2920,6 +2915,14 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
             </p>
           </div>
         )}
+        {showProfile && (
+          <ProfileModal
+            initial={profile}
+            canClose={!!(profile && profile.complete)}
+            onClose={() => setShowProfile(false)}
+            onSaved={(saved) => { setProfile(saved); setShowProfile(false); }}
+          />
+        )}
         <header style={S.header}>
           <div style={S.logoArea}>
             <h1 style={S.logoText}>
@@ -2953,6 +2956,7 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer"
               }}>Manage Plan</button>
             )}
+            <button onClick={() => setShowProfile(true)} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: "transparent", color: "rgba(0,0,0,0.55)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Profile</button>
             <button onClick={handleLogout} style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: "transparent", color: "rgba(0,0,0,0.55)", fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Log out</button>
           </div>
         </header>
@@ -3007,8 +3011,10 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                 const renderCard = (scenario) => {
                   const isForecasted = scenario.phase === "forecasted";
                   const baseStyle = S.scenarioCard(selectedScenario === scenario.id);
+                  // Forecasted = a *different kind* of item (hypothetical), not a weaker one.
+                  // Signal it with an indigo left edge instead of dimming the whole card.
                   const cardStyle = isForecasted && selectedScenario !== scenario.id
-                    ? { ...baseStyle, opacity: 0.78 }
+                    ? { ...baseStyle, borderLeft: "2px solid rgba(99,102,241,0.55)" }
                     : baseStyle;
                   return (
                     <div
@@ -3018,34 +3024,18 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                       onMouseEnter={e => {
                         if (selectedScenario !== scenario.id) {
                           e.currentTarget.style.background = "rgba(255,255,255,0.55)";
-                          e.currentTarget.style.opacity = "1";
                         }
                       }}
                       onMouseLeave={e => {
                         if (selectedScenario !== scenario.id) {
                           e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.opacity = isForecasted ? "0.78" : "1";
                         }
                       }}
                     >
                       <div style={S.cardTitle(selectedScenario === scenario.id)}>
                         <span style={S.cardIconBox}>{scenario.icon}</span>
                         <span style={{ flex: 1, minWidth: 0 }}>{scenario.title}</span>
-                        {isForecasted && (
-                          <span style={{
-                            fontSize: 8, fontWeight: 700,
-                            color: "rgba(0,0,0,0.32)",
-                            fontFamily: "'IBM Plex Mono', monospace",
-                            letterSpacing: "0.1em", textTransform: "uppercase",
-                            flexShrink: 0
-                          }}>fcst</span>
-                        )}
                       </div>
-                      {!scenario.phase && scenario.category && (
-                        <div style={S.cardMeta}>
-                          <span style={S.categoryTag}>{scenario.category}</span>
-                        </div>
-                      )}
                     </div>
                   );
                 };
@@ -3061,35 +3051,47 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                   </div>
                 );
 
-                const sectionHeader = (label, count) => (
-                  <div style={{
-                    display: "flex", alignItems: "baseline", gap: 8,
-                    padding: "0 8px 4px",
-                    fontSize: 11, fontWeight: 700,
-                    color: "#1a1a1a",
-                    fontFamily: "'Outfit', sans-serif",
-                    letterSpacing: "-0.005em"
-                  }}>
-                    <span>{label}</span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, color: "rgba(0,0,0,0.35)",
-                      fontFamily: "'IBM Plex Mono', monospace"
-                    }}>{count}</span>
-                  </div>
-                );
+                const sectionHeader = (label, count, sectionKey) => {
+                  const collapsed = !!collapsedSections[sectionKey];
+                  return (
+                    <div
+                      onClick={() => setCollapsedSections(prev => ({ ...prev, [sectionKey]: !prev[sectionKey] }))}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8,
+                        padding: "6px 8px 5px",
+                        fontSize: 11, fontWeight: 700,
+                        color: "#1a1a1a",
+                        fontFamily: "'Outfit', sans-serif",
+                        letterSpacing: "-0.005em",
+                        cursor: "pointer", userSelect: "none",
+                        position: "sticky", top: 0, zIndex: 2,
+                        background: "#ececea"
+                      }}
+                    >
+                      <span style={{
+                        fontSize: 9, color: "rgba(0,0,0,0.4)", width: 9,
+                        display: "inline-block",
+                        transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
+                        transition: "transform 160ms ease"
+                      }}>▾</span>
+                      <span>{label}</span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, color: "rgba(0,0,0,0.35)",
+                        fontFamily: "'IBM Plex Mono', monospace"
+                      }}>{count}</span>
+                    </div>
+                  );
+                };
 
-                const subHeader = (label, count, isFirst) => (
+                const subHeader = (label, _count, isFirst) => (
                   <div style={{
                     padding: isFirst ? "0 8px 2px 18px" : "8px 8px 2px 18px",
                     fontSize: 9, fontWeight: 600,
                     color: "rgba(0,0,0,0.4)",
                     fontFamily: "'IBM Plex Mono', monospace",
-                    letterSpacing: "0.1em", textTransform: "uppercase",
-                    display: "flex", alignItems: "center", gap: 8
+                    letterSpacing: "0.1em", textTransform: "uppercase"
                   }}>
-                    <span>{label}</span>
-                    <div style={{ flex: 1 }} />
-                    <span style={{ color: "rgba(0,0,0,0.28)" }}>{count}</span>
+                    {label}
                   </div>
                 );
 
@@ -3141,15 +3143,15 @@ Include 4-6 real estate impacts, 4-5 team points, 4-5 brokerage points, and a de
                         <React.Fragment key={s.key}>
                           {sectionContainer(null, (
                             <>
-                              {sectionHeader(s.header, s.count)}
-                              {s.items
+                              {sectionHeader(s.header, s.count, s.key)}
+                              {(searchTerm.trim() || !collapsedSections[s.key]) && (s.items
                                 ? renderByRealm(s.items)
                                 : conversationGroups.map((g, gi) => (
                                     <React.Fragment key={g.cat}>
                                       {conversationGroups.length > 1 && subHeader(g.cat, g.items.length, gi === 0)}
                                       {g.items.map(renderCard)}
                                     </React.Fragment>
-                                  ))}
+                                  )))}
                             </>
                           ), i === 0)}
                         </React.Fragment>

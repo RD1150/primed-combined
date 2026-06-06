@@ -9,7 +9,9 @@ import httpx
 from app.database import get_db
 from app.config import get_settings
 from app.auth import UserCreate, UserLogin, TokenResponse, register_user, login_user, get_current_user, UserResponse, ForgotPasswordRequest, ResetPasswordRequest, request_password_reset, reset_password
-from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario, SavedPhrase
+from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario, SavedPhrase, UserProfile
+from app import prompts
+import json
 
 settings = get_settings()
 router = APIRouter()
@@ -40,26 +42,179 @@ async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depend
 async def reset_password_endpoint(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
     return await reset_password(data, db)
 
-class AIRequest(BaseModel):
-    messages: list
-    system: Optional[str] = None
-    max_tokens: int = 1000
+# ════════════════════════════════════════
+# ANTHROPIC HELPERS (server-side, prompts locked in app/prompts.py)
+# ════════════════════════════════════════
 
-@router.post("/ai/generate")
-async def ai_proxy(data: AIRequest, user: User = Depends(get_current_user)):
+async def _anthropic(system: str, messages: list, max_tokens: int = 1000) -> str:
+    """Call Anthropic with a server-owned system prompt and return concatenated text."""
     async with httpx.AsyncClient(timeout=60.0) as client:
-        body = {"model": settings.anthropic_model, "max_tokens": data.max_tokens, "messages": data.messages}
-        if data.system:
-            body["system"] = data.system
         try:
             response = await client.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={"Content-Type": "application/json", "x-api-key": settings.anthropic_api_key, "anthropic-version": "2023-06-01"},
-                json=body
+                json={"model": settings.anthropic_model, "max_tokens": max_tokens, "system": system, "messages": messages},
             )
-            return response.json()
+            payload = response.json()
+            return "".join(b.get("text", "") for b in payload.get("content", [])).strip()
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"AI service error: {str(e)}")
+
+
+async def _anthropic_json(system: str, messages: list, max_tokens: int = 1200) -> dict:
+    """Same as _anthropic but parse a JSON object out of the reply (tolerates code fences)."""
+    text = await _anthropic(system, messages, max_tokens)
+    clean = text.replace("```json", "").replace("```", "").strip()
+    try:
+        return json.loads(clean)
+    except Exception:
+        # last-ditch: grab the outermost {...}
+        start, end = clean.find("{"), clean.rfind("}")
+        if start != -1 and end != -1:
+            try:
+                return json.loads(clean[start:end + 1])
+            except Exception:
+                pass
+        raise HTTPException(status_code=502, detail="AI returned malformed JSON")
+
+
+async def _load_profile(user: User, db: AsyncSession) -> Optional[UserProfile]:
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == user.id))
+    return result.scalar_one_or_none()
+
+
+# ════════════════════════════════════════
+# USER PROFILE (P0 — captured once, injected everywhere)
+# ════════════════════════════════════════
+
+class ProfileData(BaseModel):
+    market: Optional[str] = None
+    role_focus: List[str] = []
+    brokerage: Optional[str] = None
+    voice_sample: Optional[str] = None
+    tone: Optional[str] = None
+
+def _profile_dict(p: Optional[UserProfile]) -> dict:
+    if not p:
+        return {"market": None, "role_focus": [], "brokerage": None, "voice_sample": None, "tone": None, "complete": False}
+    return {"market": p.market, "role_focus": p.role_focus or [], "brokerage": p.brokerage,
+            "voice_sample": p.voice_sample, "tone": p.tone, "complete": bool(p.market and (p.voice_sample or p.tone))}
+
+@router.get("/profile")
+async def get_profile(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    return _profile_dict(await _load_profile(user, db))
+
+@router.put("/profile")
+async def upsert_profile(data: ProfileData, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    p = await _load_profile(user, db)
+    if not p:
+        p = UserProfile(user_id=user.id)
+        db.add(p)
+    p.market = data.market
+    p.role_focus = data.role_focus or []
+    p.brokerage = data.brokerage
+    p.voice_sample = data.voice_sample
+    p.tone = data.tone
+    await db.commit()
+    await db.refresh(p)
+    return _profile_dict(p)
+
+
+# ════════════════════════════════════════
+# MODE ENDPOINTS (locked prompts + profile injection)
+# ════════════════════════════════════════
+
+class PersonaIn(BaseModel):
+    name: str
+    traits: str = ""
+    backstory: str = ""
+    voice: str = ""
+    tells: str = ""
+
+class PracticeOpenerIn(BaseModel):
+    persona: PersonaIn
+    difficulty: str = "medium"
+    scenario_title: str = ""
+    scenario_desc: str = ""
+    context: Optional[str] = None
+
+@router.post("/practice/opener")
+async def practice_opener(data: PracticeOpenerIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    system = prompts.practice_system(
+        profile, persona_name=data.persona.name, persona_traits=data.persona.traits,
+        persona_backstory=data.persona.backstory, persona_voice=data.persona.voice,
+        persona_tells=data.persona.tells, difficulty=data.difficulty,
+        scenario_title=data.scenario_title, scenario_desc=data.scenario_desc,
+        extra_context=data.context or "")
+    reply = await _anthropic(system, [{"role": "user", "content": prompts.PRACTICE_OPENER_USER_MSG}], max_tokens=500)
+    return {"reply": reply}
+
+class PracticeReplyIn(BaseModel):
+    persona: PersonaIn
+    difficulty: str = "medium"
+    scenario_title: str = ""
+    scenario_desc: str = ""
+    context: Optional[str] = None
+    transcript: list  # [{role:"agent"|"client", content:str}, ...]
+
+@router.post("/practice/reply")
+async def practice_reply(data: PracticeReplyIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    system = prompts.practice_system(
+        profile, persona_name=data.persona.name, persona_traits=data.persona.traits,
+        persona_backstory=data.persona.backstory, persona_voice=data.persona.voice,
+        persona_tells=data.persona.tells, difficulty=data.difficulty,
+        scenario_title=data.scenario_title, scenario_desc=data.scenario_desc,
+        extra_context=data.context or "")
+    messages = [{"role": "user" if t.get("role") == "agent" else "assistant", "content": t.get("content", "")}
+                for t in data.transcript]
+    reply = await _anthropic(system, messages, max_tokens=1000)
+    return {"reply": reply}
+
+class PracticeScoreIn(BaseModel):
+    scenario_title: str
+    persona_name: str
+    persona_traits: str = ""
+    difficulty: str = "medium"
+    transcript: list  # [{role, content}, ...]
+
+@router.post("/practice/score")
+async def practice_score(data: PracticeScoreIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    system = prompts.scoring_system(profile, scenario_title=data.scenario_title,
+                                    persona_name=data.persona_name, persona_traits=data.persona_traits,
+                                    difficulty=data.difficulty)
+    convo = "\n\n".join(f"{'AGENT' if t.get('role') == 'agent' else 'CLIENT'}: {t.get('content','')}" for t in data.transcript)
+    return await _anthropic_json(system, [{"role": "user", "content": f"TRANSCRIPT:\n{convo}"}], max_tokens=1200)
+
+class ScenarioIn(BaseModel):
+    topic: str
+
+@router.post("/scenario")
+async def scenario_intel(data: ScenarioIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    return await _anthropic_json(prompts.scenario_system(profile),
+                                 [{"role": "user", "content": prompts.scenario_user_msg(data.topic)}], max_tokens=1400)
+
+class TalkTracksIn(BaseModel):
+    ideal_client: str
+    favorite_transaction: str
+    problem: str
+    result: str
+    timeframe: Optional[str] = ""
+    market: Optional[str] = ""
+
+@router.post("/talk-tracks")
+async def talk_tracks(data: TalkTracksIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    # fall back to profile market if the form leaves it blank
+    market = data.market or (profile.market if profile else "") or ""
+    system = prompts.talk_tracks_system(profile)
+    user_msg = prompts.talk_tracks_user_msg(
+        ideal_client=data.ideal_client, favorite_transaction=data.favorite_transaction,
+        problem=data.problem, result=data.result, timeframe=data.timeframe or "", market=market)
+    return await _anthropic_json(system, [{"role": "user", "content": user_msg}], max_tokens=1200)
 
 class CoachHintRequest(BaseModel):
     transcript: list  # [{role: "agent"|"client", content: str}, ...]

@@ -24,6 +24,23 @@ class User(Base):
     value_scripts = relationship("ValueScript", back_populates="user")
     custom_scenarios = relationship("CustomScenario", back_populates="user")
     saved_phrases = relationship("SavedPhrase", back_populates="user")
+    profile = relationship("UserProfile", back_populates="user", uselist=False)
+
+
+class UserProfile(Base):
+    """Captured once at onboarding, injected into every mode's AI call so no
+    mode ever re-asks for the agent's market or voice. Editable from Settings."""
+    __tablename__ = "user_profiles"
+    id = Column(String, primary_key=True, default=gen_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True, index=True)
+    market = Column(String, nullable=True)              # e.g. "Conejo Valley, CA"
+    role_focus = Column(JSON, nullable=False, default=list)  # ["buyer","seller","investor","luxury","first-time"]
+    brokerage = Column(String, nullable=True)
+    voice_sample = Column(Text, nullable=True)          # 1-3 sentences of the agent's own writing
+    tone = Column(String, nullable=True)                # warm | direct | data-driven | consultative
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    user = relationship("User", back_populates="profile")
 
 class PracticeSession(Base):
     __tablename__ = "practice_sessions"
