@@ -12,6 +12,7 @@ from app.auth import UserCreate, UserLogin, TokenResponse, register_user, login_
 from app.models import User, PracticeSession, SessionFeedback, ValueScript, CustomScenario, SavedPhrase, UserProfile
 from app import prompts
 import json
+import random
 
 settings = get_settings()
 router = APIRouter()
@@ -215,6 +216,57 @@ async def talk_tracks(data: TalkTracksIn, user: User = Depends(get_current_user)
         ideal_client=data.ideal_client, favorite_transaction=data.favorite_transaction,
         problem=data.problem, result=data.result, timeframe=data.timeframe or "", market=market)
     return await _anthropic_json(system, [{"role": "user", "content": user_msg}], max_tokens=1200)
+
+# ════════════════════════════════════════
+# CALL PREP IN 60 SECONDS (presets-first, locked 3-section output)
+# ════════════════════════════════════════
+
+class CallPrepIn(BaseModel):
+    situation: str
+    client_type: str
+    refine: Optional[str] = ""
+
+@router.get("/call-prep/presets")
+async def call_prep_presets():
+    """Server-owned preset lists so the frontend never hardcodes prompt labels."""
+    return {
+        "situations": [{"id": k, "label": v.split(" — ")[0], "desc": v} for k, v in prompts.CALL_PREP_SITUATIONS.items()],
+        "client_types": [{"id": k, "label": v.split(" — ")[0], "desc": v} for k, v in prompts.CALL_PREP_CLIENTS.items()],
+    }
+
+@router.post("/call-prep")
+async def call_prep(data: CallPrepIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    profile = await _load_profile(user, db)
+    system = prompts.call_prep_system(profile)
+    user_msg = prompts.call_prep_user_msg(situation=data.situation, client_type=data.client_type, refine=data.refine or "")
+    return await _anthropic_json(system, [{"role": "user", "content": user_msg}], max_tokens=1100)
+
+
+# ════════════════════════════════════════
+# CHALLENGE MODE (curated objection bank + encouraging-but-honest scoring)
+# ════════════════════════════════════════
+
+@router.get("/challenge/objection")
+async def challenge_objection(exclude: Optional[str] = None):
+    """Serve a curated objection. `exclude` (comma-sep ids) avoids immediate repeats."""
+    skip = {s.strip() for s in (exclude or "").split(",") if s.strip()}
+    pool = [o for o in prompts.CHALLENGE_OBJECTIONS if o["id"] not in skip] or prompts.CHALLENGE_OBJECTIONS
+    return random.choice(pool)
+
+class ChallengeScoreIn(BaseModel):
+    objection: str
+    category: str = ""
+    response: str
+
+@router.post("/challenge/score")
+async def challenge_score(data: ChallengeScoreIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if not data.response or not data.response.strip():
+        raise HTTPException(status_code=400, detail="Response cannot be empty")
+    profile = await _load_profile(user, db)
+    system = prompts.challenge_system(profile)
+    user_msg = prompts.challenge_user_msg(objection=data.objection, category=data.category, response=data.response)
+    return await _anthropic_json(system, [{"role": "user", "content": user_msg}], max_tokens=1100)
+
 
 class CoachHintRequest(BaseModel):
     transcript: list  # [{role: "agent"|"client", content: str}, ...]
