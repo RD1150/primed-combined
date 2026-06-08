@@ -1470,7 +1470,7 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
   const chip = (on) => ({ padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.15)"}`, background: on ? "#e05a33" : "transparent", color: on ? "#fff" : "rgba(0,0,0,0.6)", transition: "all 140ms ease" });
 
   return (
-    React.createElement("div", { style: ov, onClick: (e) => { if (canClose && e.target === e.currentTarget) onClose(); } },
+    React.createElement("div", { style: ov, onClick: (e) => { if (e.target === e.currentTarget) onClose(); } },
       React.createElement("div", { style: card },
         React.createElement("h2", { style: { fontSize: 20, fontWeight: 800, color: "#0F172A", margin: "0 0 4px" } }, "Your agent profile"),
         React.createElement("p", { style: { fontSize: 13, color: "rgba(0,0,0,0.55)", margin: "0 0 20px", lineHeight: 1.5 } }, "Set this once. Every mode — scenarios, scripts, practice — uses your market and voice automatically. You'll never be asked again."),
@@ -1495,7 +1495,7 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
         err && React.createElement("div", { style: { color: "#dc2626", fontSize: 12, marginBottom: 12 } }, err),
 
         React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } },
-          canClose && React.createElement("button", { onClick: onClose, style: { padding: "10px 18px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace" } }, "Cancel"),
+          React.createElement("button", { onClick: onClose, style: { padding: "10px 18px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace" } }, canClose ? "Cancel" : "Skip for now"),
           React.createElement("button", { onClick: save, disabled: saving, style: { padding: "10px 22px", borderRadius: 9, border: "none", background: canSave ? "#e05a33" : "rgba(0,0,0,0.2)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "default" : "pointer", fontFamily: "'DM Mono', monospace" } }, saving ? "Saving…" : "Save profile")
         )
       )
@@ -1639,7 +1639,12 @@ function Primed() {
         headers: { "Authorization": "Bearer " + getToken() }
       }).then(r => r.json()).then(d => {
         setProfile(d);
-        if (!d.complete) setShowProfile(true);
+        // Auto-open onboarding only the first time it's incomplete — never trap
+        // the user on it. After they dismiss once, the header "Profile" button
+        // reopens it on demand.
+        let seen = false;
+        try { seen = !!localStorage.getItem("primed_onboarding_seen"); } catch (e) {}
+        if (!d.complete && !seen) setShowProfile(true);
       }).catch(() => {});
       loadGameStats();
     }
@@ -3129,7 +3134,7 @@ function Primed() {
           <ProfileModal
             initial={profile}
             canClose={!!(profile && profile.complete)}
-            onClose={() => setShowProfile(false)}
+            onClose={() => { try { localStorage.setItem("primed_onboarding_seen", "1"); } catch (e) {} setShowProfile(false); }}
             onSaved={(saved) => { setProfile(saved); setShowProfile(false); }}
           />
         )}
