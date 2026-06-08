@@ -3241,8 +3241,8 @@ function Primed() {
                 return (
                   <>
                     <div style={{ marginBottom: 22 }}>
-                      <div style={{ fontSize: 13, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em" }}>{greet},</div>
-                      <h2 style={{ fontSize: 32, fontWeight: 800, color: "#0d0d0d", letterSpacing: "-0.025em", margin: "2px 0 0", fontFamily: "'Outfit', sans-serif" }}>{firstName}</h2>
+                      <div style={{ fontSize: 15, color: "rgba(0,0,0,0.5)", fontFamily: "'Outfit', sans-serif", fontWeight: 500 }}>{greet},</div>
+                      <h2 style={{ fontSize: 32, fontWeight: 800, color: "#0d0d0d", letterSpacing: "-0.025em", margin: "1px 0 0", fontFamily: "'Outfit', sans-serif" }}>{firstName}</h2>
                     </div>
 
                     {/* TODAY'S REP — hero */}
@@ -3250,8 +3250,8 @@ function Primed() {
                       <div style={{ position: "absolute", top: -40, right: -30, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(224,90,51,0.4), transparent 70%)" }} />
                       <div style={{ position: "relative" }}>
                         <div style={{ fontSize: 10, color: "#f0a58c", fontFamily: "'DM Mono', monospace", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 12 }}>Today's rep</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
-                          <span style={{ fontSize: 34 }}>{todayRep.icon}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 6 }}>
+                          <div style={{ width: 4, alignSelf: "stretch", minHeight: 42, borderRadius: 4, background: todayRep.color || "#e05a33", opacity: 0.95 }} />
                           <div>
                             <div style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", fontFamily: "'Outfit', sans-serif" }}>{todayRep.label}</div>
                             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>{todayRep.desc}</div>
@@ -3266,21 +3266,23 @@ function Primed() {
                     {/* Momentum strip */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 22 }}>
                       {[
-                        { big: gs.streak, label: "day streak", icon: "🔥" },
-                        { big: gs.reps, label: "total reps", icon: "🎯" },
-                        { big: gs.best || "—", label: "best score", icon: "🏆" }
+                        { big: gs.streak, label: "day streak", accent: "#e05a33" },
+                        { big: gs.reps, label: "total reps", accent: "#0F172A" },
+                        { big: gs.best || "—", label: "best score", accent: "#d4a03e" }
                       ].map((t, i) => (
-                        <div key={i} style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", textAlign: "center", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
-                          <div style={{ fontSize: 18, marginBottom: 6 }}>{t.icon}</div>
-                          <div style={{ fontSize: 28, fontWeight: 800, color: "#0F172A", fontFamily: "'Outfit', sans-serif", lineHeight: 1 }}>{t.big}</div>
-                          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 6 }}>{t.label}</div>
+                        <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: t.accent, flexShrink: 0 }} />
+                            <div style={{ fontSize: 30, fontWeight: 800, color: "#0F172A", fontFamily: "'Outfit', sans-serif", lineHeight: 1, letterSpacing: "-0.02em" }}>{t.big}</div>
+                          </div>
+                          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 10 }}>{t.label}</div>
                         </div>
                       ))}
                     </div>
 
                     {/* Skill rings */}
                     {gs.hasData && (
-                      <div style={{ background: "#fff", borderRadius: 18, padding: "22px 20px", marginBottom: 22, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
+                      <div style={{ background: "#fff", borderRadius: 18, padding: "22px 20px", marginBottom: 22, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
                         <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18 }}>Your skills · average</div>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, justifyItems: "center" }}>
                           {skills.map(sk => React.createElement(ScoreRing, { key: sk.key, value: gs.avg[sk.key] || 0, size: 84, stroke: 7, color: sk.color, label: sk.label }))}
@@ -3299,7 +3301,7 @@ function Primed() {
                         { id: "myscript", icon: "◆", label: "My Script", sub: "Your value pitch" },
                         { id: "library", icon: "★", label: "Library", sub: "Saved phrases" }
                       ].map(tile => (
-                        <div key={tile.id} className="icard" onClick={() => { setAppMode(tile.id); if (tile.id === "library") loadSavedPhrases(); if (tile.id === "practice") setPracticeState("setup"); }} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", cursor: "pointer", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
+                        <div key={tile.id} className="icard" onClick={() => { setAppMode(tile.id); if (tile.id === "library") loadSavedPhrases(); if (tile.id === "practice") setPracticeState("setup"); }} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", cursor: "pointer", border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
                           <div style={{ fontSize: 20, marginBottom: 10, color: "#e05a33" }}>{tile.icon}</div>
                           <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.005em" }}>{tile.label}</div>
                           <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", marginTop: 3 }}>{tile.sub}</div>
@@ -3644,7 +3646,7 @@ function Primed() {
                         borderRadius: 14,
                         padding: "18px 20px",
                         cursor: "pointer",
-                        boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
                       }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                           <span style={{ fontSize: 22 }}>{qs.icon}</span>
@@ -3708,7 +3710,7 @@ function Primed() {
                       border: `1px solid ${isSelected ? "rgba(15,23,42,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: "#fff",
                       borderLeft: `3px solid ${isSelected ? "#0F172A" : "transparent"}`,
-                      boxShadow: isSelected ? "0 6px 20px rgba(15,23,42,0.08)" : "0 8px 24px rgba(0,0,0,0.04)"
+                      boxShadow: isSelected ? "0 6px 20px rgba(15,23,42,0.08)" : "0 1px 2px rgba(0,0,0,0.03)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 22 }}>{qs.icon}</span>
@@ -3738,7 +3740,7 @@ function Primed() {
                       border: `1px solid ${isActive ? "rgba(15,23,42,0.4)" : "rgba(0,0,0,0.06)"}`,
                       background: "#fff",
                       borderLeft: `3px solid ${isActive ? "#0F172A" : "transparent"}`,
-                      boxShadow: isActive ? "0 6px 20px rgba(15,23,42,0.08)" : "0 8px 24px rgba(0,0,0,0.04)"
+                      boxShadow: isActive ? "0 6px 20px rgba(15,23,42,0.08)" : "0 1px 2px rgba(0,0,0,0.03)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{s.icon}</span>
@@ -3763,7 +3765,7 @@ function Primed() {
                           position: "relative", padding: "20px 18px 18px", borderRadius: 16, cursor: "pointer",
                           border: `1.5px solid ${sel ? p.color : "rgba(0,0,0,0.07)"}`,
                           background: "#fff",
-                          boxShadow: sel ? `0 12px 30px ${p.color}33` : "0 8px 24px rgba(0,0,0,0.04)"
+                          boxShadow: sel ? `0 12px 30px ${p.color}33` : "0 1px 2px rgba(0,0,0,0.03)"
                         }}>
                           <span style={{
                             position: "absolute", top: 12, right: 12, padding: "3px 9px", borderRadius: 6, fontSize: 9, fontWeight: 700,
@@ -4012,7 +4014,7 @@ function Primed() {
               <div style={{ maxWidth: 640, margin: "0 auto" }}>
                 {feedbackLoading ? (
                   <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                    <div style={{ fontSize: 40, marginBottom: 20 }}>🎯</div>
+                    <div style={{ fontSize: 40, marginBottom: 20, color: "#e05a33", lineHeight: 1, animation: "pulse 1.4s ease-in-out infinite" }}>✦</div>
                     <div style={{ fontSize: 18, color: "#1a1a1a", fontWeight: 600, marginBottom: 8 }}>Analyzing your conversation...</div>
                     <div style={{ fontSize: 13, color: "rgba(0,0,0,0.55)" }}>Scoring Clarity, Empathy, Persuasion, and Confidence</div>
                   </div>
