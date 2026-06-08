@@ -74,6 +74,9 @@
     }
 
     /* Standard interactive card — used everywhere we want hover lift */
+    .navtab:hover { background: rgba(0,0,0,0.045) !important; color: #0F172A !important; }
+    .navtab::-webkit-scrollbar { display: none; }
+    .modeswitch::-webkit-scrollbar { display: none; }
     .icard { transition: transform 160ms ease-out, box-shadow 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out; }
     .icard:hover:not(.is-selected) {
       transform: translateY(-2px);
@@ -3187,32 +3190,33 @@ function Primed() {
         </header>
 
         {/* ── MODE SWITCHER ── */}
-        <div style={{
-          display: "flex", borderBottom: "1px solid rgba(0,0,0,0.08)",
-          background: "#fff", flexShrink: 0
+        <div className="modeswitch" style={{
+          display: "flex", gap: 2, alignItems: "center",
+          padding: "8px 20px", borderBottom: "1px solid rgba(0,0,0,0.07)",
+          background: "#fff", flexShrink: 0, overflowX: "auto"
         }}>
           {[
             { id: "home", label: "Home", icon: "⌂" },
             { id: "intelligence", label: "Market Scenarios", icon: "◈" },
             { id: "practice", label: "Practice", icon: "◎" },
-            { id: "callprep", label: "Call Prep", icon: "⚡" },
-            { id: "challenge", label: "Challenge", icon: "⚔" },
+            { id: "callprep", label: "Call Prep", icon: "↯" },
+            { id: "challenge", label: "Challenge", icon: "✦" },
             { id: "myscript", label: "My Script", icon: "◆" },
             { id: "library", label: "Library", icon: "★" }
-          ].map(m => (
-            <button key={m.id} onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); if (m.id === "library") loadSavedPhrases(); }} style={{
-              flex: 1, padding: "13px 0", textAlign: "center",
-              fontSize: 12, fontWeight: appMode === m.id ? 700 : 600, fontFamily: "'DM Mono', monospace",
-              letterSpacing: "0.08em", textTransform: "uppercase",
-              background: "transparent",
-              color: appMode === m.id ? "#0F172A" : "rgba(0,0,0,0.45)",
-              border: "none", borderBottom: `2px solid ${appMode === m.id ? "#e05a33" : "transparent"}`,
-              cursor: "pointer", transition: "all 180ms ease",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+          ].map(m => {
+            const on = appMode === m.id;
+            return (
+            <button key={m.id} className="navtab" onClick={() => { setAppMode(m.id); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); if (m.id === "library") loadSavedPhrases(); }} style={{
+              display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap",
+              padding: "7px 13px", borderRadius: 9, border: "none", cursor: "pointer",
+              background: on ? "rgba(15,23,42,0.06)" : "transparent",
+              color: on ? "#0F172A" : "rgba(0,0,0,0.5)",
+              fontSize: 13, fontWeight: on ? 600 : 500, fontFamily: "'Outfit', sans-serif",
+              letterSpacing: "-0.005em", transition: "background 140ms ease, color 140ms ease"
             }}>
-              <span style={{ fontSize: 10 }}>{m.icon}</span> {m.label}
+              <span style={{ fontSize: 13, color: on ? "#e05a33" : "rgba(0,0,0,0.4)", transition: "color 140ms ease" }}>{m.icon}</span>{m.label}
             </button>
-          ))}
+          );})}
         </div>
 
         {appMode === "home" && (
@@ -3289,8 +3293,8 @@ function Primed() {
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12 }}>
                       {[
                         { id: "practice", icon: "◎", label: "Practice", sub: "Role-play a client" },
-                        { id: "callprep", icon: "⚡", label: "Call Prep", sub: "Ready in 60 seconds" },
-                        { id: "challenge", icon: "⚔", label: "Challenge", sub: "Beat the objection" },
+                        { id: "callprep", icon: "↯", label: "Call Prep", sub: "Ready in 60 seconds" },
+                        { id: "challenge", icon: "✦", label: "Challenge", sub: "Beat the objection" },
                         { id: "intelligence", icon: "◈", label: "Market Scenarios", sub: "Briefings & talk tracks" },
                         { id: "myscript", icon: "◆", label: "My Script", sub: "Your value pitch" },
                         { id: "library", icon: "★", label: "Library", sub: "Saved phrases" }
@@ -4168,22 +4172,25 @@ function Primed() {
               <div>
                 <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>1 — What's the call?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 28 }}>
-                  {CALLPREP_SITUATIONS.map(s => (
-                    <button key={s.id} onClick={() => setCpSituation(s.id)} style={{ textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer", background: cpSituation === s.id ? "rgba(224,90,51,0.07)" : "#fff", border: `1.5px solid ${cpSituation === s.id ? "#e05a33" : "rgba(0,0,0,0.08)"}`, transition: "all 160ms ease" }}>
-                      <div style={{ fontSize: 20, marginBottom: 6 }}>{s.icon}</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{s.label}</div>
+                  {CALLPREP_SITUATIONS.map(s => {
+                    const on = cpSituation === s.id;
+                    return (
+                    <button key={s.id} className="icard" onClick={() => setCpSituation(s.id)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer", background: "#fff", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.1)"}`, boxShadow: on ? "0 0 0 3px rgba(224,90,51,0.1)" : "none" }}>
+                      <span style={{ fontSize: 13.5, fontWeight: on ? 600 : 500, color: "#0F172A", letterSpacing: "-0.005em" }}>{s.label}</span>
+                      <span style={{ width: 7, height: 7, borderRadius: "50%", background: on ? "#e05a33" : "transparent", flexShrink: 0 }} />
                     </button>
-                  ))}
+                  );})}
                 </div>
 
                 <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>2 — Who's on the other side?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginBottom: 28 }}>
-                  {CALLPREP_CLIENTS.map(c => (
-                    <button key={c.id} onClick={() => setCpClient(c.id)} style={{ textAlign: "left", padding: "12px 14px", borderRadius: 12, cursor: "pointer", background: cpClient === c.id ? "rgba(224,90,51,0.07)" : "#fff", border: `1.5px solid ${cpClient === c.id ? "#e05a33" : "rgba(0,0,0,0.08)"}`, transition: "all 160ms ease" }}>
-                      <span style={{ fontSize: 16, marginRight: 8 }}>{c.icon}</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{c.label}</span>
+                  {CALLPREP_CLIENTS.map(c => {
+                    const on = cpClient === c.id;
+                    return (
+                    <button key={c.id} className="icard" onClick={() => setCpClient(c.id)} style={{ textAlign: "left", padding: "11px 15px", borderRadius: 10, cursor: "pointer", background: "#fff", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.1)"}`, boxShadow: on ? "0 0 0 3px rgba(224,90,51,0.1)" : "none" }}>
+                      <span style={{ fontSize: 13.5, fontWeight: on ? 600 : 500, color: "#0F172A", letterSpacing: "-0.005em" }}>{c.label}</span>
                     </button>
-                  ))}
+                  );})}
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
@@ -4253,7 +4260,7 @@ function Primed() {
 
             {!chObjection && !chLoadingObj && (
               <div style={{ textAlign: "center", padding: "50px 30px", borderRadius: 16, background: "#fff", border: "1px dashed rgba(0,0,0,0.12)" }}>
-                <div style={{ fontSize: 40, marginBottom: 16 }}>⚔</div>
+                <div style={{ fontSize: 40, marginBottom: 16, color: "#e05a33", lineHeight: 1 }}>✦</div>
                 <div style={{ fontSize: 17, fontWeight: 700, color: "#0d0d0d", marginBottom: 8 }}>Ready for a curveball?</div>
                 <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", lineHeight: 1.6, maxWidth: 380, margin: "0 auto 22px" }}>We'll throw you a tough, real-world objection. Answer it like the client is sitting right in front of you.</div>
                 <button className="pcta" onClick={loadChallengeObjection} style={{ padding: "15px 38px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Bring It On →</button>
