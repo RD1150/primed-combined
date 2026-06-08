@@ -9,12 +9,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { background: #f8f7f4; }
+    body { background: #f8f7f4; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     @keyframes barFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* Screen + element entrances (the "fun" layer) */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.82); } 60% { transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes ringDraw { from { stroke-dashoffset: var(--circ); } to { stroke-dashoffset: var(--off); } }
+    @keyframes confettiFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.9; } }
+    @keyframes flameFlicker { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.12) rotate(2deg); } }
+    .anim-slide { animation: slideUp 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-pop { animation: popIn 460ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .stagger > * { animation: slideUp 460ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .stagger > *:nth-child(1) { animation-delay: 40ms; }
+    .stagger > *:nth-child(2) { animation-delay: 110ms; }
+    .stagger > *:nth-child(3) { animation-delay: 180ms; }
+    .stagger > *:nth-child(4) { animation-delay: 250ms; }
+    .stagger > *:nth-child(5) { animation-delay: 320ms; }
+    .stagger > *:nth-child(6) { animation-delay: 390ms; }
+    @media (prefers-reduced-motion: reduce) {
+      .anim-slide, .anim-pop, .stagger > *, .confetti-pc { animation: none !important; }
+    }
 
     /* Inputs — Linear-flavored focus state */
     input, textarea {
@@ -1481,6 +1503,90 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
   );
 }
 
+// ── Gamification + motion primitives ──
+
+// Animates a number from 0 → target on mount.
+function useCountUp(target, duration = 1000) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const goal = Number(target) || 0;
+    let raf, start = null;
+    const tick = (t) => {
+      if (start === null) start = t;
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(goal * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return n;
+}
+
+// Circular progress ring with a draw-on animation and a counting center value.
+function ScoreRing({ value, size = 132, stroke = 10, color = "#e05a33", label, sub }) {
+  const v = Math.min(100, Math.max(0, Number(value) || 0));
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const off = circ * (1 - v / 100);
+  const display = useCountUp(v, 1100);
+  return React.createElement("div", { style: { position: "relative", width: size, height: size, flexShrink: 0 } },
+    React.createElement("svg", { width: size, height: size, style: { transform: "rotate(-90deg)" } },
+      React.createElement("circle", { cx: size / 2, cy: size / 2, r, fill: "none", stroke: "rgba(0,0,0,0.07)", strokeWidth: stroke }),
+      React.createElement("circle", { cx: size / 2, cy: size / 2, r, fill: "none", stroke: color, strokeWidth: stroke, strokeLinecap: "round",
+        strokeDasharray: circ + "px " + circ + "px",
+        style: { "--circ": circ + "px", "--off": off + "px", strokeDashoffset: off + "px", animation: "ringDraw 1100ms cubic-bezier(0.22,1,0.36,1) both" } })
+    ),
+    React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
+      React.createElement("div", { style: { fontSize: Math.round(size * 0.32), fontWeight: 800, color: "#0F172A", fontFamily: "'Outfit', sans-serif", lineHeight: 1 } }, display),
+      label && React.createElement("div", { style: { fontSize: Math.max(9, Math.round(size * 0.075)), color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 } }, label),
+      sub && React.createElement("div", { style: { fontSize: 10, color: "rgba(0,0,0,0.4)", marginTop: 2 } }, sub)
+    )
+  );
+}
+
+// One-shot celebration confetti (deterministic per-piece, no random).
+function Confetti({ fire }) {
+  if (!fire) return null;
+  const colors = ["#e05a33", "#10b981", "#3b82f6", "#d4a03e", "#8b5cf6"];
+  return React.createElement("div", { className: "confetti-pc", style: { position: "fixed", inset: 0, pointerEvents: "none", zIndex: 2000, overflow: "hidden" } },
+    Array.from({ length: 90 }, (_, i) => {
+      const left = (i * 41) % 100;
+      const delay = (i % 12) * 55;
+      const dur = 1700 + (i % 8) * 230;
+      const sz = 6 + (i % 4) * 3;
+      return React.createElement("div", { key: i, className: "confetti-pc", style: {
+        position: "absolute", top: 0, left: left + "%", width: sz, height: Math.round(sz * 1.6),
+        background: colors[i % colors.length], borderRadius: 2,
+        animation: "confettiFall " + dur + "ms linear " + delay + "ms forwards"
+      } });
+    })
+  );
+}
+
+// Derive streak / reps / XP / per-skill averages from the sessions list
+// (GET /sessions, newest first). No schema change required.
+function computeGameStats(sessions) {
+  const list = Array.isArray(sessions) ? sessions : [];
+  const completed = list.filter(s => s.status === "completed");
+  const withFb = completed.filter(s => s.feedback);
+  const reps = completed.length;
+  const xp = withFb.reduce((a, s) => a + (s.feedback.overall || 0), 0);
+  const best = withFb.reduce((m, s) => Math.max(m, s.feedback.overall || 0), 0);
+  const lastScore = withFb.length ? (withFb[0].feedback.overall ?? null) : null;
+  const days = new Set(completed.map(s => new Date(s.created_at).toDateString()));
+  let streak = 0; const d = new Date();
+  if (!days.has(d.toDateString())) d.setDate(d.getDate() - 1);
+  while (days.has(d.toDateString())) { streak++; d.setDate(d.getDate() - 1); }
+  const avg = {};
+  ["clarity", "empathy", "persuasion", "confidence"].forEach(k => {
+    const vals = withFb.map(s => s.feedback[k]).filter(v => typeof v === "number");
+    avg[k] = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+  });
+  return { reps, xp, best, lastScore, streak, avg, hasData: reps > 0 };
+}
+
 function Primed() {
   // Auth state
   const initialResetToken = (() => {
@@ -1502,6 +1608,19 @@ function Primed() {
   const [billingStatus, setBillingStatus] = useState(null);
   const [profile, setProfile] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [gameStats, setGameStats] = useState(null);
+  const [prevBest, setPrevBest] = useState(0);
+  const [celebrate, setCelebrate] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  const loadGameStats = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      const r = await fetch(API_URL + "/sessions", { headers: { "Authorization": "Bearer " + getToken() } });
+      if (!r.ok) return;
+      setGameStats(computeGameStats(await r.json()));
+    } catch {}
+  }, []);
 
   // Fetch billing status after login
   useEffect(() => {
@@ -1522,6 +1641,7 @@ function Primed() {
         setProfile(d);
         if (!d.complete) setShowProfile(true);
       }).catch(() => {});
+      loadGameStats();
     }
   }, [authScreen]);
 
@@ -1755,7 +1875,7 @@ function Primed() {
   const chatEndRef = useRef(null);
 
   // Practice mode state
-  const [appMode, setAppMode] = useState("intelligence");
+  const [appMode, setAppMode] = useState("home");
   const [practiceState, setPracticeState] = useState("setup"); // setup | context | active | feedback
   const [practiceScenario, setPracticeScenario] = useState(null);
   const [practicePersona, setPracticePersona] = useState(null);
@@ -1853,6 +1973,91 @@ function Primed() {
     }
     setCoachLoading(false);
   }, [practiceMessages, practicePersona, practiceScenario, selectedQuickStart, practiceDifficulty, coachLoading]);
+
+  // ── Call Prep in 60 Seconds state ──
+  const CALLPREP_SITUATIONS = [
+    { id: "listing", label: "Listing appointment", icon: "🏠" },
+    { id: "pricing", label: "Pricing discussion", icon: "💲" },
+    { id: "expired", label: "Expired listing", icon: "⏰" },
+    { id: "fsbo", label: "FSBO conversion", icon: "🪧" },
+    { id: "buyer-hesitation", label: "Buyer hesitation", icon: "🤔" },
+    { id: "offer-negotiation", label: "Offer negotiation", icon: "🤝" }
+  ];
+  const CALLPREP_CLIENTS = [
+    { id: "first-time", label: "First-timer", icon: "🌱" },
+    { id: "seller", label: "Seller", icon: "🔑" },
+    { id: "investor", label: "Investor", icon: "📈" },
+    { id: "luxury", label: "Luxury", icon: "✨" },
+    { id: "relocation", label: "Relocating", icon: "✈️" },
+    { id: "downsizer", label: "Downsizer / move-up", icon: "📦" }
+  ];
+  const [cpSituation, setCpSituation] = useState(null);
+  const [cpClient, setCpClient] = useState(null);
+  const [cpRefine, setCpRefine] = useState("");
+  const [cpResult, setCpResult] = useState(null);
+  const [cpLoading, setCpLoading] = useState(false);
+  const [cpCopied, setCpCopied] = useState(false);
+
+  const runCallPrep = useCallback(async () => {
+    if (!cpSituation || !cpClient) return;
+    setCpLoading(true); setCpResult(null);
+    try {
+      const res = await fetch(API_URL + "/call-prep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({ situation: cpSituation, client_type: cpClient, refine: cpRefine })
+      });
+      if (!res.ok) throw new Error("call prep failed");
+      setCpResult(await res.json());
+    } catch (err) {
+      console.error("Call prep error:", err);
+      setCpResult({ error: "Couldn't build your prep right now. Try again in a moment." });
+    }
+    setCpLoading(false);
+  }, [cpSituation, cpClient, cpRefine]);
+
+  // ── Challenge Mode state ──
+  const [chObjection, setChObjection] = useState(null);
+  const [chResponse, setChResponse] = useState("");
+  const [chScore, setChScore] = useState(null);
+  const [chLoadingObj, setChLoadingObj] = useState(false);
+  const [chScoring, setChScoring] = useState(false);
+  const [chSeen, setChSeen] = useState([]);
+  const [chShareCopied, setChShareCopied] = useState(false);
+
+  const loadChallengeObjection = useCallback(async () => {
+    setChLoadingObj(true); setChScore(null); setChResponse("");
+    try {
+      const res = await fetch(API_URL + "/challenge/objection?exclude=" + encodeURIComponent(chSeen.join(",")), {
+        headers: { "Authorization": "Bearer " + getToken() }
+      });
+      if (!res.ok) throw new Error("objection fetch failed");
+      const obj = await res.json();
+      setChObjection(obj);
+      setChSeen(prev => [...prev, obj.id].slice(-6));
+    } catch (err) {
+      console.error("Challenge objection error:", err);
+    }
+    setChLoadingObj(false);
+  }, [chSeen]);
+
+  const scoreChallenge = useCallback(async () => {
+    if (!chObjection || !chResponse.trim()) return;
+    setChScoring(true);
+    try {
+      const res = await fetch(API_URL + "/challenge/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({ objection: chObjection.objection, category: chObjection.category, response: chResponse })
+      });
+      if (!res.ok) throw new Error("scoring failed");
+      setChScore(await res.json());
+    } catch (err) {
+      console.error("Challenge score error:", err);
+      setChScore({ error: "Couldn't score that right now. Try again in a moment." });
+    }
+    setChScoring(false);
+  }, [chObjection, chResponse]);
 
   // Value Script Builder state
   const [vsStep, setVsStep] = useState(1);
@@ -2121,6 +2326,9 @@ function Primed() {
     if (practiceMessages.length < 2) return;
     setFeedbackLoading(true);
     setPracticeState("feedback");
+    const priorBest = (gameStats && gameStats.best) || 0;
+    setPrevBest(priorBest);
+    setCelebrate(false);
 
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
     const persona = PERSONAS.find(p => p.id === practicePersona);
@@ -2140,6 +2348,7 @@ function Primed() {
       if (!response.ok) throw new Error("scoring failed");
       const fb = await response.json();
       setPracticeFeedback(fb);
+      if ((fb.overall || 0) > priorBest) setCelebrate(true);
 
       // Save session + feedback to backend
       try {
@@ -2185,7 +2394,8 @@ function Primed() {
       setPracticeFeedback({ clarity: 75, empathy: 70, persuasion: 72, confidence: 68, overall: 71, strengths: ["Good engagement with the client"], improvements: ["Try leading with more empathy"], suggestedPhrasing: "Practice again for a detailed evaluation", nextFocus: "Empathy-first responses" });
     }
     setFeedbackLoading(false);
-  }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty]);
+    loadGameStats();
+  }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty, loadGameStats, gameStats]);
 
   useEffect(() => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -2932,6 +3142,16 @@ function Primed() {
             <span style={S.tagline}>Know what to say. Always.</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {gameStats && gameStats.hasData && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span title={gameStats.streak + " day streak"} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: gameStats.streak > 0 ? "rgba(224,90,51,0.1)" : "rgba(0,0,0,0.05)", border: "1px solid " + (gameStats.streak > 0 ? "rgba(224,90,51,0.25)" : "rgba(0,0,0,0.08)"), fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: gameStats.streak > 0 ? "#c2410c" : "rgba(0,0,0,0.4)" }}>
+                  <span style={{ display: "inline-block", animation: gameStats.streak > 0 ? "flameFlicker 1.6s ease-in-out infinite" : "none" }}>🔥</span>{gameStats.streak}
+                </span>
+                <span title="Reps banked (total score earned)" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: "rgba(212,160,62,0.12)", border: "1px solid rgba(212,160,62,0.28)", fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: "#b8860b" }}>
+                  ⚡{gameStats.xp}
+                </span>
+              </div>
+            )}
             {user && <span style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", fontFamily: "'IBM Plex Mono', monospace" }}>{user.email}</span>}
             {billingStatus && billingStatus.in_trial && (
               <span style={{
@@ -2967,8 +3187,11 @@ function Primed() {
           background: "#fff", flexShrink: 0
         }}>
           {[
+            { id: "home", label: "Home", icon: "⌂" },
             { id: "intelligence", label: "Market Scenarios", icon: "◈" },
             { id: "practice", label: "Practice", icon: "◎" },
+            { id: "callprep", label: "Call Prep", icon: "⚡" },
+            { id: "challenge", label: "Challenge", icon: "⚔" },
             { id: "myscript", label: "My Script", icon: "◆" },
             { id: "library", label: "Library", icon: "★" }
           ].map(m => (
@@ -2986,6 +3209,100 @@ function Primed() {
             </button>
           ))}
         </div>
+
+        {appMode === "home" && (
+          <div style={{ flex: 1, overflowY: "auto", padding: "36px 28px 60px" }}>
+            <div className="stagger" style={{ maxWidth: 760, margin: "0 auto" }}>
+              {(() => {
+                const firstName = (() => {
+                  const base = (user && (user.name || (user.email || "").split("@")[0])) || "there";
+                  const w = String(base).split(/[.\s_]/)[0];
+                  return w.charAt(0).toUpperCase() + w.slice(1);
+                })();
+                const hour = new Date().getHours();
+                const greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+                const todayRep = QUICK_STARTS[(new Date().getDay()) % QUICK_STARTS.length];
+                const gs = gameStats || { reps: 0, streak: 0, xp: 0, best: 0, lastScore: null, avg: {}, hasData: false };
+                const skills = [
+                  { label: "Clarity", key: "clarity", color: "#10b981" },
+                  { label: "Empathy", key: "empathy", color: "#d4a03e" },
+                  { label: "Persuasion", key: "persuasion", color: "#e05a33" },
+                  { label: "Confidence", key: "confidence", color: "#3b82f6" }
+                ];
+                return (
+                  <>
+                    <div style={{ marginBottom: 22 }}>
+                      <div style={{ fontSize: 13, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em" }}>{greet},</div>
+                      <h2 style={{ fontSize: 32, fontWeight: 800, color: "#0d0d0d", letterSpacing: "-0.025em", margin: "2px 0 0", fontFamily: "'Outfit', sans-serif" }}>{firstName}</h2>
+                    </div>
+
+                    {/* TODAY'S REP — hero */}
+                    <div className="anim-pop" style={{ position: "relative", borderRadius: 22, padding: "28px 28px 26px", marginBottom: 22, overflow: "hidden", background: "linear-gradient(135deg, #1a1410 0%, #2a1b14 55%, #3a2114 100%)", boxShadow: "0 18px 44px rgba(58,33,20,0.28)" }}>
+                      <div style={{ position: "absolute", top: -40, right: -30, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(224,90,51,0.4), transparent 70%)" }} />
+                      <div style={{ position: "relative" }}>
+                        <div style={{ fontSize: 10, color: "#f0a58c", fontFamily: "'DM Mono', monospace", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 12 }}>Today's rep</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+                          <span style={{ fontSize: 34 }}>{todayRep.icon}</span>
+                          <div>
+                            <div style={{ fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", fontFamily: "'Outfit', sans-serif" }}>{todayRep.label}</div>
+                            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>{todayRep.desc}</div>
+                          </div>
+                        </div>
+                        <button className="pcta" onClick={() => { setAppMode("practice"); quickLaunch(todayRep); }} style={{ marginTop: 18, padding: "15px 38px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>
+                          Start →
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Momentum strip */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 22 }}>
+                      {[
+                        { big: gs.streak, label: "day streak", icon: "🔥" },
+                        { big: gs.reps, label: "total reps", icon: "🎯" },
+                        { big: gs.best || "—", label: "best score", icon: "🏆" }
+                      ].map((t, i) => (
+                        <div key={i} style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", textAlign: "center", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
+                          <div style={{ fontSize: 18, marginBottom: 6 }}>{t.icon}</div>
+                          <div style={{ fontSize: 28, fontWeight: 800, color: "#0F172A", fontFamily: "'Outfit', sans-serif", lineHeight: 1 }}>{t.big}</div>
+                          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 6 }}>{t.label}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Skill rings */}
+                    {gs.hasData && (
+                      <div style={{ background: "#fff", borderRadius: 18, padding: "22px 20px", marginBottom: 22, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18 }}>Your skills · average</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, justifyItems: "center" }}>
+                          {skills.map(sk => React.createElement(ScoreRing, { key: sk.key, value: gs.avg[sk.key] || 0, size: 84, stroke: 7, color: sk.color, label: sk.label }))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Jump back in */}
+                    <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12 }}>Jump back in</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12 }}>
+                      {[
+                        { id: "practice", icon: "◎", label: "Practice", sub: "Role-play a client" },
+                        { id: "callprep", icon: "⚡", label: "Call Prep", sub: "Ready in 60 seconds" },
+                        { id: "challenge", icon: "⚔", label: "Challenge", sub: "Beat the objection" },
+                        { id: "intelligence", icon: "◈", label: "Market Scenarios", sub: "Briefings & talk tracks" },
+                        { id: "myscript", icon: "◆", label: "My Script", sub: "Your value pitch" },
+                        { id: "library", icon: "★", label: "Library", sub: "Saved phrases" }
+                      ].map(tile => (
+                        <div key={tile.id} className="icard" onClick={() => { setAppMode(tile.id); if (tile.id === "library") loadSavedPhrases(); if (tile.id === "practice") setPracticeState("setup"); }} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", cursor: "pointer", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}>
+                          <div style={{ fontSize: 20, marginBottom: 10, color: "#e05a33" }}>{tile.icon}</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.005em" }}>{tile.label}</div>
+                          <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", marginTop: 3 }}>{tile.sub}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        )}
 
         {appMode === "intelligence" && (
         <div style={S.main}>
@@ -3425,29 +3742,33 @@ function Primed() {
 
                 {practiceScenario && (
                   <>
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Your Client</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10, marginBottom: 28 }}>
-                      {PERSONAS.map(p => (
-                        <div key={p.id} onClick={() => setPracticePersona(p.id)} style={{
-                          padding: "16px 18px", borderRadius: 12, cursor: "pointer",
-                          border: `1px solid ${practicePersona === p.id ? p.color + "44" : "rgba(0,0,0,0.08)"}`,
-                          background: practicePersona === p.id ? p.color + "11" : "#fff",
-                          transition: "all 0.2s"
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Pick your sparring partner</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12, marginBottom: 28 }}>
+                      {PERSONAS.map(p => {
+                        const sel = practicePersona === p.id;
+                        const parts = p.name.split("—");
+                        const nm = parts[0].trim();
+                        const role = parts[1] ? parts[1].trim() : "";
+                        return (
+                        <div key={p.id} onClick={() => setPracticePersona(p.id)} className={"icard" + (sel ? " is-selected" : "")} style={{
+                          position: "relative", padding: "20px 18px 18px", borderRadius: 16, cursor: "pointer",
+                          border: `1.5px solid ${sel ? p.color : "rgba(0,0,0,0.07)"}`,
+                          background: "#fff",
+                          boxShadow: sel ? `0 12px 30px ${p.color}33` : "0 8px 24px rgba(0,0,0,0.04)"
                         }}>
-                          <div style={{ fontSize: 24, marginBottom: 8 }}>{p.icon}</div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>{p.name}</div>
-                          <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.6)", lineHeight: 1.5, marginBottom: 6 }}>{p.traits}</div>
-                          {p.backstory && (
-                            <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", lineHeight: 1.5, marginBottom: 10, fontStyle: "italic" }}>{p.backstory}</div>
-                          )}
                           <span style={{
-                            padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700,
+                            position: "absolute", top: 12, right: 12, padding: "3px 9px", borderRadius: 6, fontSize: 9, fontWeight: 700,
                             fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
-                            background: p.difficulty === "Hard" ? "rgba(239,68,68,0.1)" : "rgba(245,158,11,0.1)",
-                            color: p.difficulty === "Hard" ? "#ef4444" : "#f59e0b"
+                            background: p.difficulty === "Hard" ? "rgba(239,68,68,0.12)" : "rgba(245,158,11,0.12)",
+                            color: p.difficulty === "Hard" ? "#dc2626" : "#d97706"
                           }}>{p.difficulty}</span>
+                          <div style={{ width: 54, height: 54, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 12, background: p.color + "1a", border: `2px solid ${p.color}40` }}>{p.icon}</div>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.01em" }}>{nm}</div>
+                          {role && <div style={{ fontSize: 11, color: p.color, fontWeight: 600, fontFamily: "'DM Mono', monospace", letterSpacing: "0.01em", marginTop: 1, marginBottom: 8 }}>{role}</div>}
+                          <div style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", lineHeight: 1.5 }}>{p.traits}</div>
+                          {sel && <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 11, fontWeight: 700, color: p.color, fontFamily: "'DM Mono', monospace" }}><span>✓</span> Selected</div>}
                         </div>
-                      ))}
+                      );})}
                     </div>
                   </>
                 )}
@@ -3687,60 +4008,65 @@ function Primed() {
                     <div style={{ fontSize: 13, color: "rgba(0,0,0,0.55)" }}>Scoring Clarity, Empathy, Persuasion, and Confidence</div>
                   </div>
                 ) : practiceFeedback && (
-                  <>
-                    <div style={{ textAlign: "center", marginBottom: 36 }}>
-                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16 }}>Session Complete</div>
-                      <div style={{ fontSize: 64, fontWeight: 700, color: "#e05a33", fontFamily: "'DM Mono', monospace", lineHeight: 1 }}>{practiceFeedback.overall}</div>
-                      <div style={{ fontSize: 12, color: "rgba(0,0,0,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 8 }}>Overall Score</div>
+                  <div className="stagger">
+                    <Confetti fire={celebrate} />
+
+                    {/* Hero: big ring + win banner */}
+                    <div className="anim-pop" style={{ textAlign: "center", marginBottom: 14 }}>
+                      {(practiceFeedback.overall > prevBest) ? (
+                        <div style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, background: "rgba(212,160,62,0.15)", border: "1px solid rgba(212,160,62,0.35)", color: "#b8860b", fontSize: 11, fontWeight: 700, fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 18 }}>
+                          {prevBest > 0 ? "🎉 New personal best!" : "🎉 First rep in the books!"}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 18 }}>Session complete</div>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 30 }}>
+                      {React.createElement(ScoreRing, { value: practiceFeedback.overall, size: 168, stroke: 13, color: "#e05a33", label: "overall" })}
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
+                    {/* Skill rings */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, justifyItems: "center", marginBottom: 30 }}>
                       {[
                         { label: "Clarity", score: practiceFeedback.clarity, color: "#10b981" },
                         { label: "Empathy", score: practiceFeedback.empathy, color: "#d4a03e" },
                         { label: "Persuasion", score: practiceFeedback.persuasion, color: "#e05a33" },
                         { label: "Confidence", score: practiceFeedback.confidence, color: "#3b82f6" }
-                      ].map((dim, i) => (
-                        <div key={i} style={{
-                          padding: "20px", borderRadius: 14, textAlign: "center",
-                          background: "#fff", border: "1px solid rgba(0,0,0,0.08)"
-                        }}>
-                          <div style={{ fontSize: 32, fontWeight: 700, color: dim.color, fontFamily: "'DM Mono', monospace" }}>{dim.score}</div>
-                          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 4 }}>{dim.label}</div>
-                        </div>
-                      ))}
+                      ].map((dim, i) => React.createElement(ScoreRing, { key: i, value: dim.score, size: 78, stroke: 7, color: dim.color, label: dim.label }))}
                     </div>
 
-                    <div style={{ marginBottom: 24 }}>
-                      <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Strengths</div>
+                    {/* Strengths first — build them up */}
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>✓ What worked</div>
                       {practiceFeedback.strengths.map((s, i) => (
-                        <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.65)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.3)", lineHeight: 1.6 }}>{s}</div>
+                        <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.72)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.4)", lineHeight: 1.6 }}>{s}</div>
                       ))}
                     </div>
 
-                    <div style={{ marginBottom: 24 }}>
-                      <div style={{ fontSize: 10, color: "#f59e0b", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Areas to Improve</div>
-                      {practiceFeedback.improvements.map((s, i) => (
-                        <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.65)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(245,158,11,0.3)", lineHeight: 1.6 }}>{s}</div>
-                      ))}
+                    {/* One fixable next step — the single highest-leverage fix */}
+                    {practiceFeedback.improvements && practiceFeedback.improvements.length > 0 && (
+                      <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.18)", marginBottom: 16 }}>
+                        <div style={{ fontSize: 10, color: "#d97706", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>→ Fix this next</div>
+                        <div style={{ fontSize: 15, color: "rgba(0,0,0,0.78)", lineHeight: 1.55, fontWeight: 500 }}>{practiceFeedback.improvements[0]}</div>
+                        {practiceFeedback.improvements.length > 1 && (
+                          <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(245,158,11,0.15)" }}>
+                            {practiceFeedback.improvements.slice(1).map((s, i) => (
+                              <div key={i} style={{ fontSize: 13, color: "rgba(0,0,0,0.55)", marginBottom: 4, lineHeight: 1.5 }}>• {s}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Model line — what a strong answer sounds like */}
+                    <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.14)", marginBottom: 16 }}>
+                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>💬 Try saying it like this</div>
+                      <div style={{ fontSize: 15, color: "rgba(0,0,0,0.78)", lineHeight: 1.65, fontStyle: "italic" }}>"{practiceFeedback.suggestedPhrasing}"</div>
                     </div>
 
-                    <div style={{
-                      padding: "16px 20px", borderRadius: 12,
-                      background: "rgba(224,90,51,0.04)", border: "1px solid rgba(224,90,51,0.1)",
-                      marginBottom: 24
-                    }}>
-                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Try This Phrasing</div>
-                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65, fontStyle: "italic" }}>{practiceFeedback.suggestedPhrasing}</div>
-                    </div>
-
-                    <div style={{
-                      padding: "16px 20px", borderRadius: 12,
-                      background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.1)",
-                      marginBottom: 32
-                    }}>
-                      <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Next Practice Focus</div>
-                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.65 }}>{practiceFeedback.nextFocus}</div>
+                    <div style={{ padding: "14px 20px", borderRadius: 14, background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.12)", marginBottom: 30 }}>
+                      <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>Next practice focus</div>
+                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>{practiceFeedback.nextFocus}</div>
                     </div>
 
                     {/* Conversation Review with Save Phrase */}
@@ -3786,28 +4112,236 @@ function Primed() {
                       </div>
                     )}
 
-                    <div style={{ display: "flex", gap: 12 }}>
-                      <button onClick={() => { setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); }} style={{
-                        padding: "12px 28px", borderRadius: 10, border: "none",
-                        background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700,
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                      <button className="pcta" onClick={() => { setCelebrate(false); setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); sendAIFirstMessage(practiceScenario, practicePersona); }} style={{
+                        padding: "14px 32px", borderRadius: 14, border: "none",
+                        background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer"
+                      }}>
+                        🔁 Run it back
+                      </button>
+                      <button onClick={() => {
+                        const fb = practiceFeedback;
+                        const persona = PERSONAS.find(p => p.id === practicePersona);
+                        const scTitle = (PRACTICE_SCENARIOS.find(s => s.id === practiceScenario) || {}).title || "a tough conversation";
+                        const txt = `I scored ${fb.overall}/100 on Primed — practicing "${scTitle}"${persona ? " vs. " + persona.name : ""}.\nClarity ${fb.clarity} · Empathy ${fb.empathy} · Persuasion ${fb.persuasion} · Confidence ${fb.confidence}\nGet reps in before the real call: primed.today`;
+                        if (navigator.share) { navigator.share({ title: "My Primed score", text: txt }).catch(() => {}); }
+                        else { navigator.clipboard.writeText(txt); setShareCopied(true); setTimeout(() => setShareCopied(false), 1800); }
+                      }} style={{
+                        padding: "13px 24px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.12)",
+                        background: "#fff", color: "rgba(0,0,0,0.7)", fontSize: 13, fontWeight: 700,
                         fontFamily: "'DM Mono', monospace", cursor: "pointer"
                       }}>
-                        Practice Again
+                        {shareCopied ? "✓ Copied" : "↗ Share"}
                       </button>
-                      <button onClick={() => { setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); }} style={{
-                        padding: "12px 28px", borderRadius: 10,
-                        border: "1px solid rgba(255,255,255,0.1)",
+                      <button onClick={() => { setCelebrate(false); setAppMode("home"); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); }} style={{
+                        padding: "13px 18px", borderRadius: 14, border: "none",
                         background: "transparent", color: "rgba(0,0,0,0.45)",
                         fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
                       }}>
-                        New Scenario
+                        Home
                       </button>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
           )}
+        </div>
+        )}
+
+        {appMode === "callprep" && (
+        <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Call Prep in 60 Seconds</div>
+              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#0d0d0d", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>Walk in ready</h2>
+              <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>Pick the situation and who you're talking to. We'll hand you an opening line, the objections you'll likely hear, and exactly what to say back — tuned to your market and voice. No typing required.</p>
+            </div>
+
+            {!cpResult && (
+              <div>
+                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>1 — What's the call?</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 28 }}>
+                  {CALLPREP_SITUATIONS.map(s => (
+                    <button key={s.id} onClick={() => setCpSituation(s.id)} style={{ textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer", background: cpSituation === s.id ? "rgba(224,90,51,0.07)" : "#fff", border: `1.5px solid ${cpSituation === s.id ? "#e05a33" : "rgba(0,0,0,0.08)"}`, transition: "all 160ms ease" }}>
+                      <div style={{ fontSize: 20, marginBottom: 6 }}>{s.icon}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{s.label}</div>
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>2 — Who's on the other side?</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginBottom: 28 }}>
+                  {CALLPREP_CLIENTS.map(c => (
+                    <button key={c.id} onClick={() => setCpClient(c.id)} style={{ textAlign: "left", padding: "12px 14px", borderRadius: 12, cursor: "pointer", background: cpClient === c.id ? "rgba(224,90,51,0.07)" : "#fff", border: `1.5px solid ${cpClient === c.id ? "#e05a33" : "rgba(0,0,0,0.08)"}`, transition: "all 160ms ease" }}>
+                      <span style={{ fontSize: 16, marginRight: 8 }}>{c.icon}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{c.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ display: "block", fontSize: 12, color: "rgba(0,0,0,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Anything specific? <span style={{ textTransform: "none", letterSpacing: 0, opacity: 0.7 }}>(optional)</span></label>
+                  <input type="text" value={cpRefine} onChange={e => setCpRefine(e.target.value)} placeholder="e.g., they've already had two price reductions" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#1a1a1a", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
+                </div>
+
+                <button className="pcta" onClick={runCallPrep} disabled={!cpSituation || !cpClient || cpLoading} style={{ padding: "16px 36px", borderRadius: 14, border: "none", background: (!cpSituation || !cpClient || cpLoading) ? "rgba(224,90,51,0.22)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: (!cpSituation || !cpClient || cpLoading) ? "rgba(224,90,51,0.6)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: (!cpSituation || !cpClient || cpLoading) ? "not-allowed" : "pointer" }}>{cpLoading ? "Prepping..." : "Prep Me →"}</button>
+              </div>
+            )}
+
+            {cpResult && cpResult.error && (
+              <div style={{ padding: "20px 24px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.18)", color: "#b3422a", fontSize: 14 }}>
+                {cpResult.error}
+                <div style={{ marginTop: 14 }}><button onClick={() => setCpResult(null)} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
+              </div>
+            )}
+
+            {cpResult && !cpResult.error && (
+              <div className="stagger">
+                <div style={{ marginBottom: 18, padding: "22px 24px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderLeft: "3px solid #e05a33" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Open With This</div>
+                    <button onClick={() => { navigator.clipboard.writeText(cpResult.openingLine || ""); setCpCopied(true); setTimeout(() => setCpCopied(false), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: cpCopied ? "rgba(16,185,129,0.08)" : "transparent", color: cpCopied ? "#10b981" : "rgba(0,0,0,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>{cpCopied ? "✓ Copied" : "Copy"}</button>
+                  </div>
+                  <div style={{ fontSize: 16, lineHeight: 1.65, color: "#1a1a1a", fontWeight: 500 }}>{cpResult.openingLine}</div>
+                </div>
+
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", margin: "26px 0 12px", fontWeight: 600 }}>Likely Objections & Your Responses</div>
+                {(cpResult.likelyObjections || []).map((o, i) => (
+                  <div key={i} style={{ marginBottom: 14, padding: "18px 22px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#0d0d0d", marginBottom: 10 }}>“{o.objection}”</div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ width: 3, borderRadius: 3, background: "#10b981", flexShrink: 0 }} />
+                      <div style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(0,0,0,0.7)" }}>{o.yourResponse}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {(cpResult.keyReminders || []).length > 0 && (
+                  <div style={{ marginTop: 18, padding: "20px 24px", borderRadius: 14, background: "rgba(212,160,62,0.05)", border: "1px solid rgba(212,160,62,0.14)" }}>
+                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Before You Dial</div>
+                    {cpResult.keyReminders.map((r, i) => (
+                      <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.65)" }}><span style={{ color: "#d4a03e" }}>•</span> {r}</div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
+                  <button onClick={() => { setCpResult(null); setCpSituation(null); setCpClient(null); setCpRefine(""); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>New Prep</button>
+                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice It Live →</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        )}
+
+        {appMode === "challenge" && (
+        <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
+          <div style={{ maxWidth: 680, margin: "0 auto" }}>
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Challenge Mode</div>
+              <h2 style={{ fontSize: 30, fontWeight: 700, color: "#0d0d0d", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>Beat the objection</h2>
+              <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>A real client objection, one shot to answer it. Get scored on confidence, empathy, persuasion, and clarity — with exactly how to make it stronger.</p>
+            </div>
+
+            {!chObjection && !chLoadingObj && (
+              <div style={{ textAlign: "center", padding: "50px 30px", borderRadius: 16, background: "#fff", border: "1px dashed rgba(0,0,0,0.12)" }}>
+                <div style={{ fontSize: 40, marginBottom: 16 }}>⚔</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: "#0d0d0d", marginBottom: 8 }}>Ready for a curveball?</div>
+                <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", lineHeight: 1.6, maxWidth: 380, margin: "0 auto 22px" }}>We'll throw you a tough, real-world objection. Answer it like the client is sitting right in front of you.</div>
+                <button className="pcta" onClick={loadChallengeObjection} style={{ padding: "15px 38px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Bring It On →</button>
+              </div>
+            )}
+
+            {chLoadingObj && (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(0,0,0,0.45)", fontSize: 13 }}>Loading your challenge...</div>
+            )}
+
+            {chObjection && !chScore && (
+              <div className="anim-slide">
+                <div style={{ padding: "26px 28px", borderRadius: 16, background: "linear-gradient(135deg, #1a1a1a 0%, #2a1410 100%)", marginBottom: 22 }}>
+                  <div style={{ fontSize: 10, color: "#e8674a", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{chObjection.category} · The client says</div>
+                  <div style={{ fontSize: 20, lineHeight: 1.5, color: "#fff", fontWeight: 600, fontFamily: "'Instrument Serif', Georgia, serif" }}>“{chObjection.objection}”</div>
+                  {chObjection.context && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 12, lineHeight: 1.5 }}>{chObjection.context}</div>}
+                </div>
+                <textarea value={chResponse} onChange={e => setChResponse(e.target.value)} placeholder="Type exactly what you'd say back..." style={{ width: "100%", minHeight: 130, padding: "16px 18px", background: "#fff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 12, color: "#1a1a1a", fontSize: 15, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
+                <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                  <button className="pcta" onClick={scoreChallenge} disabled={!chResponse.trim() || chScoring} style={{ padding: "15px 34px", borderRadius: 14, border: "none", background: (!chResponse.trim() || chScoring) ? "rgba(224,90,51,0.22)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: (!chResponse.trim() || chScoring) ? "rgba(224,90,51,0.6)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: (!chResponse.trim() || chScoring) ? "not-allowed" : "pointer" }}>{chScoring ? "Scoring..." : "Score Me"}</button>
+                  <button onClick={loadChallengeObjection} disabled={chScoring} style={{ padding: "13px 24px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>↻ Different objection</button>
+                </div>
+              </div>
+            )}
+
+            {chScore && chScore.error && (
+              <div style={{ padding: "20px 24px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.18)", color: "#b3422a", fontSize: 14 }}>
+                {chScore.error}
+                <div style={{ marginTop: 14 }}><button onClick={scoreChallenge} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
+              </div>
+            )}
+
+            {chScore && !chScore.error && (() => {
+              const tierColor = chScore.score >= 88 ? "#d4a03e" : chScore.score >= 70 ? "#10b981" : chScore.score >= 50 ? "#3b82f6" : "#e05a33";
+              return (
+              <div className="anim-pop">
+                {chScore.score >= 88 && <Confetti fire={true} />}
+                {/* Shareable score card */}
+                <div style={{ padding: "30px 28px", borderRadius: 18, background: "linear-gradient(135deg, #1a1a1a 0%, #2a1410 100%)", marginBottom: 22, position: "relative", overflow: "hidden" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+                    <ScoreRing value={chScore.score} size={118} stroke={9} color={tierColor} label={chScore.tier} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>{chObjection ? chObjection.category : ""} Objection</div>
+                      <div style={{ fontSize: 18, lineHeight: 1.45, color: "#fff", fontWeight: 600, fontFamily: "'Instrument Serif', Georgia, serif" }}>{chScore.shareLine}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 24 }}>
+                    {[["Confidence", chScore.breakdown && chScore.breakdown.confidence], ["Empathy", chScore.breakdown && chScore.breakdown.empathy], ["Persuasion", chScore.breakdown && chScore.breakdown.persuasion], ["Clarity", chScore.breakdown && chScore.breakdown.clarity]].map(([k, v]) => (
+                      <div key={k} style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "'Outfit', sans-serif" }}>{v != null ? v : "—"}</div>
+                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>{k}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 18, textAlign: "center" }}>
+                    <button onClick={() => { navigator.clipboard.writeText(chScore.shareLine + " — Primed (primed.today)"); setChShareCopied(true); setTimeout(() => setChShareCopied(false), 2000); }} style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.06)", color: chShareCopied ? "#10b981" : "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer" }}>{chShareCopied ? "✓ Copied" : "📋 Share result"}</button>
+                  </div>
+                </div>
+
+                <div style={{ padding: "18px 22px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Why this score</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(0,0,0,0.7)" }}>{chScore.why}</div>
+                </div>
+
+                {(chScore.didWell || []).length > 0 && (
+                  <div style={{ padding: "18px 22px", borderRadius: 14, background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.14)", marginBottom: 14 }}>
+                    <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>What you nailed</div>
+                    {chScore.didWell.map((d, i) => <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.7)" }}><span style={{ color: "#10b981" }}>✓</span> {d}</div>)}
+                  </div>
+                )}
+
+                {(chScore.improve || []).length > 0 && (
+                  <div style={{ padding: "18px 22px", borderRadius: 14, background: "rgba(212,160,62,0.05)", border: "1px solid rgba(212,160,62,0.14)", marginBottom: 14 }}>
+                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Make it sharper</div>
+                    {chScore.improve.map((d, i) => <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.7)" }}><span style={{ color: "#d4a03e" }}>→</span> {d}</div>)}
+                  </div>
+                )}
+
+                {chScore.modelAnswer && (
+                  <div style={{ padding: "20px 24px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderLeft: "3px solid #e05a33", marginBottom: 22 }}>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>How a closer says it</div>
+                    <div style={{ fontSize: 15, lineHeight: 1.7, color: "#1a1a1a" }}>{chScore.modelAnswer}</div>
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button className="pcta" onClick={loadChallengeObjection} style={{ padding: "14px 32px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Next Objection →</button>
+                  <button onClick={() => { setChObjection(null); setChScore(null); setChResponse(""); }} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Done</button>
+                </div>
+              </div>
+              );
+            })()}
+          </div>
         </div>
         )}
 

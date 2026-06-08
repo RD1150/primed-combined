@@ -197,3 +197,113 @@ BIGGEST PROBLEM THEY SOLVE: {problem}
 MEASURABLE RESULT: {result}
 TIMEFRAME: {timeframe}
 MARKET/AREA: {market}"""
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# CALL PREP IN 60 SECONDS — preset-driven, fixed 3-section output (JSON contract)
+# ────────────────────────────────────────────────────────────────────────────
+
+# Presets-first (P1): the agent picks a situation + client type rather than
+# typing into a blank box. Labels here are the server-owned source of truth; the
+# frontend sends the preset id, never raw prompt text.
+CALL_PREP_SITUATIONS = {
+    "listing": "Listing appointment — winning the listing and agreeing on price/terms",
+    "pricing": "Pricing discussion — the home is overpriced and a reduction is needed",
+    "expired": "Expired listing — re-listing a home that failed to sell with another agent",
+    "fsbo": "FSBO — converting a for-sale-by-owner into a listing client",
+    "buyer-hesitation": "Buyer hesitation — a buyer who keeps stalling on making an offer",
+    "offer-negotiation": "Offer negotiation — navigating offer, counter, and terms to a deal",
+}
+
+CALL_PREP_CLIENTS = {
+    "first-time": "First-time buyer/seller — anxious, needs education and reassurance",
+    "seller": "Home seller — focused on price, timeline, and net proceeds",
+    "investor": "Investor — numbers-driven, cares about returns and speed",
+    "luxury": "Luxury client — high expectations, discretion, white-glove service",
+    "relocation": "Relocating client — out-of-area, time-pressured, leaning on you as local expert",
+    "downsizer": "Downsizer / move-up — life transition, emotional and financial weight",
+}
+
+
+def call_prep_system(profile) -> str:
+    return f"""You are an elite real estate call coach. In 60 seconds you prepare an agent to walk into a specific conversation calm and ready. Be concrete, confident, and ready to say out loud — no theory, no filler.
+
+{profile_context(profile)}
+
+Tailor every line to the agent's market and voice. The "yourResponse" lines must sound like THIS agent could say them verbatim.
+
+Return ONLY valid JSON (no markdown, no backticks), exactly these keys and order:
+{{
+  "openingLine": "One strong opening line the agent can lead with — warm, specific, sets the frame.",
+  "likelyObjections": [
+    {{"objection": "What the client is likely to say", "yourResponse": "Exactly what the agent should say back — ready to deliver"}}
+  ],
+  "keyReminders": ["Short tactical reminder", "Another reminder"]
+}}
+
+Include exactly 3-4 likely objections (the most probable for THIS situation + client type, in order of likelihood) and 2-3 key reminders. Keep every string tight enough to glance at on a phone before the call."""
+
+
+def call_prep_user_msg(*, situation: str, client_type: str, refine: str = "") -> str:
+    sit = CALL_PREP_SITUATIONS.get(situation, situation or "a real estate conversation")
+    cli = CALL_PREP_CLIENTS.get(client_type, client_type or "a general client")
+    extra = f"\nADDITIONAL DETAIL FROM THE AGENT: {refine.strip()}" if refine and refine.strip() else ""
+    return f"""Prepare the agent for this call.
+
+SITUATION: {sit}
+CLIENT TYPE: {cli}{extra}
+
+Give the opening line, the likely objections with ready responses, and key reminders."""
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# CHALLENGE MODE — curated objection bank + encouraging-but-honest scoring
+# ────────────────────────────────────────────────────────────────────────────
+
+# Curated, recognizable objections only (P1: no obscure curveballs). Server-owned
+# so difficulty/quality is consistent and the client can't inject its own.
+CHALLENGE_OBJECTIONS = [
+    {"id": "commission", "category": "Commission", "objection": "Your commission is too high. Why would I pay 6% when discount brokers charge half that?", "context": "Seller pushing back on your fee at the listing table."},
+    {"id": "zillow", "category": "Pricing", "objection": "Zillow says my home is worth $80,000 more than what you're suggesting. Why are you so far off?", "context": "Seller anchoring on a Zestimate above your CMA."},
+    {"id": "wait-market", "category": "Timing", "objection": "We're going to wait for the market to get better before we list.", "context": "Seller stalling, hoping prices climb."},
+    {"id": "fsbo", "category": "FSBO", "objection": "We've decided to just sell it ourselves and save the commission.", "context": "Owner leaning toward for-sale-by-owner."},
+    {"id": "other-agent-higher", "category": "Pricing", "objection": "Another agent said they could list it for $50,000 more than you. Why should I go with you?", "context": "Seller tempted by a buy-the-listing pitch."},
+    {"id": "think-about-it", "category": "Stalling", "objection": "This all sounds good, but we need some time to think about it.", "context": "Classic end-of-appointment stall."},
+    {"id": "interview-others", "category": "Competition", "objection": "We're interviewing a few other agents before we decide.", "context": "Seller comparison-shopping agents."},
+    {"id": "buyer-lowball", "category": "Negotiation", "objection": "I want to come in $40,000 under asking — the place has been sitting, so they're probably desperate.", "context": "Buyer pushing an aggressive lowball you have to manage."},
+    {"id": "no-hurry", "category": "Timing", "objection": "We're not in any hurry, so let's just see what happens.", "context": "Buyer with no urgency, slow-walking the search."},
+    {"id": "family-agent", "category": "Loyalty", "objection": "My cousin just got their license — I kind of feel like I should give them the business.", "context": "Relationship-based objection to hiring you."},
+]
+
+
+def challenge_system(profile) -> str:
+    return f"""You are the head coach of an elite real estate sales gym, scoring how an agent handled a tough client objection. Your job is to be HONEST but ENCOURAGING — this agent is building confidence, and the result is shareable, so it must be fair, transparent, and never demoralizing. Reward real skill; coach the gaps without shaming.
+
+{profile_context(profile)}
+
+Scoring rules:
+- Be transparent: the "why" must explain in plain language exactly what earned or cost points.
+- Be fair: a genuinely good response scores 80+. Reserve sub-50 for responses that are empty, evasive, or make things worse.
+- Always coach: even a top score gets one sharper improvement and a model line.
+- The "modelAnswer" must sound like THIS agent could say it (their market, their tone).
+
+Return ONLY valid JSON (no markdown, no backticks), exactly these keys:
+{{
+  "score": 0-100,
+  "tier": "One of: Rookie, Contender, Closer, Elite (map from score: <50 Rookie, 50-69 Contender, 70-87 Closer, 88-100 Elite)",
+  "breakdown": {{"confidence": 0-100, "empathy": 0-100, "persuasion": 0-100, "clarity": 0-100}},
+  "why": "2-3 sentences, plain language, explaining the score transparently.",
+  "didWell": ["Specific thing the agent did well", "Another"],
+  "improve": ["One specific, fixable improvement phrased constructively (e.g. 'Anchor with a number before reframing')"],
+  "modelAnswer": "A strong, ready-to-say response to this exact objection, in the agent's voice.",
+  "shareLine": "A punchy one-line takeaway for a shareable result card (e.g. 'Handled the commission objection like a Closer — 84/100')."
+}}"""
+
+
+def challenge_user_msg(*, objection: str, category: str, response: str) -> str:
+    return f"""OBJECTION CATEGORY: {category}
+CLIENT SAID: "{objection}"
+
+AGENT'S RESPONSE: "{response.strip()}"
+
+Score how the agent handled it."""
