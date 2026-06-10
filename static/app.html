@@ -1467,9 +1467,9 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
   };
 
   const ov = { position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 };
-  const card = { background: "#fff", borderRadius: 16, maxWidth: 540, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: "28px 28px 24px", fontFamily: "'Figtree',sans-serif", boxShadow: "0 24px 64px rgba(0,0,0,0.25)" };
+  const card = { background: "#fff", borderRadius: 16, maxWidth: 540, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: "28px 28px 24px", fontFamily: "'Figtree', sans-serif", boxShadow: "0 24px 64px rgba(0,0,0,0.25)" };
   const labelS = { fontSize: 12, fontWeight: 700, color: "#0F172A", marginBottom: 6, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase" };
-  const inputS = { width: "100%", padding: "11px 13px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", fontSize: 14, fontFamily: "'Figtree',sans-serif", boxSizing: "border-box", marginBottom: 18 };
+  const inputS = { width: "100%", padding: "11px 13px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", fontSize: 14, fontFamily: "'Figtree', sans-serif", boxSizing: "border-box", marginBottom: 18 };
   const chip = (on) => ({ padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.15)"}`, background: on ? "#e05a33" : "transparent", color: on ? "#fff" : "rgba(0,0,0,0.6)", transition: "all 140ms ease" });
 
   return (
@@ -1542,7 +1542,7 @@ function ScoreRing({ value, size = 132, stroke = 10, color = "#e05a33", label, s
         style: { "--circ": circ + "px", "--off": off + "px", strokeDashoffset: off + "px", animation: "ringDraw 1100ms cubic-bezier(0.22,1,0.36,1) both" } })
     ),
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
-      React.createElement("div", { style: { fontSize: Math.round(size * 0.32), fontWeight: 800, color: "#0F172A", fontFamily: "'Figtree',sans-serif", lineHeight: 1 } }, display),
+      React.createElement("div", { style: { fontSize: Math.round(size * 0.32), fontWeight: 800, color: "#0F172A", fontFamily: "'Figtree', sans-serif", lineHeight: 1 } }, display),
       label && React.createElement("div", { style: { fontSize: Math.max(9, Math.round(size * 0.075)), color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 } }, label),
       sub && React.createElement("div", { style: { fontSize: 10, color: "rgba(0,0,0,0.4)", marginTop: 2 } }, sub)
     )
@@ -2491,7 +2491,7 @@ function Primed() {
   // ── STYLES (Light Theme) ──
   const S = {
     app: {
-      fontFamily: "'Figtree','Helvetica Neue', sans-serif",
+      fontFamily: "'Figtree', 'Helvetica Neue', sans-serif",
       minHeight: "100vh",
       background: "#f8f7f4",
       color: "#2a231d",
@@ -2521,7 +2521,7 @@ function Primed() {
     },
     logoText: {
       fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em",
-      color: "#2a231d", margin: 0, fontFamily: "'Figtree',sans-serif"
+      color: "#2a231d", margin: 0, fontFamily: "'Figtree', sans-serif"
     },
     tagline: {
       fontSize: 12, color: "rgba(42,33,24,0.5)", letterSpacing: "0.12em",
@@ -2533,11 +2533,11 @@ function Primed() {
     },
     main: { display: "flex", flex: 1, overflow: "hidden" },
     sidebar: {
-      width: 340, borderRight: "1px solid rgba(0,0,0,0.08)",
-      display: "flex", flexDirection: "column", background: "#ececea", flexShrink: 0
+      width: 340, borderRight: "1px solid rgba(0,0,0,0.07)",
+      display: "flex", flexDirection: "column", background: "#f1eee8", flexShrink: 0
     },
     sidebarControls: {
-      padding: "16px 16px 12px", borderBottom: "1px solid rgba(0,0,0,0.1)", flexShrink: 0
+      padding: "18px 16px 14px", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0
     },
     searchInput: {
       width: "100%", padding: "10px 14px", background: "#fff",
@@ -2554,18 +2554,18 @@ function Primed() {
       cursor: "pointer", transition: "all 0.2s",
       fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.02em"
     }),
-    scenarioList: { flex: 1, overflowY: "auto", padding: "8px 6px" },
+    scenarioList: { flex: 1, overflowY: "auto", padding: "10px 10px 16px" },
     scenarioCard: (active) => ({
-      padding: "7px 10px 7px 8px", borderRadius: 6, marginBottom: 1, cursor: "pointer",
+      padding: "10px 12px 10px 11px", borderRadius: 9, marginBottom: 3, cursor: "pointer",
       background: active ? "#fff" : "transparent",
       borderLeft: `3px solid ${active ? "#e05a33" : "transparent"}`,
       boxShadow: active ? "0 1px 4px rgba(0,0,0,0.10)" : "none",
       transition: "background 160ms ease, box-shadow 160ms ease"
     }),
     cardTitle: (active) => ({
-      fontSize: 13, fontWeight: active ? 700 : 500, color: "#2a231d",
-      display: "flex", alignItems: "center", gap: 8,
-      lineHeight: 1.3
+      fontSize: 13.5, fontWeight: active ? 700 : 500, color: "#2a231d",
+      display: "flex", alignItems: "center", gap: 9,
+      lineHeight: 1.4
     }),
     cardIconBox: {
       width: 18, display: "inline-flex", justifyContent: "center",
@@ -2577,7 +2577,7 @@ function Primed() {
       textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace"
     },
     generateBtn: {
-      margin: "10px 10px 14px", padding: "12px 16px", borderRadius: 12,
+      margin: "12px 12px 16px", padding: "13px 16px", borderRadius: 12,
       border: "1px dashed rgba(0,0,0,0.22)", background: "#fff",
       color: "#2a231d", fontSize: 13, fontWeight: 600, cursor: "pointer",
       textAlign: "center", transition: "all 160ms ease-out", fontFamily: "'IBM Plex Mono', monospace",
@@ -2993,7 +2993,7 @@ function Primed() {
           <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 40, justifyContent: "center" }}>
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e05a33", boxShadow: "0 0 8px rgba(224,90,51,0.3)" }} />
-              <span style={{ fontSize: 28, fontWeight: 700, color: "#2a231d", fontFamily: "'Figtree',sans-serif" }}>primed</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: "#2a231d", fontFamily: "'Figtree', sans-serif" }}>primed</span>
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 400, color: "#2a231d", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
               {authScreen === "login" ? "Welcome back." :
@@ -3015,17 +3015,17 @@ function Primed() {
             )}
             {authScreen === "signup" && (
               <input type="text" placeholder="Your name" value={authName} onChange={e => setAuthName(e.target.value)}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup" || authScreen === "forgot") && (
               <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") { authScreen === "forgot" ? handleForgot() : handleAuth(authScreen === "signup"); } }}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup" || authScreen === "reset") && (
               <input type="password" placeholder={authScreen === "reset" ? "New password (8+ characters)" : "Password"} value={authPass} onChange={e => setAuthPass(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") { authScreen === "reset" ? handleReset() : handleAuth(authScreen === "signup"); } }}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup") && (
               <button className="pcta" onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading}
@@ -3211,7 +3211,7 @@ function Primed() {
               padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer",
               background: on ? "rgba(42,33,24,0.07)" : "transparent",
               color: on ? "#2a231d" : "rgba(42,33,24,0.55)",
-              fontSize: 15, fontWeight: on ? 600 : 500, fontFamily: "'Figtree',sans-serif",
+              fontSize: 15, fontWeight: on ? 600 : 500, fontFamily: "'Figtree', sans-serif",
               letterSpacing: "-0.005em", transition: "background 140ms ease, color 140ms ease"
             }}>
               <span style={{ fontSize: 15, color: on ? "#e05a33" : "rgba(42,33,24,0.4)", transition: "color 140ms ease" }}>{m.icon}</span>{m.label}
@@ -3241,7 +3241,7 @@ function Primed() {
                 return (
                   <>
                     <div style={{ marginBottom: 22 }}>
-                      <div style={{ fontSize: 18, color: "rgba(42,33,24,0.6)", fontFamily: "'Figtree',sans-serif", fontWeight: 500 }}>{greet},</div>
+                      <div style={{ fontSize: 18, color: "rgba(42,33,24,0.6)", fontFamily: "'Figtree', sans-serif", fontWeight: 500 }}>{greet},</div>
                       <h2 style={{ fontSize: 48, fontWeight: 400, color: "#21190f", letterSpacing: "-0.01em", margin: "0", fontFamily: "'Instrument Serif', Georgia, serif", lineHeight: 1.05 }}>{firstName}</h2>
                     </div>
 
@@ -3253,7 +3253,7 @@ function Primed() {
                         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 6 }}>
                           <div style={{ width: 4, alignSelf: "stretch", minHeight: 42, borderRadius: 4, background: todayRep.color || "#e05a33", opacity: 0.95 }} />
                           <div>
-                            <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em", fontFamily: "'Figtree',sans-serif" }}>{todayRep.label}</div>
+                            <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em", fontFamily: "'Figtree', sans-serif" }}>{todayRep.label}</div>
                             <div style={{ fontSize: 14.5, color: "rgba(255,255,255,0.65)", marginTop: 4 }}>{todayRep.desc}</div>
                           </div>
                         </div>
@@ -3273,7 +3273,7 @@ function Primed() {
                         <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ width: 6, height: 6, borderRadius: "50%", background: t.accent, flexShrink: 0 }} />
-                            <div style={{ fontSize: 36, fontWeight: 800, color: "#2a231d", fontFamily: "'Figtree',sans-serif", lineHeight: 1, letterSpacing: "-0.02em" }}>{t.big}</div>
+                            <div style={{ fontSize: 36, fontWeight: 800, color: "#2a231d", fontFamily: "'Figtree', sans-serif", lineHeight: 1, letterSpacing: "-0.02em" }}>{t.big}</div>
                           </div>
                           <div style={{ fontSize: 11, color: "rgba(42,33,24,0.5)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 10 }}>{t.label}</div>
                         </div>
@@ -3386,14 +3386,14 @@ function Primed() {
                       onClick={() => setCollapsedSections(prev => ({ ...prev, [sectionKey]: !prev[sectionKey] }))}
                       style={{
                         display: "flex", alignItems: "center", gap: 8,
-                        padding: "6px 8px 5px",
-                        fontSize: 11, fontWeight: 700,
+                        padding: "14px 8px 7px",
+                        fontSize: 12, fontWeight: 700,
                         color: "#2a231d",
-                        fontFamily: "'Figtree',sans-serif",
+                        fontFamily: "'Figtree', sans-serif",
                         letterSpacing: "-0.005em",
                         cursor: "pointer", userSelect: "none",
                         position: "sticky", top: 0, zIndex: 2,
-                        background: "#ececea"
+                        background: "#f1eee8"
                       }}
                     >
                       <span style={{
@@ -3413,11 +3413,11 @@ function Primed() {
 
                 const subHeader = (label, _count, isFirst) => (
                   <div style={{
-                    padding: isFirst ? "0 8px 2px 18px" : "8px 8px 2px 18px",
-                    fontSize: 9, fontWeight: 700,
-                    color: "rgba(0,0,0,0.4)",
+                    padding: isFirst ? "2px 8px 4px 18px" : "10px 8px 4px 18px",
+                    fontSize: 9.5, fontWeight: 700,
+                    color: "rgba(0,0,0,0.42)",
                     fontFamily: "'Figtree', sans-serif",
-                    letterSpacing: "0.1em", textTransform: "uppercase"
+                    letterSpacing: "0.11em", textTransform: "uppercase"
                   }}>
                     {label}
                   </div>
@@ -3683,7 +3683,7 @@ function Primed() {
                 
                 {/* GET PRIMED - Hero Section */}
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Figtree',sans-serif" }}>Get Primed</h2>
+                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Figtree', sans-serif" }}>Get Primed</h2>
                   <p style={{ fontSize: 15, color: "rgba(0,0,0,0.5)", marginBottom: 28, letterSpacing: "0.01em" }}>Practice the conversation before it matters.</p>
                   <button className="pcta" onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
                     padding: "18px 44px", borderRadius: 16, border: "none",
@@ -4312,7 +4312,7 @@ function Primed() {
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 24 }}>
                     {[["Confidence", chScore.breakdown && chScore.breakdown.confidence], ["Empathy", chScore.breakdown && chScore.breakdown.empathy], ["Persuasion", chScore.breakdown && chScore.breakdown.persuasion], ["Clarity", chScore.breakdown && chScore.breakdown.clarity]].map(([k, v]) => (
                       <div key={k} style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "'Figtree',sans-serif" }}>{v != null ? v : "—"}</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "'Figtree', sans-serif" }}>{v != null ? v : "—"}</div>
                         <div style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>{k}</div>
                       </div>
                     ))}
