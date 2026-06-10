@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.2/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
@@ -1467,10 +1467,10 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
   };
 
   const ov = { position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 };
-  const card = { background: "#fff", borderRadius: 16, maxWidth: 540, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: "28px 28px 24px", fontFamily: "'Figtree', 'Outfit', sans-serif", boxShadow: "0 24px 64px rgba(0,0,0,0.25)" };
-  const labelS = { fontSize: 12, fontWeight: 700, color: "#0F172A", marginBottom: 6, fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase" };
-  const inputS = { width: "100%", padding: "11px 13px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", fontSize: 14, fontFamily: "'Figtree', 'Outfit', sans-serif", boxSizing: "border-box", marginBottom: 18 };
-  const chip = (on) => ({ padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.15)"}`, background: on ? "#e05a33" : "transparent", color: on ? "#fff" : "rgba(0,0,0,0.6)", transition: "all 140ms ease" });
+  const card = { background: "#fff", borderRadius: 16, maxWidth: 540, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: "28px 28px 24px", fontFamily: "'Figtree',sans-serif", boxShadow: "0 24px 64px rgba(0,0,0,0.25)" };
+  const labelS = { fontSize: 12, fontWeight: 700, color: "#0F172A", marginBottom: 6, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase" };
+  const inputS = { width: "100%", padding: "11px 13px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", fontSize: 14, fontFamily: "'Figtree',sans-serif", boxSizing: "border-box", marginBottom: 18 };
+  const chip = (on) => ({ padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.15)"}`, background: on ? "#e05a33" : "transparent", color: on ? "#fff" : "rgba(0,0,0,0.6)", transition: "all 140ms ease" });
 
   return (
     React.createElement("div", { style: ov, onClick: (e) => { if (e.target === e.currentTarget) onClose(); } },
@@ -1498,8 +1498,8 @@ function ProfileModal({ initial, onSaved, onClose, canClose }) {
         err && React.createElement("div", { style: { color: "#dc2626", fontSize: 12, marginBottom: 12 } }, err),
 
         React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } },
-          React.createElement("button", { onClick: onClose, style: { padding: "10px 18px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Mono', monospace" } }, canClose ? "Cancel" : "Skip for now"),
-          React.createElement("button", { onClick: save, disabled: saving, style: { padding: "10px 22px", borderRadius: 9, border: "none", background: canSave ? "#e05a33" : "rgba(0,0,0,0.2)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "default" : "pointer", fontFamily: "'DM Mono', monospace" } }, saving ? "Saving…" : "Save profile")
+          React.createElement("button", { onClick: onClose, style: { padding: "10px 18px", borderRadius: 9, border: "1px solid rgba(0,0,0,0.14)", background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace" } }, canClose ? "Cancel" : "Skip for now"),
+          React.createElement("button", { onClick: save, disabled: saving, style: { padding: "10px 22px", borderRadius: 9, border: "none", background: canSave ? "#e05a33" : "rgba(0,0,0,0.2)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "default" : "pointer", fontFamily: "'IBM Plex Mono', monospace" } }, saving ? "Saving…" : "Save profile")
         )
       )
     )
@@ -1542,8 +1542,8 @@ function ScoreRing({ value, size = 132, stroke = 10, color = "#e05a33", label, s
         style: { "--circ": circ + "px", "--off": off + "px", strokeDashoffset: off + "px", animation: "ringDraw 1100ms cubic-bezier(0.22,1,0.36,1) both" } })
     ),
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
-      React.createElement("div", { style: { fontSize: Math.round(size * 0.32), fontWeight: 800, color: "#0F172A", fontFamily: "'Figtree', 'Outfit', sans-serif", lineHeight: 1 } }, display),
-      label && React.createElement("div", { style: { fontSize: Math.max(9, Math.round(size * 0.075)), color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 } }, label),
+      React.createElement("div", { style: { fontSize: Math.round(size * 0.32), fontWeight: 800, color: "#0F172A", fontFamily: "'Figtree',sans-serif", lineHeight: 1 } }, display),
+      label && React.createElement("div", { style: { fontSize: Math.max(9, Math.round(size * 0.075)), color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 } }, label),
       sub && React.createElement("div", { style: { fontSize: 10, color: "rgba(0,0,0,0.4)", marginTop: 2 } }, sub)
     )
   );
@@ -2491,7 +2491,7 @@ function Primed() {
   // ── STYLES (Light Theme) ──
   const S = {
     app: {
-      fontFamily: "'Figtree', 'Outfit', 'Helvetica Neue', sans-serif",
+      fontFamily: "'Figtree','Helvetica Neue', sans-serif",
       minHeight: "100vh",
       background: "#f8f7f4",
       color: "#2a231d",
@@ -2521,11 +2521,11 @@ function Primed() {
     },
     logoText: {
       fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em",
-      color: "#2a231d", margin: 0, fontFamily: "'Figtree', 'Outfit', sans-serif"
+      color: "#2a231d", margin: 0, fontFamily: "'Figtree',sans-serif"
     },
     tagline: {
       fontSize: 12, color: "rgba(42,33,24,0.5)", letterSpacing: "0.12em",
-      textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400
+      textTransform: "uppercase", fontFamily: "'Figtree', sans-serif", fontWeight: 600
     },
     headerRight: {
       fontSize: 11, color: "rgba(224,90,51,0.8)",
@@ -2980,7 +2980,7 @@ function Primed() {
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
       {/* ═══ AUTH SCREEN ═══ */}
       {authScreen && (
@@ -2993,7 +2993,7 @@ function Primed() {
           <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 40, justifyContent: "center" }}>
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e05a33", boxShadow: "0 0 8px rgba(224,90,51,0.3)" }} />
-              <span style={{ fontSize: 28, fontWeight: 700, color: "#2a231d", fontFamily: "'Figtree', 'Outfit', sans-serif" }}>primed</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: "#2a231d", fontFamily: "'Figtree',sans-serif" }}>primed</span>
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 400, color: "#2a231d", textAlign: "center", marginBottom: 8, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
               {authScreen === "login" ? "Welcome back." :
@@ -3015,17 +3015,17 @@ function Primed() {
             )}
             {authScreen === "signup" && (
               <input type="text" placeholder="Your name" value={authName} onChange={e => setAuthName(e.target.value)}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', 'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup" || authScreen === "forgot") && (
               <input type="email" placeholder="Email address" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") { authScreen === "forgot" ? handleForgot() : handleAuth(authScreen === "signup"); } }}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', 'Outfit', sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 12, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup" || authScreen === "reset") && (
               <input type="password" placeholder={authScreen === "reset" ? "New password (8+ characters)" : "Password"} value={authPass} onChange={e => setAuthPass(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") { authScreen === "reset" ? handleReset() : handleAuth(authScreen === "signup"); } }}
-                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree', 'Outfit', sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "13px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "'Figtree',sans-serif", outline: "none", marginBottom: 20, boxSizing: "border-box" }} />
             )}
             {(authScreen === "login" || authScreen === "signup") && (
               <button className="pcta" onClick={() => handleAuth(authScreen === "signup")} disabled={authLoading}
@@ -3152,10 +3152,10 @@ function Primed() {
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             {gameStats && gameStats.hasData && (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span title={gameStats.streak + " day streak"} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: gameStats.streak > 0 ? "rgba(224,90,51,0.1)" : "rgba(0,0,0,0.05)", border: "1px solid " + (gameStats.streak > 0 ? "rgba(224,90,51,0.25)" : "rgba(0,0,0,0.08)"), fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: gameStats.streak > 0 ? "#c2410c" : "rgba(0,0,0,0.4)" }}>
+                <span title={gameStats.streak + " day streak"} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: gameStats.streak > 0 ? "rgba(224,90,51,0.1)" : "rgba(0,0,0,0.05)", border: "1px solid " + (gameStats.streak > 0 ? "rgba(224,90,51,0.25)" : "rgba(0,0,0,0.08)"), fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 600, color: gameStats.streak > 0 ? "#c2410c" : "rgba(0,0,0,0.4)" }}>
                   <span style={{ display: "inline-block", animation: gameStats.streak > 0 ? "flameFlicker 1.6s ease-in-out infinite" : "none" }}>🔥</span>{gameStats.streak}
                 </span>
-                <span title="Reps banked (total score earned)" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: "rgba(212,160,62,0.12)", border: "1px solid rgba(212,160,62,0.28)", fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: "#b8860b" }}>
+                <span title="Reps banked (total score earned)" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: "rgba(212,160,62,0.12)", border: "1px solid rgba(212,160,62,0.28)", fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 600, color: "#b8860b" }}>
                   ⚡{gameStats.xp}
                 </span>
               </div>
@@ -3211,7 +3211,7 @@ function Primed() {
               padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer",
               background: on ? "rgba(42,33,24,0.07)" : "transparent",
               color: on ? "#2a231d" : "rgba(42,33,24,0.55)",
-              fontSize: 15, fontWeight: on ? 600 : 500, fontFamily: "'Figtree', 'Outfit', sans-serif",
+              fontSize: 15, fontWeight: on ? 600 : 500, fontFamily: "'Figtree',sans-serif",
               letterSpacing: "-0.005em", transition: "background 140ms ease, color 140ms ease"
             }}>
               <span style={{ fontSize: 15, color: on ? "#e05a33" : "rgba(42,33,24,0.4)", transition: "color 140ms ease" }}>{m.icon}</span>{m.label}
@@ -3241,7 +3241,7 @@ function Primed() {
                 return (
                   <>
                     <div style={{ marginBottom: 22 }}>
-                      <div style={{ fontSize: 18, color: "rgba(42,33,24,0.6)", fontFamily: "'Figtree', 'Outfit', sans-serif", fontWeight: 500 }}>{greet},</div>
+                      <div style={{ fontSize: 18, color: "rgba(42,33,24,0.6)", fontFamily: "'Figtree',sans-serif", fontWeight: 500 }}>{greet},</div>
                       <h2 style={{ fontSize: 48, fontWeight: 400, color: "#21190f", letterSpacing: "-0.01em", margin: "0", fontFamily: "'Instrument Serif', Georgia, serif", lineHeight: 1.05 }}>{firstName}</h2>
                     </div>
 
@@ -3249,11 +3249,11 @@ function Primed() {
                     <div className="anim-pop" style={{ position: "relative", borderRadius: 22, padding: "28px 28px 26px", marginBottom: 22, overflow: "hidden", background: "linear-gradient(135deg, #1a1410 0%, #2a1b14 55%, #3a2114 100%)", boxShadow: "0 18px 44px rgba(58,33,20,0.28)" }}>
                       <div style={{ position: "absolute", top: -40, right: -30, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(224,90,51,0.4), transparent 70%)" }} />
                       <div style={{ position: "relative" }}>
-                        <div style={{ fontSize: 11.5, color: "#f0a58c", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Today's rep</div>
+                        <div style={{ fontSize: 11.5, color: "#f0a58c", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Today's rep</div>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 6 }}>
                           <div style={{ width: 4, alignSelf: "stretch", minHeight: 42, borderRadius: 4, background: todayRep.color || "#e05a33", opacity: 0.95 }} />
                           <div>
-                            <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em", fontFamily: "'Figtree', 'Outfit', sans-serif" }}>{todayRep.label}</div>
+                            <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em", fontFamily: "'Figtree',sans-serif" }}>{todayRep.label}</div>
                             <div style={{ fontSize: 14.5, color: "rgba(255,255,255,0.65)", marginTop: 4 }}>{todayRep.desc}</div>
                           </div>
                         </div>
@@ -3273,9 +3273,9 @@ function Primed() {
                         <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "18px 18px", border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <span style={{ width: 6, height: 6, borderRadius: "50%", background: t.accent, flexShrink: 0 }} />
-                            <div style={{ fontSize: 36, fontWeight: 800, color: "#2a231d", fontFamily: "'Figtree', 'Outfit', sans-serif", lineHeight: 1, letterSpacing: "-0.02em" }}>{t.big}</div>
+                            <div style={{ fontSize: 36, fontWeight: 800, color: "#2a231d", fontFamily: "'Figtree',sans-serif", lineHeight: 1, letterSpacing: "-0.02em" }}>{t.big}</div>
                           </div>
-                          <div style={{ fontSize: 11, color: "rgba(42,33,24,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 10 }}>{t.label}</div>
+                          <div style={{ fontSize: 11, color: "rgba(42,33,24,0.5)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 10 }}>{t.label}</div>
                         </div>
                       ))}
                     </div>
@@ -3283,7 +3283,7 @@ function Primed() {
                     {/* Skill rings */}
                     {gs.hasData && (
                       <div style={{ background: "#fff", borderRadius: 18, padding: "22px 20px", marginBottom: 22, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
-                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18 }}>Your skills · average</div>
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18 }}>Your skills · average</div>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, justifyItems: "center" }}>
                           {skills.map(sk => React.createElement(ScoreRing, { key: sk.key, value: gs.avg[sk.key] || 0, size: 84, stroke: 7, color: sk.color, label: sk.label }))}
                         </div>
@@ -3291,7 +3291,7 @@ function Primed() {
                     )}
 
                     {/* Jump back in */}
-                    <div style={{ fontSize: 11.5, color: "rgba(42,33,24,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Jump back in</div>
+                    <div style={{ fontSize: 11.5, color: "rgba(42,33,24,0.5)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 14 }}>Jump back in</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12 }}>
                       {[
                         { id: "practice", icon: "◎", label: "Practice", sub: "Role-play a client" },
@@ -3389,7 +3389,7 @@ function Primed() {
                         padding: "6px 8px 5px",
                         fontSize: 11, fontWeight: 700,
                         color: "#2a231d",
-                        fontFamily: "'Figtree', 'Outfit', sans-serif",
+                        fontFamily: "'Figtree',sans-serif",
                         letterSpacing: "-0.005em",
                         cursor: "pointer", userSelect: "none",
                         position: "sticky", top: 0, zIndex: 2,
@@ -3414,9 +3414,9 @@ function Primed() {
                 const subHeader = (label, _count, isFirst) => (
                   <div style={{
                     padding: isFirst ? "0 8px 2px 18px" : "8px 8px 2px 18px",
-                    fontSize: 9, fontWeight: 600,
+                    fontSize: 9, fontWeight: 700,
                     color: "rgba(0,0,0,0.4)",
-                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontFamily: "'Figtree', sans-serif",
                     letterSpacing: "0.1em", textTransform: "uppercase"
                   }}>
                     {label}
@@ -3499,7 +3499,7 @@ function Primed() {
                   </div>
                   <div style={S.cardMeta}>
                     <span style={S.categoryTag}>{generatedScenario.category}</span>
-                    <span style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace" }}>AI GENERATED</span>
+                    <span style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace" }}>AI GENERATED</span>
                   </div>
                 </div>
               )}
@@ -3683,7 +3683,7 @@ function Primed() {
                 
                 {/* GET PRIMED - Hero Section */}
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Figtree', 'Outfit', sans-serif" }}>Get Primed</h2>
+                  <h2 style={{ fontSize: 36, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "'Figtree',sans-serif" }}>Get Primed</h2>
                   <p style={{ fontSize: 15, color: "rgba(0,0,0,0.5)", marginBottom: 28, letterSpacing: "0.01em" }}>Practice the conversation before it matters.</p>
                   <button className="pcta" onClick={() => quickLaunch(selectedQuickStart || QUICK_STARTS[0])} style={{
                     padding: "18px 44px", borderRadius: 16, border: "none",
@@ -3729,7 +3729,7 @@ function Primed() {
                 </div>
 
                 {/* Existing Scenario Picker */}
-                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Scenario</div>
+                <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Choose Scenario</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10, marginBottom: 40 }}>
                   {PRACTICE_SCENARIOS.map(s => {
@@ -3753,7 +3753,7 @@ function Primed() {
 
                 {practiceScenario && (
                   <>
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Pick your sparring partner</div>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Pick your sparring partner</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12, marginBottom: 28 }}>
                       {PERSONAS.map(p => {
                         const sel = practicePersona === p.id;
@@ -3769,15 +3769,15 @@ function Primed() {
                         }}>
                           <span style={{
                             position: "absolute", top: 12, right: 12, padding: "3px 9px", borderRadius: 6, fontSize: 9, fontWeight: 700,
-                            fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
+                            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
                             background: p.difficulty === "Hard" ? "rgba(239,68,68,0.12)" : "rgba(245,158,11,0.12)",
                             color: p.difficulty === "Hard" ? "#dc2626" : "#d97706"
                           }}>{p.difficulty}</span>
                           <div style={{ width: 54, height: 54, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 12, background: p.color + "1a", border: `2px solid ${p.color}40` }}>{p.icon}</div>
                           <div style={{ fontSize: 16, fontWeight: 700, color: "#2a231d", letterSpacing: "-0.01em" }}>{nm}</div>
-                          {role && <div style={{ fontSize: 11, color: p.color, fontWeight: 600, fontFamily: "'DM Mono', monospace", letterSpacing: "0.01em", marginTop: 1, marginBottom: 8 }}>{role}</div>}
+                          {role && <div style={{ fontSize: 11, color: p.color, fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.01em", marginTop: 1, marginBottom: 8 }}>{role}</div>}
                           <div style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", lineHeight: 1.5 }}>{p.traits}</div>
-                          {sel && <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 11, fontWeight: 700, color: p.color, fontFamily: "'DM Mono', monospace" }}><span>✓</span> Selected</div>}
+                          {sel && <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 11, fontWeight: 700, color: p.color, fontFamily: "'IBM Plex Mono', monospace" }}><span>✓</span> Selected</div>}
                         </div>
                       );})}
                     </div>
@@ -3786,12 +3786,12 @@ function Primed() {
 
                 {practiceScenario && practicePersona && (
                   <>
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Difficulty</div>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Difficulty</div>
                     <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
                       {["easy", "medium", "hard"].map(d => (
                         <button key={d} onClick={() => setPracticeDifficulty(d)} style={{
                           padding: "8px 20px", borderRadius: 8, fontSize: 12, fontWeight: 600,
-                          fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase",
+                          fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase",
                           border: `1px solid ${practiceDifficulty === d ? "#0F172A" : "rgba(0,0,0,0.1)"}`,
                           background: practiceDifficulty === d ? "#0F172A" : "transparent",
                           color: practiceDifficulty === d ? "#F5F0E8" : "rgba(0,0,0,0.45)",
@@ -3800,7 +3800,7 @@ function Primed() {
                       ))}
                     </div>
 
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Context (Optional)</div>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Context (Optional)</div>
                     <textarea
                       value={practiceContext}
                       onChange={e => setPracticeContext(e.target.value)}
@@ -3841,7 +3841,7 @@ function Primed() {
                   <span style={{ fontSize: 20 }}>{PERSONAS.find(p => p.id === practicePersona)?.icon}</span>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#2a231d" }}>{PERSONAS.find(p => p.id === practicePersona)?.name}</div>
-                    <div style={{ fontSize: 11, color: "rgba(0,0,0,0.5)", fontFamily: "'DM Mono', monospace" }}>
+                    <div style={{ fontSize: 11, color: "rgba(0,0,0,0.5)", fontFamily: "'IBM Plex Mono', monospace" }}>
                       {PRACTICE_SCENARIOS.find(s => s.id === practiceScenario)?.title} • {practiceDifficulty}
                     </div>
                   </div>
@@ -3851,7 +3851,7 @@ function Primed() {
                   border: "1px solid rgba(212,160,62,0.3)",
                   background: "rgba(212,160,62,0.08)",
                   color: "#d4a03e", fontSize: 11, fontWeight: 600,
-                  fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em",
+                  fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em",
                   cursor: "pointer", transition: "all 0.2s"
                 }}>
                   End & Get Feedback
@@ -3884,7 +3884,7 @@ function Primed() {
                       borderBottomRightRadius: msg.role === "agent" ? 4 : 14,
                       borderBottomLeftRadius: msg.role === "client" ? 4 : 14,
                     }}>
-                      <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: msg.role === "agent" ? "#e05a33" : "rgba(226,224,219,0.35)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>
+                      <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", color: msg.role === "agent" ? "#e05a33" : "rgba(226,224,219,0.35)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>
                         {msg.role === "agent" ? "You" : PERSONAS.find(p => p.id === practicePersona)?.name}
                       </div>
                       <div style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(226,224,219,0.8)", whiteSpace: "pre-wrap" }}>{msg.content}</div>
@@ -4025,11 +4025,11 @@ function Primed() {
                     {/* Hero: big ring + win banner */}
                     <div className="anim-pop" style={{ textAlign: "center", marginBottom: 14 }}>
                       {(practiceFeedback.overall > prevBest) ? (
-                        <div style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, background: "rgba(212,160,62,0.15)", border: "1px solid rgba(212,160,62,0.35)", color: "#b8860b", fontSize: 11, fontWeight: 700, fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 18 }}>
+                        <div style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, background: "rgba(212,160,62,0.15)", border: "1px solid rgba(212,160,62,0.35)", color: "#b8860b", fontSize: 11, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 18 }}>
                           {prevBest > 0 ? "🎉 New personal best!" : "🎉 First rep in the books!"}
                         </div>
                       ) : (
-                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 18 }}>Session complete</div>
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 18 }}>Session complete</div>
                       )}
                     </div>
                     <div style={{ display: "flex", justifyContent: "center", marginBottom: 30 }}>
@@ -4048,7 +4048,7 @@ function Primed() {
 
                     {/* Strengths first — build them up */}
                     <div style={{ marginBottom: 18 }}>
-                      <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>✓ What worked</div>
+                      <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>✓ What worked</div>
                       {practiceFeedback.strengths.map((s, i) => (
                         <div key={i} style={{ fontSize: 14, color: "rgba(0,0,0,0.72)", marginBottom: 6, paddingLeft: 16, borderLeft: "2px solid rgba(16,185,129,0.4)", lineHeight: 1.6 }}>{s}</div>
                       ))}
@@ -4057,7 +4057,7 @@ function Primed() {
                     {/* One fixable next step — the single highest-leverage fix */}
                     {practiceFeedback.improvements && practiceFeedback.improvements.length > 0 && (
                       <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.18)", marginBottom: 16 }}>
-                        <div style={{ fontSize: 10, color: "#d97706", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>→ Fix this next</div>
+                        <div style={{ fontSize: 10, color: "#d97706", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>→ Fix this next</div>
                         <div style={{ fontSize: 15, color: "rgba(0,0,0,0.78)", lineHeight: 1.55, fontWeight: 500 }}>{practiceFeedback.improvements[0]}</div>
                         {practiceFeedback.improvements.length > 1 && (
                           <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(245,158,11,0.15)" }}>
@@ -4071,19 +4071,19 @@ function Primed() {
 
                     {/* Model line — what a strong answer sounds like */}
                     <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.14)", marginBottom: 16 }}>
-                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>💬 Try saying it like this</div>
+                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>💬 Try saying it like this</div>
                       <div style={{ fontSize: 15, color: "rgba(0,0,0,0.78)", lineHeight: 1.65, fontStyle: "italic" }}>"{practiceFeedback.suggestedPhrasing}"</div>
                     </div>
 
                     <div style={{ padding: "14px 20px", borderRadius: 14, background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.12)", marginBottom: 30 }}>
-                      <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>Next practice focus</div>
+                      <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>Next practice focus</div>
                       <div style={{ fontSize: 14, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>{practiceFeedback.nextFocus}</div>
                     </div>
 
                     {/* Conversation Review with Save Phrase */}
                     {practiceMessages.length > 0 && (
                       <div style={{ marginBottom: 32 }}>
-                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.55)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
+                        <div style={{ fontSize: 10, color: "rgba(0,0,0,0.55)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
                           Conversation Review
                         </div>
                         <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.45)", marginBottom: 16, lineHeight: 1.5 }}>
@@ -4141,7 +4141,7 @@ function Primed() {
                       }} style={{
                         padding: "13px 24px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.12)",
                         background: "#fff", color: "rgba(0,0,0,0.7)", fontSize: 13, fontWeight: 700,
-                        fontFamily: "'DM Mono', monospace", cursor: "pointer"
+                        fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer"
                       }}>
                         {shareCopied ? "✓ Copied" : "↗ Share"}
                       </button>
@@ -4165,14 +4165,14 @@ function Primed() {
         <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
           <div style={{ maxWidth: 720, margin: "0 auto" }}>
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Call Prep in 60 Seconds</div>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Call Prep in 60 Seconds</div>
               <h2 style={{ fontSize: 30, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>Walk in ready</h2>
               <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>Pick the situation and who you're talking to. We'll hand you an opening line, the objections you'll likely hear, and exactly what to say back — tuned to your market and voice. No typing required.</p>
             </div>
 
             {!cpResult && (
               <div>
-                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>1 — What's the call?</div>
+                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>1 — What's the call?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 28 }}>
                   {CALLPREP_SITUATIONS.map(s => {
                     const on = cpSituation === s.id;
@@ -4184,7 +4184,7 @@ function Primed() {
                   );})}
                 </div>
 
-                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>2 — Who's on the other side?</div>
+                <div style={{ fontSize: 12, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>2 — Who's on the other side?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginBottom: 28 }}>
                   {CALLPREP_CLIENTS.map(c => {
                     const on = cpClient === c.id;
@@ -4196,7 +4196,7 @@ function Primed() {
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ display: "block", fontSize: 12, color: "rgba(0,0,0,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Anything specific? <span style={{ textTransform: "none", letterSpacing: 0, opacity: 0.7 }}>(optional)</span></label>
+                  <label style={{ display: "block", fontSize: 12, color: "rgba(0,0,0,0.5)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Anything specific? <span style={{ textTransform: "none", letterSpacing: 0, opacity: 0.7 }}>(optional)</span></label>
                   <input type="text" value={cpRefine} onChange={e => setCpRefine(e.target.value)} placeholder="e.g., they've already had two price reductions" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
 
@@ -4207,7 +4207,7 @@ function Primed() {
             {cpResult && cpResult.error && (
               <div style={{ padding: "20px 24px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.18)", color: "#b3422a", fontSize: 14 }}>
                 {cpResult.error}
-                <div style={{ marginTop: 14 }}><button onClick={() => setCpResult(null)} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
+                <div style={{ marginTop: 14 }}><button onClick={() => setCpResult(null)} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
               </div>
             )}
 
@@ -4215,13 +4215,13 @@ function Primed() {
               <div className="stagger">
                 <div style={{ marginBottom: 18, padding: "22px 24px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderLeft: "3px solid #e05a33" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Open With This</div>
-                    <button onClick={() => { navigator.clipboard.writeText(cpResult.openingLine || ""); setCpCopied(true); setTimeout(() => setCpCopied(false), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: cpCopied ? "rgba(16,185,129,0.08)" : "transparent", color: cpCopied ? "#10b981" : "rgba(0,0,0,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>{cpCopied ? "✓ Copied" : "Copy"}</button>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Open With This</div>
+                    <button onClick={() => { navigator.clipboard.writeText(cpResult.openingLine || ""); setCpCopied(true); setTimeout(() => setCpCopied(false), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: cpCopied ? "rgba(16,185,129,0.08)" : "transparent", color: cpCopied ? "#10b981" : "rgba(0,0,0,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>{cpCopied ? "✓ Copied" : "Copy"}</button>
                   </div>
                   <div style={{ fontSize: 16, lineHeight: 1.65, color: "#2a231d", fontWeight: 500 }}>{cpResult.openingLine}</div>
                 </div>
 
-                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", margin: "26px 0 12px", fontWeight: 600 }}>Likely Objections & Your Responses</div>
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", margin: "26px 0 12px", fontWeight: 600 }}>Likely Objections & Your Responses</div>
                 {(cpResult.likelyObjections || []).map((o, i) => (
                   <div key={i} style={{ marginBottom: 14, padding: "18px 22px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "#21190f", marginBottom: 10 }}>“{o.objection}”</div>
@@ -4234,7 +4234,7 @@ function Primed() {
 
                 {(cpResult.keyReminders || []).length > 0 && (
                   <div style={{ marginTop: 18, padding: "20px 24px", borderRadius: 14, background: "rgba(212,160,62,0.05)", border: "1px solid rgba(212,160,62,0.14)" }}>
-                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Before You Dial</div>
+                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Before You Dial</div>
                     {cpResult.keyReminders.map((r, i) => (
                       <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.65)" }}><span style={{ color: "#d4a03e" }}>•</span> {r}</div>
                     ))}
@@ -4243,7 +4243,7 @@ function Primed() {
 
                 <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
                   <button onClick={() => { setCpResult(null); setCpSituation(null); setCpClient(null); setCpRefine(""); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>New Prep</button>
-                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice It Live →</button>
+                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Practice It Live →</button>
                 </div>
               </div>
             )}
@@ -4255,7 +4255,7 @@ function Primed() {
         <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
           <div style={{ maxWidth: 680, margin: "0 auto" }}>
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Challenge Mode</div>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Challenge Mode</div>
               <h2 style={{ fontSize: 30, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>Beat the objection</h2>
               <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>A real client objection, one shot to answer it. Get scored on confidence, empathy, persuasion, and clarity — with exactly how to make it stronger.</p>
             </div>
@@ -4276,7 +4276,7 @@ function Primed() {
             {chObjection && !chScore && (
               <div className="anim-slide">
                 <div style={{ padding: "26px 28px", borderRadius: 16, background: "linear-gradient(135deg, #2a231d 0%, #2a1410 100%)", marginBottom: 22 }}>
-                  <div style={{ fontSize: 10, color: "#e8674a", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{chObjection.category} · The client says</div>
+                  <div style={{ fontSize: 10, color: "#e8674a", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{chObjection.category} · The client says</div>
                   <div style={{ fontSize: 20, lineHeight: 1.5, color: "#fff", fontWeight: 600, fontFamily: "'Instrument Serif', Georgia, serif" }}>“{chObjection.objection}”</div>
                   {chObjection.context && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 12, lineHeight: 1.5 }}>{chObjection.context}</div>}
                 </div>
@@ -4291,7 +4291,7 @@ function Primed() {
             {chScore && chScore.error && (
               <div style={{ padding: "20px 24px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.18)", color: "#b3422a", fontSize: 14 }}>
                 {chScore.error}
-                <div style={{ marginTop: 14 }}><button onClick={scoreChallenge} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
+                <div style={{ marginTop: 14 }}><button onClick={scoreChallenge} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Try Again</button></div>
               </div>
             )}
 
@@ -4305,45 +4305,45 @@ function Primed() {
                   <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
                     <ScoreRing value={chScore.score} size={118} stroke={9} color={tierColor} label={chScore.tier} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>{chObjection ? chObjection.category : ""} Objection</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>{chObjection ? chObjection.category : ""} Objection</div>
                       <div style={{ fontSize: 18, lineHeight: 1.45, color: "#fff", fontWeight: 600, fontFamily: "'Instrument Serif', Georgia, serif" }}>{chScore.shareLine}</div>
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 24 }}>
                     {[["Confidence", chScore.breakdown && chScore.breakdown.confidence], ["Empathy", chScore.breakdown && chScore.breakdown.empathy], ["Persuasion", chScore.breakdown && chScore.breakdown.persuasion], ["Clarity", chScore.breakdown && chScore.breakdown.clarity]].map(([k, v]) => (
                       <div key={k} style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "'Figtree', 'Outfit', sans-serif" }}>{v != null ? v : "—"}</div>
-                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>{k}</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "'Figtree',sans-serif" }}>{v != null ? v : "—"}</div>
+                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>{k}</div>
                       </div>
                     ))}
                   </div>
                   <div style={{ marginTop: 18, textAlign: "center" }}>
-                    <button onClick={() => { navigator.clipboard.writeText(chScore.shareLine + " — Primed (primed.today)"); setChShareCopied(true); setTimeout(() => setChShareCopied(false), 2000); }} style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.06)", color: chShareCopied ? "#10b981" : "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer" }}>{chShareCopied ? "✓ Copied" : "📋 Share result"}</button>
+                    <button onClick={() => { navigator.clipboard.writeText(chScore.shareLine + " — Primed (primed.today)"); setChShareCopied(true); setTimeout(() => setChShareCopied(false), 2000); }} style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.06)", color: chShareCopied ? "#10b981" : "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer" }}>{chShareCopied ? "✓ Copied" : "📋 Share result"}</button>
                   </div>
                 </div>
 
                 <div style={{ padding: "18px 22px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", marginBottom: 14 }}>
-                  <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Why this score</div>
+                  <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>Why this score</div>
                   <div style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(0,0,0,0.7)" }}>{chScore.why}</div>
                 </div>
 
                 {(chScore.didWell || []).length > 0 && (
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.14)", marginBottom: 14 }}>
-                    <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>What you nailed</div>
+                    <div style={{ fontSize: 10, color: "#10b981", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>What you nailed</div>
                     {chScore.didWell.map((d, i) => <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.7)" }}><span style={{ color: "#10b981" }}>✓</span> {d}</div>)}
                   </div>
                 )}
 
                 {(chScore.improve || []).length > 0 && (
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "rgba(212,160,62,0.05)", border: "1px solid rgba(212,160,62,0.14)", marginBottom: 14 }}>
-                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Make it sharper</div>
+                    <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Make it sharper</div>
                     {chScore.improve.map((d, i) => <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 14, lineHeight: 1.55, color: "rgba(0,0,0,0.7)" }}><span style={{ color: "#d4a03e" }}>→</span> {d}</div>)}
                   </div>
                 )}
 
                 {chScore.modelAnswer && (
                   <div style={{ padding: "20px 24px", borderRadius: 14, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderLeft: "3px solid #e05a33", marginBottom: 22 }}>
-                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>How a closer says it</div>
+                    <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>How a closer says it</div>
                     <div style={{ fontSize: 15, lineHeight: 1.7, color: "#2a231d" }}>{chScore.modelAnswer}</div>
                   </div>
                 )}
@@ -4363,7 +4363,7 @@ function Primed() {
         <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
           <div style={{ maxWidth: 700, margin: "0 auto" }}>
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
+              <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Personal Value Script</div>
               <h2 style={{ fontSize: 30, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
                 {vsStep < 4 ? "Build Your Script" : "Your Value Script"}
               </h2>
@@ -4392,7 +4392,7 @@ function Primed() {
 
             {vsStep === 1 && (
               <div>
-                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 1 — Who You Serve</div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 1 — Who You Serve</div>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: 14, color: "#2a231d", fontWeight: 600, marginBottom: 8 }}>What's your favorite type of transaction?</label>
                   <p style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", marginBottom: 10, lineHeight: 1.5 }}>Think about the deal that made you proudest. First-time buyers? Luxury listings? Relocations?</p>
@@ -4407,13 +4407,13 @@ function Primed() {
                   <label style={{ display: "block", fontSize: 14, color: "#2a231d", fontWeight: 600, marginBottom: 8 }}>What market or area do you work in?</label>
                   <input type="text" value={vsMarket} onChange={e => setVsMarket(e.target.value)} placeholder="e.g., North Dallas suburbs, Frisco, McKinney" style={{ width: "100%", padding: "12px 16px", background: "#f4f3f0", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
                 </div>
-                <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.18)" : "#e05a33", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
+                <button onClick={() => setVsStep(2)} disabled={!vsFavoriteTransaction.trim() || !vsIdealClient.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.18)" : "#e05a33", color: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: (!vsFavoriteTransaction.trim() || !vsIdealClient.trim()) ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
               </div>
             )}
 
             {vsStep === 2 && (
               <div>
-                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 2 — The Problem You Solve</div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 2 — The Problem You Solve</div>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: 14, color: "#2a231d", fontWeight: 600, marginBottom: 8 }}>What's the biggest problem your clients face before they find you?</label>
                   <p style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", marginBottom: 10, lineHeight: 1.5 }}>What keeps them up at night? The fear, the frustration, the thing they can't figure out alone.</p>
@@ -4421,14 +4421,14 @@ function Primed() {
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => setVsStep(1)} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
-                  <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(224,90,51,0.18)" : "#e05a33", color: !vsProblem.trim() ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: !vsProblem.trim() ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
+                  <button onClick={() => setVsStep(3)} disabled={!vsProblem.trim()} style={{ padding: "13px 32px", borderRadius: 10, border: "none", background: !vsProblem.trim() ? "rgba(224,90,51,0.18)" : "#e05a33", color: !vsProblem.trim() ? "rgba(224,90,51,0.55)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: !vsProblem.trim() ? "not-allowed" : "pointer", transition: "all 180ms ease", boxShadow: !vsProblem.trim() ? "none" : "0 4px 14px rgba(224,90,51,0.22)" }}>Next →</button>
                 </div>
               </div>
             )}
 
             {vsStep === 3 && (
               <div>
-                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 3 — Your Results</div>
+                <div style={{ fontSize: 12, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Step 3 — Your Results</div>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: 14, color: "#2a231d", fontWeight: 600, marginBottom: 8 }}>What measurable result do you deliver?</label>
                   <p style={{ fontSize: 12, color: "rgba(0,0,0,0.55)", marginBottom: 10, lineHeight: 1.5 }}>Numbers are powerful. Sale-to-list ratio, days on market, homes sold — whatever proves your value.</p>
@@ -4461,18 +4461,18 @@ function Primed() {
                         <div style={{ fontSize: 15, fontWeight: 600, color: "#2a231d" }}>{label}</div>
                         <div style={{ fontSize: 11, color: "rgba(0,0,0,0.5)", marginTop: 2 }}>{desc}</div>
                       </div>
-                      <button onClick={() => { navigator.clipboard.writeText(vsGeneratedScript[key]); setVsCopied(key); setTimeout(() => setVsCopied(null), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${vsCopied === key ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"}`, background: vsCopied === key ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.03)", color: vsCopied === key ? "#10b981" : "rgba(226,224,219,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'DM Mono', monospace", cursor: "pointer", flexShrink: 0 }}>{vsCopied === key ? "✓ Copied" : "Copy"}</button>
+                      <button onClick={() => { navigator.clipboard.writeText(vsGeneratedScript[key]); setVsCopied(key); setTimeout(() => setVsCopied(null), 2000); }} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${vsCopied === key ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"}`, background: vsCopied === key ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.03)", color: vsCopied === key ? "#10b981" : "rgba(226,224,219,0.4)", fontSize: 10, fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer", flexShrink: 0 }}>{vsCopied === key ? "✓ Copied" : "Copy"}</button>
                     </div>
                     <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(0,0,0,0.65)", whiteSpace: "pre-wrap" }}>{vsGeneratedScript[key]}</div>
                   </div>
                 ))}
                 <div style={{ marginBottom: 28, padding: "20px 24px", borderRadius: 14, background: "rgba(212,160,62,0.04)", border: "1px solid rgba(212,160,62,0.12)" }}>
-                  <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Coaching Notes</div>
+                  <div style={{ fontSize: 10, color: "#d4a03e", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, fontWeight: 600 }}>Coaching Notes</div>
                   <div style={{ fontSize: 14, lineHeight: 1.7, color: "rgba(0,0,0,0.6)" }}>{vsGeneratedScript.coachingNotes}</div>
                 </div>
                 <div style={{ display: "flex", gap: 12 }}>
                   <button onClick={() => { setVsStep(1); setVsGeneratedScript(null); }} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Start Over</button>
-                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>Practice Delivering It →</button>
+                  <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "#e05a33", color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", cursor: "pointer" }}>Practice Delivering It →</button>
                 </div>
               </div>
             )}
@@ -4484,7 +4484,7 @@ function Primed() {
         <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'DM Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Phrase Library</div>
+              <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Phrase Library</div>
               <h2 style={{ fontSize: 30, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>
                 What's working for you
               </h2>
@@ -4512,7 +4512,7 @@ function Primed() {
                 <button onClick={() => { setAppMode("practice"); setPracticeState("setup"); }} style={{
                   marginTop: 22, padding: "10px 22px", borderRadius: 10, border: "none",
                   background: "#e05a33", color: "#fff", fontSize: 12, fontWeight: 700,
-                  fontFamily: "'DM Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
+                  fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase",
                   cursor: "pointer"
                 }}>Start Practicing</button>
               </div>
@@ -4520,7 +4520,7 @@ function Primed() {
 
             {!savedPhrasesLoading && savedPhrases.length > 0 && (
               <div>
-                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14, fontWeight: 600 }}>
                   {savedPhrases.length} {savedPhrases.length === 1 ? "Phrase" : "Phrases"} Saved
                 </div>
                 {savedPhrases.map(p => (
@@ -4593,7 +4593,7 @@ function Primed() {
                     background: isGenerating ? "rgba(224,90,51,0.2)" : "#e05a33",
                     color: isGenerating ? "#e05a33" : "#fff",
                     fontSize: 13, fontWeight: 700, cursor: isGenerating ? "wait" : "pointer",
-                    fontFamily: "'DM Mono', monospace", letterSpacing: "0.02em",
+                    fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.02em",
                     transition: "all 0.2s"
                   }}
                   onClick={generateScenario}
