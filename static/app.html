@@ -1590,6 +1590,32 @@ function computeGameStats(sessions) {
   return { reps, xp, best, lastScore, streak, avg, hasData: reps > 0 };
 }
 
+// ── Hash routing: appMode <-> URL slug ──
+const MODE_TO_SLUG = {
+  home: "home",
+  intelligence: "market-scenarios",
+  practice: "practice",
+  callprep: "call-prep",
+  challenge: "challenge",
+  myscript: "my-script",
+  library: "library",
+};
+const SLUG_TO_MODE = Object.fromEntries(
+  Object.entries(MODE_TO_SLUG).map(([mode, slug]) => [slug, mode])
+);
+// Parse a location.hash into { mode, scenario }. A scenario id is only
+// meaningful under the market-scenarios route. Unknown slugs fall back to home.
+function parseRoute(hash) {
+  const raw = (hash || "").replace(/^#\/?/, "");
+  if (raw.startsWith("reset-password")) return null; // owned by the auth flow
+  const [slug, sub] = raw.split("/");
+  const mode = SLUG_TO_MODE[slug] || "home";
+  const scenario = mode === "intelligence" && sub
+    ? decodeURIComponent(sub.split("?")[0])
+    : null;
+  return { mode, scenario };
+}
+
 function Primed() {
   // Auth state
   const initialResetToken = (() => {
@@ -1774,8 +1800,8 @@ function Primed() {
   // App state
   const [selectedScenario, setSelectedScenario] = useState(() => {
     if (typeof window === "undefined") return null;
-    const m = window.location.pathname.match(/^\/app\/scenarios\/([^/?#]+)/);
-    return m ? decodeURIComponent(m[1]) : null;
+    const r = parseRoute(window.location.hash);
+    return r ? r.scenario : null;
   });
   const [activeTab, setActiveTab] = useState("synopsis");
   const [searchTerm, setSearchTerm] = useState("");
@@ -1883,7 +1909,11 @@ function Primed() {
   const chatEndRef = useRef(null);
 
   // Practice mode state
-  const [appMode, setAppMode] = useState("home");
+  const [appMode, setAppMode] = useState(() => {
+    if (typeof window === "undefined") return "home";
+    const r = parseRoute(window.location.hash);
+    return r ? r.mode : "home";
+  });
   const [practiceState, setPracticeState] = useState("setup"); // setup | context | active | feedback
   const [practiceScenario, setPracticeScenario] = useState(null);
   const [practicePersona, setPracticePersona] = useState(null);
@@ -2431,12 +2461,7 @@ function Primed() {
       setSelectedScenario(id);
       setActiveTab("synopsis");
       setAnimateIn(true);
-      if (typeof window !== "undefined") {
-        const newPath = id ? `/app/scenarios/${id}` : "/app";
-        if (window.location.pathname !== newPath) {
-          window.history.pushState(null, "", newPath);
-        }
-      }
+      // URL is kept in sync by the hash-routing effect below.
     }, 100);
   }, []);
 
@@ -2487,6 +2512,39 @@ function Primed() {
       contentRef.current.scrollTop = 0;
     }
   }, [activeTab]);
+
+  // ── Hash routing ──
+  // State -> URL: reflect the current tab/scenario into the hash so a reload
+  // or shared link lands in the same place. Only while logged in, so we never
+  // clobber the auth/reset-password hash.
+  useEffect(() => {
+    if (typeof window === "undefined" || authScreen !== null) return;
+    const slug = MODE_TO_SLUG[appMode] || "home";
+    let target = "#/" + slug;
+    if (appMode === "intelligence" && selectedScenario) {
+      target += "/" + encodeURIComponent(selectedScenario);
+    }
+    if (window.location.hash !== target) {
+      window.history.pushState(null, "", target);
+    }
+  }, [appMode, selectedScenario, authScreen]);
+
+  // URL -> State: handle back/forward and manual hash edits.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onNav = () => {
+      const r = parseRoute(window.location.hash);
+      if (!r) return; // reset-password hash, leave it to the auth flow
+      setAppMode(prev => (prev !== r.mode ? r.mode : prev));
+      setSelectedScenario(prev => (prev !== r.scenario ? r.scenario : prev));
+    };
+    window.addEventListener("popstate", onNav);
+    window.addEventListener("hashchange", onNav);
+    return () => {
+      window.removeEventListener("popstate", onNav);
+      window.removeEventListener("hashchange", onNav);
+    };
+  }, []);
 
   // ── STYLES (Light Theme) ──
   const S = {
