@@ -497,12 +497,24 @@ async def user_stats(user: User = Depends(get_current_user), db: AsyncSession = 
 class TTSRequest(BaseModel):
     text: str
     voice_id: Optional[str] = None
+    # Per-persona expressiveness. Lower stability = more emotional/reactive
+    # delivery (anxious, tearful, angry); higher style exaggerates the
+    # persona's tone. Defaults match the old fixed settings.
+    stability: Optional[float] = None
+    similarity_boost: Optional[float] = None
+    style: Optional[float] = None
 
 @router.post("/tts")
 async def text_to_speech(data: TTSRequest, user: User = Depends(get_current_user)):
     if not settings.elevenlabs_api_key:
         raise HTTPException(status_code=503, detail="TTS not configured")
     voice = data.voice_id or settings.elevenlabs_voice_id
+    voice_settings = {
+        "stability": data.stability if data.stability is not None else 0.5,
+        "similarity_boost": data.similarity_boost if data.similarity_boost is not None else 0.75,
+        "style": data.style if data.style is not None else 0.0,
+        "use_speaker_boost": True,
+    }
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
@@ -513,8 +525,8 @@ async def text_to_speech(data: TTSRequest, user: User = Depends(get_current_user
                 },
                 json={
                     "text": data.text,
-                    "model_id": "eleven_monolingual_v1",
-                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": voice_settings
                 }
             )
             if response.status_code != 200:

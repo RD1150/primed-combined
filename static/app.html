@@ -2348,7 +2348,7 @@ function Primed() {
           const ttsRes = await fetch(API_URL + "/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify({ text: reply })
+            body: JSON.stringify(buildTtsBody(reply))
           });
           if (ttsRes.ok) {
             const audioBlob = await ttsRes.blob();
@@ -2621,7 +2621,8 @@ function Primed() {
       backstory: "37, sold one rental in 2019. Keeps a Notion doc with comp analysis open during calls.",
       voice: "Measured, structured sentences. Says 'so basically', 'what's the data on that?', 'I'd want to see the underlying methodology.' No fillers. Asks one precise question at a time.",
       tells: "When unsure, asks for sources. When pushed emotionally, retreats to data. Says 'interesting' when skeptical.",
-      difficulty: "Medium", color: "#3b82f6"
+      difficulty: "Medium", color: "#3b82f6",
+      voiceId: "GBv7mTt0atip3xQ6PFEW", voiceSettings: { stability: 0.7, similarity_boost: 0.8, style: 0.0 }
     },
     {
       id: "emotional", name: "Linda — Grieving Downsizer", icon: "💔",
@@ -2629,7 +2630,8 @@ function Primed() {
       backstory: "62, husband passed 8 months ago. Her three kids grew up in this house. Selling feels like erasing the past.",
       voice: "Long sentences with tangents. Brings up memories unprompted ('this is where the boys had their birthday parties'). Tears up about small things. Sometimes still says 'we' instead of 'I'.",
       tells: "Pivots to stories when pushed on price. Says 'I just don't know' as a stall. Apologizes for emotion then keeps being emotional.",
-      difficulty: "Hard", color: "#ef4444"
+      difficulty: "Hard", color: "#ef4444",
+      voiceId: "XrExE9yKIg1WjnnlVkGX", voiceSettings: { stability: 0.3, similarity_boost: 0.75, style: 0.45 }
     },
     {
       id: "distrustful", name: "Derek — Burned Once", icon: "🤨",
@@ -2637,7 +2639,8 @@ function Primed() {
       backstory: "45, contractor by trade. Has Zillow open during your calls and will check your numbers in real time.",
       voice: "Short, clipped sentences. Interrupts with 'how do you know?' or 'where's that from?'. Uses 'last guy said the same thing' as a put-down. Will go silent to make you uncomfortable.",
       tells: "When you say something he can't verify, he repeats it back flat. When he likes something, he asks a follow-up instead of agreeing.",
-      difficulty: "Hard", color: "#f59e0b"
+      difficulty: "Hard", color: "#f59e0b",
+      voiceId: "2EiwWnXFnvU5JabPnv8n", voiceSettings: { stability: 0.35, similarity_boost: 0.8, style: 0.5 }
     },
     {
       id: "firsttimer", name: "Priya — Anxious First-Timer", icon: "😰",
@@ -2645,7 +2648,8 @@ function Primed() {
       backstory: "29, software PM. Partner stays out of the calls. Saved for 4 years. Terrified of buying wrong.",
       voice: "Tentative — 'I might be wrong but', 'is it weird if I ask...', 'I read on Reddit that...'. Trails off mid-sentence. Apologizes for asking questions.",
       tells: "When reassured, asks the same question 3 different ways. When pushed to decide, says 'I need to talk to my partner.'",
-      difficulty: "Medium", color: "#10b981"
+      difficulty: "Medium", color: "#10b981",
+      voiceId: "MF3mGyEYCl7XYWbV9V6O", voiceSettings: { stability: 0.3, similarity_boost: 0.75, style: 0.4 }
     },
     {
       id: "investor", name: "Janet — Hardball Investor", icon: "💼",
@@ -2653,7 +2657,8 @@ function Primed() {
       backstory: "51, owns 14 doors, ex-finance. Treats this as a transaction, not a relationship. Calling multiple agents simultaneously.",
       voice: "Fast, terse, no pleasantries. Goes straight to numbers. Uses acronyms (cap rate, DSCR, COC). Cuts you off if you ramble.",
       tells: "If your number is wrong, she lets you finish before correcting. Will say 'is that your final answer?' to test. Long silence = she's about to walk.",
-      difficulty: "Hard", color: "#8b5cf6"
+      difficulty: "Hard", color: "#8b5cf6",
+      voiceId: "AZnzlk1XvdvUeBnXmlld", voiceSettings: { stability: 0.6, similarity_boost: 0.8, style: 0.25 }
     },
     {
       id: "influencer", name: "Tasha — The Showcaser", icon: "📸",
@@ -2661,7 +2666,8 @@ function Primed() {
       backstory: "32, full-time content creator. Buying a second home for content. Her comp set is 'what looks best on Reels.'",
       voice: "Casual, exclamation-heavy, name-drops neighborhoods. Says 'is this giving X energy?', 'this is a moment'. Asks about the kitchen's photogenic-ness before asking the price.",
       tells: "Goes quiet when bored. Pulls out her phone. If you don't 'get' aesthetic, she stops engaging.",
-      difficulty: "Medium", color: "#ec4899"
+      difficulty: "Medium", color: "#ec4899",
+      voiceId: "jsCqWAovK2LkecY7zXl4", voiceSettings: { stability: 0.35, similarity_boost: 0.7, style: 0.55 }
     },
     {
       id: "couple", name: "Ben & Maya — Disagreeing Couple", icon: "💑",
@@ -2669,7 +2675,8 @@ function Primed() {
       backstory: "Ben grew up in a cul-de-sac, Maya in NYC. Both feel strongly. You're playing referee while showing both you have a plan.",
       voice: "Talk over each other. Maya: 'Ben, can we listen for a sec?' Ben: 'we already discussed this, hon.' One agrees with you, the other pushes back — then they switch.",
       tells: "When they argue, addressing them by name resets the room. If you pick a side, you lose. They watch HOW you navigate disagreement more than what you say. Both speak in your responses — alternate between Ben and Maya naturally.",
-      difficulty: "Hard", color: "#06b6d4"
+      difficulty: "Hard", color: "#06b6d4",
+      voiceId: "XB0fDUnXU5powFXDhCwa", voiceSettings: { stability: 0.45, similarity_boost: 0.75, style: 0.35 }
     },
     {
       id: "relocator", name: "Carlos — Out-of-State Buyer", icon: "✈️",
@@ -2677,7 +2684,8 @@ function Primed() {
       backstory: "44, tech exec relocation. Has never visited the area. Doing it all via Zoom. Wife is staying behind until the kids finish school.",
       voice: "Polite but anxious under the surface. Asks about schools, commute, weather, crime in that order. Says 'I'm completely trusting your judgment here' — both a compliment and a threat.",
       tells: "Long silences when overwhelmed. Asks for 'one more video walkthrough' as a delay. Says 'let me sleep on it' when he's actually freezing.",
-      difficulty: "Medium", color: "#0891b2"
+      difficulty: "Medium", color: "#0891b2",
+      voiceId: "ErXwobaYiN019PkySvjV", voiceSettings: { stability: 0.4, similarity_boost: 0.78, style: 0.3 }
     }
   ];
 
@@ -2745,7 +2753,7 @@ function Primed() {
           const ttsRes = await fetch(API_URL + "/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify({ text: reply })
+            body: JSON.stringify(buildTtsBody(reply))
           });
           if (ttsRes.ok) {
             const ab = await ttsRes.blob();
@@ -2765,6 +2773,16 @@ function Primed() {
 
   // Structured payload for the server-side /practice/* endpoints. The prompt is
   // built and locked server-side (app/prompts.py); the client sends only data.
+  // Build the /tts request body for the active persona: their distinct
+  // ElevenLabs voice + emotion-tuned settings (anxious, angry, tearful, etc.).
+  const buildTtsBody = (text) => {
+    const persona = PERSONAS.find(p => p.id === practicePersona);
+    const body = { text };
+    if (persona && persona.voiceId) body.voice_id = persona.voiceId;
+    if (persona && persona.voiceSettings) Object.assign(body, persona.voiceSettings);
+    return body;
+  };
+
   const practicePayload = () => {
     const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
     const persona = PERSONAS.find(p => p.id === practicePersona);
@@ -2805,7 +2823,7 @@ function Primed() {
           const ttsRes = await fetch(API_URL + "/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify({ text: reply })
+            body: JSON.stringify(buildTtsBody(reply))
           });
           if (ttsRes.ok) {
             const ab = await ttsRes.blob();
