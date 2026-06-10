@@ -1347,8 +1347,471 @@ const SCENARIOS = [
       "Audit lost listings quarterly: what model won, what objection was used, did the listing actually close at the lower fee, and at what final price?"
     ],
     clientScript: `"You're absolutely right—there are options at lower fees, and they exist for a reason. Let me ask you something: what would you say is the most important number in this transaction—the commission percentage, or the dollars in your pocket at the end?\n\nBecause here's what the data in our market shows: [reference local stats—list-to-sale ratio, DOM, price reductions]. Homes I list close at [X%] of asking price; flat-fee and discount listings in our market close at [Y%]. On a [home value], that gap is [$amount].\n\nWhen you do the math: if a discount listing saves you 2% in commission but loses 4% in final sale price, you're paying 2% to do worse. The question isn't 'who charges less'—it's 'who gets you more.'\n\nThat said: I'm not going to pretend my approach is right for every home. If your home is in great condition, in a hot neighborhood, priced sharply, and you have the time and skill to handle showings, offers, inspections, and negotiations yourself—a flat-fee MLS service could absolutely work. I can refer you to one if that's the right call.\n\nBut if you want me handling marketing strategy, price negotiation, inspection responses, appraisal disputes, and pushing back on every buyer-agent who tries to grind you down—that's what my fee buys. And I'd rather you understand exactly what you're getting than save 1.5% and wish you hadn't.\n\nWant to walk through the comparison side by side?"`
+  },
+  {
+    id: "why-choose-me",
+    title: "\"Why Should I Choose You?\"",
+    icon: "🤝",
+    category: "Objection",
+    heat: "Critical",
+    synopsis: `You're sitting across the kitchen table at a listing appointment, and the seller leans back and says they're interviewing two other agents this week. This is the single highest-leverage moment in your business: the listing close. The temptation is to recite your resume and hope volume wins, but interviewing sellers don't buy resumes, they buy certainty about net proceeds and a stress-free sale. Your job is to differentiate on repeatable process, marketing dollars actually spent, negotiation outcomes, and verifiable track record, framed entirely around what the seller gets, not how great you are. The agent who wins here is rarely the cheapest or the loudest; it's the one who makes the seller feel the risk of choosing anyone else.`,
+    realEstateImpact: [
+      { area: "Commission Captured", direction: "mixed", detail: "Win the listing at full rate and you protect both your fee and the seller's outcome; lose it on price alone and you've trained them to shop you." },
+      { area: "Agent Credibility", direction: "up", detail: "A structured, numbers-backed presentation builds trust that survives the inevitable mid-sale negotiation and inspection bumps." },
+      { area: "Days on Market", direction: "down", detail: "A documented marketing and pricing process gets the home positioned correctly week one instead of chasing the market down." },
+      { area: "Seller Net Proceeds", direction: "up", detail: "Sellers who hire on value over discount net more, because skilled negotiation and exposure routinely beat a half-point of saved commission." }
+    ],
+    teamTalkingPoints: [
+      "Open by interviewing them back: 'Before I tell you about me, what went right or wrong with agents you've used before?' You can't differentiate until you know what they're afraid of.",
+      "Lead with a 90-day average days-on-market and list-to-sale-price ratio versus the local MLS average; specific numbers beat adjectives every time.",
+      "Show the marketing plan as a physical checklist with dollar amounts (pro photo, video, 3D tour, paid social spend) so 'marketing' becomes tangible, not a buzzword.",
+      "Tell one concrete negotiation story where you saved or made a past seller real money; stories are remembered, stats are forgotten.",
+      "Close with a risk-reversal: an easy-exit cancellation guarantee reframes the decision from 'pick the best pitch' to 'pick the one with zero downside.'"
+    ],
+    brokerageTalkingPoints: [
+      "Coach agents to never badmouth competitors; differentiate on what we do, because trash-talk reads as insecurity and tanks trust.",
+      "Standardize a leave-behind pre-listing packet (CMA, marketing plan, sample net sheet) so every agent competes on the brokerage's process, not improvised charm.",
+      "Equip every listing presentation with brokerage-level proof: aggregate sold volume, average list-to-sale ratio, and reach of our syndication network.",
+      "Train the 'interview them first' discovery script in role-play; the questions an agent asks signal more competence than the answers they give.",
+      "Reinforce that the cancellation guarantee is a brokerage-backed policy, not an individual promise, so agents can offer it with full confidence."
+    ],
+    clientScript: `"I appreciate you being upfront that you're talking to other agents, that's exactly what a smart seller should do, and I'd actually be a little worried if you weren't.\n\nSo before I talk about me, let me ask you this: when you picture this sale going perfectly, what does that look like, and what's the part that's been keeping you up at night?\n\n[FOR SELLERS: Here's how I'm different in plain terms. My listings sell in an average of 18 days versus 34 for our market, and I net my sellers an average of 99 percent of list price. That gap isn't luck, it's a system: professional photography and video the same week we list, a paid social campaign I fund myself, and a pricing strategy I'll walk you through line by line so we capture the most motivated buyers in the first ten days when attention is highest.]\n\nLet me give you one example. My last seller had an offer come in 12 thousand under ask, and instead of just countering, I used a backup buyer I'd lined up to create competition. We closed 4 thousand over list. That's the difference negotiation makes, and it's worth far more than any half-point of commission.\n\nAnd here's the part that should make this easy: if at any point you feel I'm not delivering, you can cancel the listing, no fee, no fight. I only win when you do. So the real question isn't whether I'm confident, it's whether you want someone who'll put that in writing."`
+  },
+  {
+    id: "seller-commission-cut",
+    title: "\"Will You Cut Your Commission?\"",
+    icon: "✂️",
+    category: "Pricing",
+    heat: "Critical",
+    synopsis: `The seller looks you in the eye and asks you, directly, to lower your listing-side commission. This is different from 'another agent charges less'; it's a test of whether you believe in your own value. The instant you discount without changing scope, you've told the seller your fee was arbitrary and inflated to begin with, and you've also signaled how you'll negotiate on their behalf when a buyer pushes back. The expert move is to never argue about the percentage in a vacuum; you reframe the conversation around net proceeds, anchor on the value the fee buys, and if you give anything, you unbundle a service rather than cut the rate. A commission is a return-on-investment proposition, and your task is to make the seller see the dollars your skill adds, which dwarf the dollars they're trying to save.`,
+    realEstateImpact: [
+      { area: "Seller Net Proceeds", direction: "mixed", detail: "Saving a point on commission feels like a win, but a weaker negotiator can leave far more than that on the table at offer and inspection." },
+      { area: "Commission Captured", direction: "down", detail: "Every reflexive discount compounds across a career; holding rate on one listing protects your pricing power on the next hundred." },
+      { area: "Agent Credibility", direction: "mixed", detail: "Folding instantly erodes trust ('what else was padded?'); holding value with grace actually raises the seller's confidence in you." },
+      { area: "Buyer Perception", direction: "down", detail: "Under-budgeted marketing from a cut fee means fewer eyeballs, weaker first-week momentum, and a softer top-of-market price." }
+    ],
+    teamTalkingPoints: [
+      "Never defend the percentage; pivot to net dollars: 'Let's not talk about my fee in isolation, let's talk about what you walk away with at closing.'",
+      "Anchor on what the fee funds: 'That commission pays for the photography, the ad spend, and the negotiation that typically nets sellers more than the fee itself.'",
+      "If pressed, unbundle instead of discount: 'I can reduce the rate if we drop professional video and paid social, but I'd be cutting the very things that drive your sale price.'",
+      "Use the negotiation mirror: 'If I cave the moment you push on my fee, how hard do you think I'll fight when a buyer pushes on your price?'",
+      "Quantify the gap: 'A skilled negotiator routinely captures two to three percent more on the sale price; that's several times the half-point you're asking me to give up.'"
+    ],
+    brokerageTalkingPoints: [
+      "Train a brokerage-wide value menu so agents can unbundle services (video, staging, paid ads) instead of slashing the rate, preserving margin firm-wide.",
+      "Equip agents with a net-sheet calculator that reframes every commission conversation in take-home dollars, not percentages.",
+      "Reinforce that discounting on demand sets a precedent across the office; one agent's quick cut becomes the next client's expectation.",
+      "Role-play the 'how I negotiate my fee is how I'll negotiate your price' rebuttal until it's reflexive, because it's the single most persuasive line.",
+      "Backstop agents with brokerage performance data (list-to-sale ratios) that prove full-service nets more, so the value case isn't just the agent's word."
+    ],
+    clientScript: `"That's a completely fair thing to ask, and I'd rather you ask it now than wonder about it later, so let me give you a straight answer.\n\nI'm not going to dodge it, but I am going to reframe it, because the percentage isn't really the number that matters to you. What matters is the check you walk away with at closing, and those are two very different things.\n\n[FOR SELLERS: Here's the honest math. My fee funds your professional photography, video, the paid social campaign I run, and the negotiation on every offer. Sellers I represent net an average of two to three percent more on the final sale price than the market average. On a 500 thousand dollar home, that's 10 to 15 thousand dollars in your pocket, and you're asking me to cut a fee worth a fraction of that. If I trim the rate, I'm not trimming my paycheck, I'm trimming your marketing and your leverage.]\n\nLet me put it another way. If I fold the second you push on my commission, what does that tell you about how I'll hold the line when a buyer lowballs you by 20 thousand? The way I protect my own value is exactly the way I'll protect yours.\n\nNow, if budget is genuinely the concern, I'd rather adjust the scope than the rate. I can pull back the video package or the paid ad spend and lower the cost honestly, but I'd be removing the things that drive your price up. My recommendation is to keep the full plan, because it pays for itself several times over. Which direction feels right to you?"`
+  },
+  {
+    id: "discount-broker",
+    title: "\"I Can List With Redfin for Less\"",
+    icon: "💸",
+    category: "Objection",
+    heat: "High",
+    synopsis: `The seller has done their homework and found a flat-fee, discount, or limited-service brokerage that promises to list their home for a fraction of a traditional rate. The wrong response is to panic or to bash the competitor, because the discount model is a legitimate choice for the right seller, and pretending otherwise insults their intelligence. The right response is an honest contrast of outcomes: what full service actually buys in marketing spend, showing coverage, negotiation, and final net price versus the genuine trade-offs of a volume, low-touch model. Discount brokerages win on price-per-listing because they spend less time and money per home; your entire case is that the difference in net proceeds typically exceeds the savings on commission. Make the seller a fully informed buyer of their own representation, and the value-based agent wins more often than not.`,
+    realEstateImpact: [
+      { area: "Seller Net Proceeds", direction: "mixed", detail: "The commission savings are real, but a thinner marketing budget and lighter negotiation often shave more off the final sale price than the fee saved." },
+      { area: "Days on Market", direction: "up", detail: "Limited-service models typically mean less proactive showing coordination and follow-up, which can stretch time on market and invite price reductions." },
+      { area: "Buyer Perception", direction: "down", detail: "Reduced photography, staging, and paid promotion shrink the buyer pool, and a smaller pool means weaker offers and less competition." },
+      { area: "Agent Credibility", direction: "up", detail: "Honestly mapping the trade-offs (rather than trashing the competitor) positions you as the trustworthy advisor, which is exactly what wins value-driven sellers." }
+    ],
+    teamTalkingPoints: [
+      "Never bash the discount brokerage; validate it: 'That's a real option, and for some sellers it's the right one, so let me show you the honest trade-offs so you can decide.'",
+      "Reframe from cost to net: 'The question isn't who charges less, it's who puts more in your pocket after everything closes.'",
+      "Make the service gap concrete: 'Ask them how many homes their agent juggles at once, who runs your showings, and whether they negotiate your offers or just relay them.'",
+      "Quantify exposure: full marketing (pro media, paid ads, agent network) expands the buyer pool, and more buyers means competition that lifts the sale price well past the fee difference.",
+      "Use a side-by-side net sheet: model the likely sale price and total costs under both models so the savings-versus-outcome gap is visible in dollars, not vibes."
+    ],
+    brokerageTalkingPoints: [
+      "Arm agents with a clear full-service-vs-discount comparison sheet that's factual and fair, not a hit piece, because honesty out-converts fear.",
+      "Track and publish brokerage list-to-sale-ratio data so agents can show, in numbers, that full service nets more even after the higher fee.",
+      "Coach agents to ask diagnostic questions about the discount model's service level rather than making claims, letting the seller uncover the gaps themselves.",
+      "Standardize a dual net-sheet tool so every agent can model both scenarios live at the kitchen table.",
+      "Reinforce that the goal is an informed seller, not a pressured one; value-based positioning protects margin without resorting to scare tactics."
+    ],
+    clientScript: `"You're smart to look at that, and I'm not going to tell you it's a bad option, because for some sellers a discount model genuinely is the right fit. Let me just make sure you're comparing the whole picture, not only the fee.\n\nThe thing to understand is that those brokerages charge less because they spend less time and money per home, and that's a fair trade for them. The question is whether that trade works in your favor on net.\n\n[FOR SELLERS: Here's what I'd ask them directly: How many listings does your assigned agent handle at one time? Who coordinates and follows up on every showing? And when an offer comes in, do they negotiate it for you, or just pass it along? With me, your home gets professional photography and video, a funded ad campaign, and full negotiation on every offer, and that wider exposure pulls in more buyers. More buyers means competition, and competition is what pushes your price up.]\n\nLet me show you the math side by side. If full service nets you even two percent more on a 500 thousand dollar home, that's 10 thousand dollars, which is typically more than the entire commission you'd save going the discount route.\n\nSo I'd never pressure you. I just want you deciding with the full net picture in front of you. Want me to build out both scenarios on paper right now so you can see the real difference?"`
+  },
+  {
+    id: "inspection-blowup",
+    title: "\"We Want to Renegotiate After the Inspection\"",
+    icon: "🔍",
+    category: "Negotiation",
+    heat: "Critical",
+    synopsis: `The inspection report came back, the buyer wants a wall of credits and repairs, and the seller is reading it as an insult and an ambush. This is where deals get personal, and personal is what kills them. The buyer is scared of the unknown ("what else is wrong with this house?"), and the seller feels nickel-and-dimed on a home they've loved for years. Your job is to be the editor of the inspection report: separate the three things that actually matter (safety, structural, systems) from the twenty cosmetic items padding the list. The number on the table is almost never the real issue, the real issue is the buyer's fear and the seller's pride, and you negotiate those, not just the dollars. A surgical, prioritized ask closes; a kitchen-sink demand list detonates.`,
+    realEstateImpact: [
+      { area: "Deal Survival", direction: "down", detail: "Post-inspection renegotiation is the second-most-common deal-killer after financing; an over-broad buyer demand or a defensive seller refusal can implode a contract that was otherwise sound." },
+      { area: "Seller Net Proceeds", direction: "down", detail: "Every credit and repair comes off the seller's bottom line, but a blown deal means re-disclosing every newly-known defect to the next buyer, who will ask for the same things anyway." },
+      { area: "Buyer Confidence", direction: "mixed", detail: "Handled right, a fair resolution turns buyer fear into commitment; handled wrong, the buyer spirals into 'what else are we missing' and walks before close." },
+      { area: "Closing Timeline", direction: "up", detail: "Repair negotiations and re-inspections commonly add 5 to 10 days, and contractor bids to substantiate a credit request can stall the clock further if not gathered fast." }
+    ],
+    teamTalkingPoints: [
+      "Triage the report into three buckets before you negotiate anything: Material (safety/structural/major systems, roof, foundation, electrical, HVAC, water intrusion), Maintenance (real but routine), and Cosmetic (don't even ask). Negotiate hard on bucket one, concede gracefully on bucket two, drop bucket three entirely.",
+      "Get a contractor bid on the material items immediately. 'The seller should fix this' is weak; 'here's a $4,200 licensed estimate for the failing HVAC' is a number nobody can argue with and it reframes the talk from feelings to facts.",
+      "Push credits over repairs whenever possible. A closing-cost credit is clean, fast, and lets the buyer control the work; seller-performed repairs invite re-inspection fights and 'they did it cheap' disputes that re-open the deal late.",
+      "Coach the seller out of taking it personally: this isn't a referendum on their home, it's standard buyer due diligence, and the next buyer's inspector will find the exact same things. The question is never 'are they right,' it's 'is this cheaper than relisting.'",
+      "Protect the relationship between the parties. Frame the buyer's ask as 'they want to move forward, here's what they need to feel good closing,' not 'they're demanding.' Tone in how you relay the request decides whether the seller digs in or solves it."
+    ],
+    brokerageTalkingPoints: [
+      "Make a standardized inspection-response framework part of agent training: the three-bucket triage plus a 'reasonable ask' threshold so agents don't let buyers torpedo deals with cosmetic kitchen-sink lists.",
+      "Maintain a vetted contractor and trades list office-wide so agents can turn around a substantiating bid within 48 hours. The brokerage that produces a real estimate fastest controls the negotiation.",
+      "Coach disclosure discipline: once a defect is known, it must be disclosed to all future buyers. Agents should use this fact to keep sellers realistic, walking rarely makes the problem disappear, it just resets it with full disclosure attached.",
+      "Track post-inspection deal-save rate by agent. A high renegotiation-survival number is a sign of a skilled negotiator and a strong listing-presentation and recruiting talking point.",
+      "Limit brokerage liability by keeping agents out of the contractor/repair-quality business. Push credit-based resolutions and licensed third-party bids; never let an agent opine on whether a repair was 'done right.'"
+    ],
+    clientScript: `"The inspection's back, and before we react to the list, I want to do one thing: separate what actually matters from what's just noise. Every inspection report looks scary because it's the inspector's job to document every imperfection in the house, even the ones that don't matter. Let me tell you what I see when I read this professionally.\n\n[FOR BUYERS: There are really only three things on here worth fighting for, the HVAC that's near end of life, the electrical panel issue, and the moisture in the basement. Those are real, and I'll get a licensed bid so we walk in with a number, not an opinion. The other eighteen items? Door that sticks, a few cracked outlets, paint, those are normal homeownership, and if we pile them onto our ask, we look unreasonable and we hand the seller a reason to dig in. I want you to get the things that protect your safety and your wallet, and I don't want you to lose this house over a sticky door. Let's go in surgical and strong.]\n\n[FOR SELLERS: I know this list feels like an attack on a home you've cared for, and I get it. But here's what you have to know: this is routine buyer due diligence, not a personal shot, and the next buyer's inspector will hand us the exact same report, except now we'd have to disclose every item on it. So the real question isn't 'are they right,' it's 'is meeting them here cheaper than starting over.' My recommendation: ignore the cosmetic stuff entirely, and let's address the three real items with a closing credit instead of doing the repairs ourselves. A credit is clean, it closes on time, and it keeps us out of a re-inspection fight.]\n\nGive me 48 hours to get a real contractor estimate on the items that matter. Then we respond with something precise and reasonable, the kind of ask that gets a yes and keeps this deal alive. We are not going to let a long list of small things kill a good deal."`
+  },
+  {
+    id: "financing-fell-through",
+    title: "\"The Loan Just Fell Through\"",
+    icon: "🏦",
+    category: "Conversation",
+    heat: "Critical",
+    synopsis: `Five days before closing, the buyer's loan collapsed, the underwriter pulled the approval, and now you have to make the call no one wants to make. How you deliver this news in the first sixty seconds determines whether your client sees you as the cause of the disaster or the person who's going to fix it. Do not bury the lede, do not over-apologize, and do not show up to this call without a plan already in motion. The script is simple: state the facts plainly, take ownership of the next steps, and present the salvage paths before the panic sets in. Financing falls through more often than anyone admits, and a surprising number of these deals still close, but only when the agent leads with calm competence instead of dread. Your composure is the product here.`,
+    realEstateImpact: [
+      { area: "Deal Survival", direction: "down", detail: "A late financing collapse is the single most common reason deals die at the finish line; salvage is possible but the window is measured in days, and hesitation closes it." },
+      { area: "Client Trust", direction: "mixed", detail: "This call can permanently damage the relationship or cement it for life; clients remember not that the loan failed, but how their agent showed up when it did." },
+      { area: "Closing Timeline", direction: "up", detail: "Even a successful save typically requires a 10 to 21 day extension to re-qualify with a new lender, plus addendum sign-offs from every party to the contract." },
+      { area: "Earnest Money / Liability", direction: "mixed", detail: "If the financing contingency is still in force, the buyer's deposit is usually protected; if it lapsed, real money and potential breach exposure are on the line, and the timeline matters enormously." }
+    ],
+    teamTalkingPoints: [
+      "Call, don't text, and call the moment you know. Bad news delivered late or in writing reads as cowardice; a calm, immediate phone call reads as leadership. Open with the facts in one clean sentence, then go straight to the plan.",
+      "Walk into the call with options already in motion: a backup lender lined up, a draft extension addendum, and a read on whether there was a backup offer. Never present a problem without simultaneously presenting the next three moves.",
+      "Get the real reason from the loan officer in writing before you talk to your client, appraisal issue, debt-to-income change, employment verification, a credit event. The cause dictates the fix, and you can't salvage a problem you haven't diagnosed.",
+      "Move fast on a second lender. A clean borrower whose deal died on a lender-specific overlay can sometimes re-qualify elsewhere in 10-14 days; have a trusted local mortgage broker you can hand the file to the same afternoon.",
+      "Manage the other side proactively. The listing or buying agent across the table will hear about this, so control the narrative: 'here's what happened, here's our plan, here's the extension we're requesting.' Surprise breeds distrust; a managed message buys you time."
+    ],
+    brokerageTalkingPoints: [
+      "Mandate early and mid-stream lender check-ins (at contract, and again 10 days out) so financing risk surfaces with runway to fix it, not five days before closing. Most late collapses were detectable weeks earlier.",
+      "Vet preferred lenders hard and steer buyers toward those with strong pull-through rates. A brokerage's deal-fall-through rate is largely a function of which lenders its agents tolerate.",
+      "Train a standardized 'hard call' protocol: facts first, ownership of next steps, options on the table, all by phone within the hour. Make delivering bad news well a coached, repeatable skill, not a personality trait.",
+      "Keep a backup-lender bench and a relationship with a fast, flexible mortgage broker at the brokerage level, so any agent can hand off a dying file the same day instead of starting a lender search from scratch.",
+      "Protect the brokerage legally: ensure agents understand financing contingency deadlines and earnest money implications cold, and loop in managing broker and counsel the instant a deal threatens to turn into a breach or deposit dispute."
+    ],
+    clientScript: `"I need to talk to you directly, and I'm calling instead of texting because you deserve to hear this from me, not read it. The lender pulled the loan approval this morning. I know that's the last thing you wanted to hear five days out, and I'm not going to sugarcoat it. But here's the more important part: I already have a plan in motion, and a lot of deals that hit this exact wall still close. So stay with me.\n\n[FOR BUYERS: Here's what happened and here's what I'm already doing about it. The underwriter flagged an issue with your file, and I've got the loan officer putting the exact reason in writing so we fix the right thing. While we sort the cause, I've already reached out to a second lender I trust, a sharp local broker, and if your situation is as clean as I believe it is, we may be able to re-qualify you in about two weeks. I'm drafting a request to extend the closing so we have the runway to do that. Your earnest money and your position are my priority, and I'll walk you through exactly where you stand on both before you sign anything. You did not do anything wrong here. Let me carry this.]\n\n[FOR SELLERS: I want you to hear this from me before you hear it anywhere else, the buyer's financing fell through this morning. I know that's a gut punch this close to closing. Here's where we are: I'm already working with the buyer's side to see if they can re-qualify with another lender inside a short extension, and at the same time I'm pulling our backup-offer situation so we know every option we have. I am not going to let this sit. Within 24 hours I'll come back to you with a clear recommendation: extend and let them re-qualify, or pivot to our next-best buyer. Either way, you're going to have a path forward, not just bad news.]\n\nThis is the part of the job nobody likes, but it's also the part where you find out what your agent is made of. I'm on it right now, and I'll have a concrete update for you within 24 hours. We are going to work this problem together until it's solved."`
+  },
+  {
+    id: "buyer-cold-feet",
+    title: "\"I'm Getting Cold Feet\"",
+    icon: "🥶",
+    category: "Buyer",
+    heat: "High",
+    synopsis: `Your buyer is under contract, the inspection passed, the loan's on track, and now, at 11pm, the text comes in: "Did we overpay? Is this even the right house?" This is buyer's remorse, and it is one of the most predictable and most survivable moments in any transaction. Here's the key insight: cold feet are almost never about the house. They're about the size of the decision, the finality of it, and the brain's natural reflex to manufacture doubt right before a major commitment. Your job is not to argue them back in, that triggers more resistance. Your job is to validate the fear as normal, gently separate the feeling from the facts, and re-anchor them to the original reasons they fell in love with this home and chose this path. Reassurance without re-grounding is hollow; re-grounding is what closes.`,
+    realEstateImpact: [
+      { area: "Deal Survival", direction: "mixed", detail: "Cold feet are extremely common and usually pass within days, but a buyer left alone to spiral can talk themselves into forfeiting earnest money and walking from a home they actually want." },
+      { area: "Client Trust", direction: "up", detail: "Handling a vulnerable, late-night moment with patience rather than a sales push deepens loyalty and is one of the strongest drivers of referrals and repeat business." },
+      { area: "Buyer Confidence", direction: "down", detail: "Untreated, the doubt compounds: every minor news headline, every relative's opinion, and every inspection nit becomes 'proof' they should bail, eroding the conviction they need to reach closing." },
+      { area: "Earnest Money", direction: "mixed", detail: "If panic drives a buyer to walk outside their contingencies, their deposit is at risk; calm, timely intervention protects both the deal and their money." }
+    ],
+    teamTalkingPoints: [
+      "Validate first, always. 'What you're feeling is completely normal, almost every buyer feels this right before closing' lowers the defenses. The moment a buyer feels judged or sold to, they dig into the doubt to defend it.",
+      "Diagnose the real fear before you address anything. 'Overpaid' often means 'this is scary and final.' Ask open questions, 'what specifically is on your mind tonight?', because you can't re-anchor a fear you haven't actually located.",
+      "Re-anchor to their original 'why.' Pull up the exact reasons they chose this home, the commute, the school district, the yard their kids loved, the number that fit their budget. Their past, clear-headed self made a good decision; remind them of that person.",
+      "Separate feeling from fact with data, gently. If 'did we overpay' is the worry, walk the comps that justified the price and remind them they competed for this home in a real market, value isn't a feeling, it's what others were willing to pay too.",
+      "Normalize, don't pressure. Never say 'you can't back out now.' Say 'take the night, sleep on it, and let's talk in the morning when it's not 11pm.' Giving them permission to feel the doubt is what lets the doubt pass."
+    ],
+    brokerageTalkingPoints: [
+      "Teach agents that buyer's remorse is a predictable transaction phase, not a red flag, and build it into client expectation-setting up front: 'somewhere around closing, you'll probably get nervous, that's normal, call me when you do.'",
+      "Coach a 'validate, diagnose, re-anchor' response framework so agents don't default to defensive selling, which reliably backfires and accelerates a walk.",
+      "Front-load the cure: train agents to document each buyer's stated 'why' and must-haves at the start, so there's a concrete, personal anchor to return to when doubt hits late in the deal.",
+      "Track cold-feet-to-close outcomes. Agents who consistently talk panicked buyers calmly across the finish line are protecting deals, earnest money, and the brokerage's referral pipeline.",
+      "Protect clients and the brokerage by keeping agents on the right side of the line: support and re-ground the buyer's own decision, never pressure or coerce them past genuine, informed second thoughts."
+    ],
+    clientScript: `"I got your text, and I want you to know the first thing: what you're feeling right now is completely, totally normal. I'd say nine out of ten buyers feel some version of this in the final stretch. It doesn't mean you made a mistake, it means you're a thoughtful person making a big decision. So let's not run from the feeling, let's actually look at it together.\n\n[FOR BUYERS: Tell me honestly, what's the thought that's loudest tonight? Because 'did we overpay' and 'is this the right house' usually aren't really about the house at all, they're about how big and final this feels, and your brain throwing up doubt right before a commitment is the most human thing in the world. So let me separate the feeling from the facts for you. On price: you didn't overpay. We pulled the comps together, we competed for this home in a real market, and what you paid is what this house is genuinely worth, value isn't a feeling, it's what the market said too. And on whether it's right, let me take you back to why you chose it. You walked in and pictured your mornings in that kitchen, the commute worked, the neighborhood felt like home, and it fit your budget without stretching you. That version of you, calm, clear-eyed, did the homework, fell for this place, that person made a really good call. Tonight's 11pm version is just nervous, and nervous always shows up right before something important.]\n\nHere's what I want you to do: don't make any decision tonight. Sleep on it. Let the nerves settle, and let's talk first thing in the morning when the world looks different. If in the daylight you still have real, specific concerns, we'll walk through every one of them together, no judgment, no pressure. But I think you're going to wake up and remember exactly why you fell in love with this house. I'm in your corner either way."`
+  },
+  {
+    id: "bidding-war-fatigue",
+    title: "\"We Keep Losing Out\"",
+    icon: "⚔️",
+    category: "Buyer",
+    heat: "High",
+    synopsis: `Your buyer has lost three, maybe four multiple-offer situations, and they're done. The text reads "We keep losing out, maybe we should just stop looking." This is the most dangerous emotional state in a competitive market, because demoralized buyers make exactly two self-destructive moves: they quit right before the win, or they overpay wildly out of pure frustration on the next house just to "finally get one." Your job is to do two things at once: rebuild their morale so they don't quit, and sharpen their strategy so they don't have to overpay to win. Losing bidding wars is rarely about money alone, it's about terms, speed, and how clean and credible the offer reads to a nervous seller. A great buyer's agent turns a string of losses into a precise, winning playbook, and gets the client to the finish line without setting their finances on fire.`,
+    realEstateImpact: [
+      { area: "Buyer Confidence", direction: "down", detail: "Repeated losses erode morale fast; a demoralized buyer is at high risk of either dropping out of the market entirely or panic-bidding far over value on the next home." },
+      { area: "Deal Survival", direction: "mixed", detail: "Sharper offer strategy meaningfully raises win rate, but frustration-driven overbidding creates appraisal-gap and financing risk that can blow up the very deal they finally won." },
+      { area: "Buyer Net Cost", direction: "mixed", detail: "Smart terms (escalation caps, appraisal-gap coverage, flexible possession) can win without the highest price; emotional bidding can cost them tens of thousands they didn't need to spend." },
+      { area: "Agent Credibility", direction: "up", detail: "Diagnosing why offers lost and engineering a winning strategy is the core value of a buyer's agent; doing it well turns a frustrated client into a lifelong advocate." }
+    ],
+    teamTalkingPoints: [
+      "Validate the fatigue before you strategize. 'Losing three in a row is genuinely exhausting, you're not doing anything wrong, this market is brutal' keeps them in the game. A buyer who feels their pain is dismissed is a buyer who quits.",
+      "Diagnose each loss specifically, don't guess. Call the listing agents and find out what actually beat you: price, contingencies, close timeline, financing type, earnest money. You can't fix a losing strategy until you know precisely how you lost.",
+      "Win on terms, not just price. Coach the levers that cost little but read huge to a seller: shorter inspection window, appraisal-gap coverage, flexible or rent-back possession, larger earnest money, and a pre-underwritten loan, not just a pre-approval.",
+      "Use a smart escalation clause with a firm cap so they compete automatically without overpaying or bidding against ghosts, and pair it with strict pre-set walk-away numbers so frustration never overrides the math in the moment.",
+      "Re-anchor to their non-negotiables and budget ceiling now, while they're calm. The whole point is so that when the next house hits, they can move in hours with a clear, pre-decided line they won't cross out of desperation."
+    ],
+    brokerageTalkingPoints: [
+      "Train a structured 'loss debrief' habit: after every losing offer, the agent calls the listing agent and logs why it lost. Aggregated, this turns market intelligence into a repeatable winning-offer playbook.",
+      "Coach agents fluently on the full menu of competitive terms (escalation clauses, appraisal-gap coverage, rent-backs, contingency strategy) so they can win without simply telling buyers to pay more.",
+      "Build relationships with lenders who offer fully underwritten pre-approvals and fast closes, a buyer who can credibly close in 18 days beats a higher offer that can't, and that's a brokerage-level competitive advantage.",
+      "Set agent expectations on buyer morale management: in tight markets, retention of discouraged buyers is a real skill and a real revenue protector, demoralized clients who quit are lost commission and lost referrals.",
+      "Guard against the brokerage's clients overpaying out of desperation, document budget ceilings and walk-away terms, because a buyer who overbids into an appraisal gap they can't cover becomes a fallen-through deal and a liability, not a win."
+    ],
+    clientScript: `"I hear you, and before we talk about anything tactical, I want to say this plainly: losing three in a row is exhausting and demoralizing, and you are not doing anything wrong. This market is genuinely brutal right now, and the fact that you're still standing in it says everything. So I don't want you to quit, and I really don't want you to get so frustrated that you overpay on the next one just to make the pain stop. There's a better path, and it's strategy, not just more money.\n\n[FOR BUYERS: Here's what I've learned from how we lost. I called the listing agents on all three, and it wasn't always about price, in two of them, our terms got beat, not our number. So here's our new playbook. One, we get you fully underwritten, not just pre-approved, so your offer reads as the safest, most certain close on the table, sellers will trade real money for certainty. Two, we sharpen our terms: a tighter inspection window, appraisal-gap coverage so a low appraisal doesn't scare them, and flexible possession so we solve the seller's move, not just ours. Three, we use a smart escalation clause with a hard cap, so you automatically beat competing offers up to a number you and I set together when we're calm, never a penny more. That last part is the discipline that protects you: we decide your ceiling now, in daylight, so frustration never makes that decision for us in the heat of the moment.]\n\nWe are not going to keep doing the same thing and hoping. We're going to be the cleanest, most credible, best-structured offer the next seller sees, and we're going to do it without setting your finances on fire. You've been losing because the market is hard, not because we can't win. Let's go get the right one, the right way."`
+  },
+  {
+    id: "internet-lead-first-call",
+    title: "The Internet Lead First Call",
+    icon: "📲",
+    category: "Prospecting",
+    heat: "High",
+    synopsis: `A lead just filled out a form on a listing 90 seconds ago, and the clock is the entire game. Studies show your odds of making contact drop by roughly 10x after the first five minutes, and a lead is up to 100x more likely to connect if you reach them in the first minute versus thirty. This person is sitting on their couch with a phone in hand, actively curious about ONE specific home, they have not yet decided you are a "salesperson" to be avoided. Your job on this call is not to qualify, pitch, or close; it is to sound human, reference the exact property they were looking at, and earn a 90-second conversation that ends in a scheduled next step. Most agents lose here by either never calling fast enough or by launching into an interrogation the instant someone says hello.`,
+    realEstateImpact: [
+      { area: "Speed-to-Lead Conversion", direction: "up", detail: "Calling inside 1-5 minutes can lift contact-to-appointment rates by 3-5x versus a same-day or next-day callback; the first agent to make real contact wins the lead the majority of the time." },
+      { area: "Cost Per Acquisition", direction: "down", detail: "Internet leads are paid-for inventory. Converting the ones you already bought by responding instantly slashes your effective cost per closing far more than buying more leads." },
+      { area: "Agent Credibility", direction: "up", detail: "An instant, helpful, low-pressure call signals competence and responsiveness, which is exactly the trait sellers and buyers say they want most in an agent." },
+      { area: "Lead Trust", direction: "mixed", detail: "Speed builds trust, but an aggressive pitch or robotic script on a first call destroys it just as fast, tone determines which direction this moves." }
+    ],
+    teamTalkingPoints: [
+      "Set a hard team standard: every web lead gets a call attempt within 5 minutes, period. Build the workflow (notifications, a rotation, or an ISA) so nobody is ever the bottleneck.",
+      "Open by referencing the EXACT property and the lead's own action: 'Hi, this is ___ with ___ , you just looked at the place on Maple Street, I'm the agent who can get you inside it.' Specificity proves you're a real person, not a spam dialer.",
+      "Lead with a question that's easy and about THEM, not you: 'Quick question, are you hoping to be in something by a certain time, or just starting to look around?' Then shut up and listen.",
+      "The only goal of call one is the next appointment, not the life story. Aim to book a showing, a buyer consult, or a callback at a specific time before you hang up.",
+      "If they don't answer, leave a 12-second voicemail AND immediately text the same message, a text reply rate on a fresh lead is several times higher than a callback rate."
+    ],
+    brokerageTalkingPoints: [
+      "Speed-to-lead is a trainable, measurable system, instrument it. Track median response time per agent and coach the outliers; the metric correlates directly with closed volume.",
+      "Provide the tech stack that makes 5-minute response realistic: instant lead routing, mobile push, click-to-call, and pre-written first-touch text templates agents can fire in one tap.",
+      "Teach the 'curiosity over qualification' first-call frame in onboarding, new agents instinctively interrogate, which tanks conversion. Role-play the soft open until it's muscle memory.",
+      "Standardize a multi-touch cadence (call, text, email across the first 10 days) so no paid lead dies after a single missed call; the average sale takes 6-8 touches to surface.",
+      "Audit lead sources by speed-adjusted conversion, not raw cost, a 'cheap' lead source nobody calls fast is more expensive than a pricier one worked instantly."
+    ],
+    clientScript: `"Hi, is this Jordan? Hey Jordan, this is Alex with Summit Realty, you literally just pulled up the house on Maple Street online, so I figured I'd save you the back-and-forth and just call you directly. Did I catch you at an okay time for thirty seconds?\n\nPerfect. So real quick, I'm actually the agent who can get you inside that one, but before I talk your ear off about it, let me ask you the more useful question: are you hoping to be in a new place by a certain point, or are you just starting to look around and see what's out there?\n\nGot it, that's super helpful. And is Maple Street the style you're really after, or was it more the area and the price that caught your eye? Okay, that tells me a lot, there are actually two others that haven't hit the big sites yet that fit exactly what you just described.\n\nHere's what I'd suggest so I'm not just sending you links all week: let's grab fifteen minutes, I'll line up Maple Street plus those two, and you tell me what's a yes and what's a no. I've got tomorrow at 5:30 or Saturday at 10, which one's easier on you?"`
+  },
+  {
+    id: "ghosted-lead",
+    title: "Re-Engaging a Lead Who Went Cold",
+    icon: "👻",
+    category: "Prospecting",
+    heat: "Medium",
+    synopsis: `A lead who was warm a few weeks ago has gone silent, no replies to your last two or three messages. The instinct most agents follow is exactly wrong: they either guilt-trip ("Just following up again...") or vanish entirely, when the truth is the lead's life simply got loud and you fell off the radar. Going cold is rarely rejection; it's inertia, and inertia is broken with a pattern interrupt, not pressure. The winning move is a short, low-pressure, value-first message that gives them an easy and dignified way back into the conversation, ideally one that requires only a one-word reply. You are not chasing them; you are casually reopening a door and making it effortless to walk through.`,
+    realEstateImpact: [
+      { area: "Pipeline Recovery", direction: "up", detail: "A large share of 'dead' leads are simply dormant, disciplined re-engagement routinely revives 5-15% of a cold database into active conversations at near-zero acquisition cost." },
+      { area: "Conversion Timeline", direction: "mixed", detail: "Reviving a cold lead can shorten time-to-close if they were just waiting, or it may surface that timing shifted, either way you replace guessing with a real signal." },
+      { area: "Agent Reputation", direction: "up", detail: "A genuinely useful, no-pressure touch makes you the agent they remember warmly, so even if they aren't ready now they come back to you and not a competitor later." },
+      { area: "Wasted Follow-Up Effort", direction: "down", detail: "A good re-engagement message forces a yes/no/not-yet, letting you stop burning energy on truly dead contacts and reinvest it where there's a pulse." }
+    ],
+    teamTalkingPoints: [
+      "Drop the guilt entirely, never say 'haven't heard back' or 'just circling back again.' Open with a pattern interrupt: something new, specific, and useful that gives a clean reason to text.",
+      "Lead with value they didn't ask for: 'Saw this just listed two streets over from the one you liked, thought of you. Want me to send it?' The ask is tiny and the out is graceful.",
+      "Make the reply require one word. 'Still on the radar or did life take over for now, totally fine either way, just want to know how to be helpful.' This gives permission to be honest and almost always gets an answer.",
+      "Change the channel and the time of day. If three texts died, try a short voicemail or an email at 8am instead of 6pm, a new context can break the silence pattern on its own.",
+      "Set a re-engagement cadence, then respect the no. A handful of spaced value-touches, and if there's truly nothing, move them to a long-term drip rather than chasing into resentment."
+    ],
+    brokerageTalkingPoints: [
+      "Treat the cold database as an asset, not dead weight, run quarterly reactivation campaigns against aged leads; it's the cheapest pipeline a brokerage owns.",
+      "Give agents a library of pattern-interrupt templates (new listing, price drop, market shift, anniversary) so re-engagement is value-led by default, not a needy 'checking in.'",
+      "Coach the psychology: silence is usually inertia or bad timing, not rejection. Agents who internalize this re-engage confidently instead of taking the ghost personally and quitting.",
+      "Automate the low-value touches (drip, market reports) so agents reserve their personal energy for the handful of replies that signal renewed intent.",
+      "Track reactivation rate as a KPI, agents who systematically work their cold list close meaningfully more deals per lead dollar than those who only chase fresh leads."
+    ],
+    clientScript: `"Hey Jordan, no agenda here, something just came across my desk and you were the first person I thought of. A place two streets over from the one you liked a few weeks back just hit the market, and honestly it's a better layout for the price. Want me to shoot it over, yes or no?\n\nAnd genuinely no pressure either way, I know how it goes, life gets loud and the house search goes on the back burner. If now's just not the time, that's completely fine; I'd rather you tell me straight so I'm helpful and not annoying.\n\nSo which is it, still kind of on the radar, or more of a 'later this year' thing right now? Either answer is the right answer, I just want to know how to be useful to you."`
+  },
+  {
+    id: "referral-ask",
+    title: "Asking for Referrals Without Being Pushy",
+    icon: "🌟",
+    category: "Prospecting",
+    heat: "Medium",
+    synopsis: `Referrals are the highest-converting, lowest-cost lead a realtor will ever get, yet most agents either never ask or ask so vaguely ("Know anyone looking to buy or sell?") that the question dies on contact. The fix is specificity: the human brain can't easily scan its entire social graph, but it can instantly answer "Who do you know that's been griping about their commute or their growing family?" A great referral ask is tied to how you actually work, framed as you wanting to help one more person rather than needing one more deal, and timed to a moment of genuine goodwill. You are not begging for business; you are inviting a happy client to make a friend's life easier by connecting them to someone they already trust, you.`,
+    realEstateImpact: [
+      { area: "Lead Quality", direction: "up", detail: "Referred leads close at dramatically higher rates and shorter timelines than cold internet leads because the trust transfer is already done before you ever speak." },
+      { area: "Acquisition Cost", direction: "down", detail: "A referral pipeline costs essentially nothing versus paid leads or ad spend, dropping cost-per-closing and protecting margin in any market." },
+      { area: "Relationship Equity", direction: "mixed", detail: "Done well, a referral ask deepens the bond and flatters the client; done clumsily or too often it feels transactional and can cool the relationship, execution decides the direction." },
+      { area: "Repeat Business", direction: "up", detail: "Clients who refer become more loyal through commitment-consistency, having vouched for you, they're psychologically primed to use you again themselves." }
+    ],
+    teamTalkingPoints: [
+      "Never ask the vague 'know anyone looking to buy or sell?', it gives the brain nothing to grab. Ask a specific, situational question: 'Who do you know that's outgrowing their place or finally fed up with renting?'",
+      "Tie the ask to how you work, not to your need: 'The way I keep my business sane is I only take a handful of clients at a time, mostly from people my past clients send me, so when someone comes to mind, I'd genuinely love the intro.'",
+      "Time it to a peak moment of goodwill, right after a smooth closing, a happy review, or solving a problem for them. Gratitude is when the door is widest open.",
+      "Make saying yes effortless: offer to do the work. 'You don't have to sell me at all, just text them my number, or text me their name and I'll reach out gently and mention you.'",
+      "Close the loop and reward it. Always thank the referrer, keep them posted (within privacy limits), and acknowledge the gesture, recognition is what produces the SECOND referral."
+    ],
+    brokerageTalkingPoints: [
+      "Make referral generation a deliberate post-close system, not a hopeful afterthought, bake a specific ask into the closing-day and 30-day-after touchpoints for every agent.",
+      "Train the 'specific question' technique brokerage-wide; it's the single highest-leverage change to most agents' lead gen and it costs nothing to deploy.",
+      "Build a sphere-nurture engine (value touches, client events, anniversary outreach) so the referral ask lands on a warm relationship, not a cold one the agent ignored for a year.",
+      "Coach agents past the 'I don't want to seem pushy' fear by reframing: a referral is a gift to the friend, not an imposition, confident, well-timed asks feel generous, not needy.",
+      "Track referrals-per-closed-client as a leading indicator of a durable book of business; agents with a high ratio are far more recession-resistant than lead-buyers."
+    ],
+    clientScript: `"Jordan, before I let you go, I have to tell you, you've been a genuine pleasure to work with, and that actually leads me to a small ask. The way I run my business on purpose is that I take a limited number of clients so everyone gets the kind of attention you just got, and almost all of them come from people my past clients introduce me to rather than from ads.\n\nSo here's my real question, not the generic 'know anyone buying or selling,' because nobody can ever think of anyone on the spot. Who in your world has been kind of grumbling lately about needing more space, or a shorter commute, or finally being done with renting? Even just one name that pops into your head.\n\nAnd you don't have to sell me at all, I promise. You can just text them my number, or honestly easier, text me their first name, I'll reach out warmly, mention you sent me, and take great care of them exactly like I did with you. That work?"`
+  },
+  {
+    id: "past-client-checkin",
+    title: "The Past-Client Check-In",
+    icon: "☎️",
+    category: "Prospecting",
+    heat: "Medium",
+    synopsis: `The average homeowner moves every 8-10 years and knows several people who will move much sooner, yet the majority of agents never speak to a client again after the closing gift, and then act surprised when that client lists with someone else. Staying top of mind is not about random "just checking in" calls that feel like a thinly veiled pitch; it's about showing up periodically with something genuinely valuable: their home's updated equity, a relevant market shift, or a warm home-anniversary touch. The goal of this call is connection, not conversion, you are watering a relationship, and the business grows as a byproduct. An agent who delivers value to past clients three or four times a year owns the repeat-and-referral business that everyone else leaves on the table.`,
+    realEstateImpact: [
+      { area: "Repeat & Referral Business", direction: "up", detail: "The bulk of a mature agent's volume comes from past clients and their referrals; consistent value-first check-ins are what convert a one-time deal into a lifetime relationship." },
+      { area: "Client Retention", direction: "up", detail: "Most clients say they'd use their agent again, yet most don't, purely because the agent went silent. Periodic contact closes that gap and prevents the slow drift to a competitor." },
+      { area: "Lifetime Client Value", direction: "up", detail: "One nurtured past client can mean a future sale, a future purchase, and a steady stream of referrals over a decade, multiplying the value of the original transaction many times over." },
+      { area: "Call Reception", direction: "mixed", detail: "A value-led call deepens the relationship; a thinly disguised 'so, thinking of selling?' call erodes it, whether this is welcomed or dreaded depends entirely on the lead-with-value execution." }
+    ],
+    teamTalkingPoints: [
+      "Always lead with value, never with 'are you thinking of selling.' Open with something concretely useful: 'Your place has gained around forty grand in equity since we closed, I ran the numbers and wanted you to know.'",
+      "Use natural, non-salesy triggers as your reason to reach out: the home-purchase anniversary, a notable comp that just sold on their street, a tax-assessment or rate shift that affects them.",
+      "Make the call about THEM and their home, not your pipeline. Ask how they're enjoying the place, whether that renovation ever happened, how the neighborhood's treating them, be a person, not a prospector.",
+      "Build a simple cadence: aim to touch every past client with something of value 3-4 times a year, mixing personal calls with market updates and an anniversary note so you never go silent.",
+      "Plant a soft, no-pressure door at the end: 'No need to do anything with this, just wanted you to have the number. And you know I'm always your go-to if you or anyone you know ever has a real estate question.'"
+    ],
+    brokerageTalkingPoints: [
+      "Past-client nurture is the highest-ROI activity in the business and the most neglected, make a recurring database touch plan a non-negotiable part of every agent's business plan.",
+      "Equip agents with the tools that make value-touches easy: automated equity/CMA updates, anniversary reminders, and a hyperlocal market report they can personalize and send in minutes.",
+      "Coach the mindset shift from 'transaction closed' to 'relationship opened', the closing is the start of the client lifecycle, not the end, and the brokerage's repeat business depends on agents living that.",
+      "Audit each agent's database for orphaned past clients and assign a re-warming campaign; a client who hasn't heard from their agent in two years is one good competitor call away from gone.",
+      "Track repeat-and-referral percentage of total volume as a core health metric, a rising ratio signals a self-sustaining business that's far less dependent on expensive lead generation."
+    ],
+    clientScript: `"Hey Jordan, it's Alex, no reason to panic, nothing's wrong, I actually just have good news for you. It hit me that it's been almost two years since we closed on the place, and I was running some numbers this morning: based on what's sold around you, your home's gained somewhere in the neighborhood of forty thousand dollars in equity since you bought it. I figured that's the kind of thing you'd want to know.\n\nBut honestly, enough about the numbers, how's the house treating you? Did you ever end up doing that kitchen you were dreaming about, and is the neighborhood living up to the hype? I think about you guys whenever I drive through over there.\n\nAnd listen, there's zero ask here, I just like to make sure my past clients always have a current picture of where they stand and know I'm a text away. If you, or honestly anyone you know, ever has even a random real estate question, I want to be the person you call. Great catching up, Jordan, I'll check back in down the road."`
+  },
+  {
+    id: "fair-housing-steering",
+    title: "\"Is This a Safe Neighborhood With Good Schools?\"",
+    icon: "⚖️",
+    category: "Conversation",
+    heat: "Critical",
+    synopsis: `Your buyer asks you point-blank whether a neighborhood is "safe," "good," "family-friendly," or has "the right kind of people", and whether the schools are any good. It feels like a simple, friendly question, but answering it substantively is one of the fastest ways an agent commits illegal steering under the Fair Housing Act. Words like "safe," "good," and "family-friendly" are legally loaded proxies that can correlate with race, national origin, familial status, and disability, protected classes you may never characterize. The compliant move is not to refuse coldly, but to stay warm and genuinely helpful while handing the client objective, third-party tools they can evaluate against their OWN definition of what matters. This protects the buyer's right to choose freely and shields you and your brokerage from a fair-housing complaint that can end a career.`,
+    realEstateImpact: [
+      { area: "Legal Liability", direction: "down", detail: "Redirecting to objective sources eliminates the steering exposure that a substantive answer creates; documenting the referral further protects you in any HUD or state complaint." },
+      { area: "Agent Credibility", direction: "up", detail: "Equipping a buyer with real research tools reads as professional and consultative, not evasive, when you frame the why honestly." },
+      { area: "Client Trust", direction: "mixed", detail: "Some buyers feel briefly brushed off by a non-answer; a warm, well-explained redirect converts that into respect for your integrity." },
+      { area: "Deal Velocity", direction: "down", detail: "Buyers who self-research take a beat longer to commit, but offers built on their own verified criteria are far less likely to fall apart later." }
+    ],
+    teamTalkingPoints: [
+      "Treat 'safe,' 'good,' 'family-friendly,' and 'the right kind of people' as red-flag words, never characterize them yourself, for ANY client, no exceptions.",
+      "Always pivot to objective, third-party data the buyer evaluates themselves: GreatSchools/Niche for schools, local police department crime portals and city crime-mapping sites, and the buyer's own in-person visits at different times of day.",
+      "The compliant answer is the same regardless of who is asking, uniform process is your best defense against a discrimination claim.",
+      "Document the interaction in your CRM: note the question and that you provided objective resources rather than an opinion.",
+      "If a buyer pushes for your personal take, hold the line warmly: 'I want you choosing based on your own research, not my bias', then hand them the tools again."
+    ],
+    brokerageTalkingPoints: [
+      "Steering violations under the Fair Housing Act create liability for the individual agent AND the brokerage, train every agent to recognize proxy language.",
+      "Maintain a brokerage-standard resource sheet (school-rating sites, crime-data portals, census/demographic tools) so every agent gives an identical, defensible response.",
+      "Audit CRM notes and require that 'is it safe/good' style questions are logged with the objective-resources response, not an opinion.",
+      "Make uniform treatment policy: the answer to 'good schools?' must not change based on the client's perceived protected-class status.",
+      "Consult brokerage counsel on state-specific additions, some states protect classes (e.g., source of income) beyond the federal seven."
+    ],
+    clientScript: `"That's such an important question, and I want to make sure you get a real answer, not just my personal opinion, which honestly wouldn't serve you well here.\n\nThere are actually two reasons I steer you to the source data instead of giving you my take. First, fair housing law is strict about agents characterizing neighborhoods, because words like 'safe' or 'good' mean very different things to different people, and the law protects your right to choose without my bias nudging you. Second, and more practically, my opinion is just one person's; the objective data is far more useful to you.\n\nSo here's how I'd actually get you great answers. For schools, pull up GreatSchools.org and Niche, you can compare ratings, test scores, programs, and parent reviews and weigh what matters to YOUR family. For safety, the local police department almost always publishes a crime map and incident reports online, and sites like CrimeMapping or your city's open-data portal let you see the real numbers street by street.\n\nAnd the best research is your own feet: drive the neighborhood on a weekday morning, a weekend evening, walk around, talk to a future neighbor. I'm happy to set up showings at different times so you can get a real feel for it.\n\nYou tell me which areas check YOUR boxes once you've looked, and I'll go all-in finding you the right home there. Sound good?"`
+  },
+  {
+    id: "dual-agency",
+    title: "The Dual Agency Conversation",
+    icon: "🔀",
+    category: "Conversation",
+    heat: "High",
+    synopsis: `You hold the listing for a seller, and now a buyer wants to write an offer on that exact property directly through you, putting you in a dual agency situation where you'd represent both sides of the same transaction. Where it's legal, dual agency is permitted only with the informed, written consent of BOTH parties, and it fundamentally changes what you can do: you can no longer advocate fully for either side, advise on price strategy, or share confidential motivations. Several states (notably including ones that have banned it outright) prohibit dual agency entirely, so the first step is always knowing your state's rules. The professional move is full, early transparency, disclose the conflict in plain language, explain exactly what loyalties you lose, and lay out every option including separate representation, before anyone gets emotionally or financially committed. Done right, this conversation builds trust; done late or vaguely, it's an agency-law violation and a lawsuit.`,
+    realEstateImpact: [
+      { area: "Legal Compliance", direction: "mixed", detail: "Proper written disclosure and consent keep you compliant where dual agency is legal; in states that ban it, the only compliant path is referring one party out." },
+      { area: "Client Advocacy", direction: "down", detail: "As a dual agent you forfeit the ability to negotiate price or strategy for either party, both clients lose a dedicated advocate." },
+      { area: "Agent Trust", direction: "up", detail: "Disclosing the conflict early and offering separate representation signals integrity and almost always strengthens the relationship." },
+      { area: "Transaction Risk", direction: "mixed", detail: "A documented, consented arrangement reduces liability, but undisclosed or pressured dual agency is a top source of agency-law complaints." }
+    ],
+    teamTalkingPoints: [
+      "Know your state FIRST, dual agency is outright illegal in several states; never assume you can offer it without checking current law.",
+      "Disclose the conflict the moment it appears, in writing, and before any offer is discussed, late disclosure is the classic agency violation.",
+      "Be explicit about what you LOSE as a dual agent: no price advice, no negotiation strategy, no sharing of either side's confidential motivations.",
+      "Always present the alternatives, not just consent, the buyer can get their own agent, or one party can be referred to a colleague for true representation.",
+      "Get informed written consent from BOTH parties and keep it in the file; never let a client feel pressured into it to save you a commission."
+    ],
+    brokerageTalkingPoints: [
+      "Maintain a state-specific policy on dual agency (and designated agency, where allowed) and confirm every agent knows whether it's even legal in your market.",
+      "Require the state-mandated disclosure form be signed by both parties BEFORE an offer is written, and audit files for it.",
+      "Train agents that the commission incentive to 'keep both sides' must never override a client's right to independent representation.",
+      "Stand up a referral network so agents can hand one party to a colleague rather than forcing a dual-agency conflict.",
+      "Carry and document the conversation: brokerages are named in agency-violation claims, so paper trails of informed consent are essential E&O protection."
+    ],
+    clientScript: `"Before we go any further, I owe you complete transparency, because something important just changed. I'm the listing agent for this property, I already represent the seller, and now you'd like to make an offer on it through me. That puts us in what's called dual agency, and I want you to understand exactly what it means before you decide anything.\n\nHere's the honest part: if I represent both of you, I legally can't fully advocate for either side. I can't advise you on what to offer, I can't share the seller's motivation, and I can't run negotiation strategy for you the way a buyer's agent normally would. My role becomes neutral, facilitating a fair, lawful transaction rather than fighting to get YOU the best deal.\n\nSo let me lay out your options. One, you can get your own buyer's agent who represents only you and your interests, I think that's often the strongest choice for a buyer. Two, in our state I can refer you to a trusted colleague at my brokerage who'd represent you separately. Or three, if you'd still prefer to proceed with me as a dual agent, we can do that ONLY with your informed written consent, and I'd never want you to feel pressured into it.\n\nThere's no wrong answer here, and my goal is that you feel fully protected and informed. Which of those directions feels right to you, and what questions can I answer?"`
+  },
+  {
+    id: "ibuyer-comparison",
+    title: "\"Opendoor Offered Me Cash\"",
+    icon: "🏠",
+    category: "Objection",
+    heat: "High",
+    synopsis: `Your seller just got an instant cash offer from Opendoor (or Offerpad) and is leaning toward taking it because it's fast, certain, and "good enough." Here's the trap: the headline offer number is not the take-home number. iBuyers build their margin into a service fee (typically 5-8%, often higher than a full agent commission), an offer that is usually 2-8% below true market value, and a repair/concession deduction they assess after inspection. Your job is not to bash the convenience, for a seller who genuinely values speed and certainty above dollars, an iBuyer can be the right call. Your job is to make sure they are comparing net to net, with eyes open, before they leave $20K-$40K on the table to save three weeks.`,
+    realEstateImpact: [
+      { area: "Seller Net Proceeds", direction: "down", detail: "On a $400K home, an iBuyer offer at 4% below market ($384K) minus a 6% service fee (~$23K) minus typical repair deductions ($5K-$10K) nets roughly $351K-$356K. A traditional sale at $400K minus 5-6% total commission (~$22K) nets ~$378K, a $22K-$27K gap." },
+      { area: "Time to Close", direction: "up", detail: "iBuyers can close in 7-14 days with a flexible move-out; an open-market sale typically takes 30-45 days from list to close. The speed is real and worth quantifying for the seller's situation." },
+      { area: "Certainty of Sale", direction: "mixed", detail: "An iBuyer offer removes financing-fall-through and buyer-cold-feet risk, but the offer is re-traded after inspection, the final number can drop, so the 'certainty' is on the close, not the price." },
+      { area: "Agent Credibility", direction: "up", detail: "An agent who lays out the real net-to-net math instead of dismissing the offer earns trust, even if the seller ultimately chooses convenience, they remember who told them the truth." }
+    ],
+    teamTalkingPoints: [
+      "Never argue against the iBuyer's convenience, concede it openly. The credibility win is in being the one who runs honest math, not the one who badmouths a competitor.",
+      "Get the actual offer document, not the seller's memory of it. The service fee and 'estimated closing costs' lines are where the real number hides, and sellers routinely quote the gross.",
+      "Build a side-by-side net sheet: iBuyer gross minus service fee minus repair deduction vs. market price minus commission minus seller concessions. Net to net is the only fair comparison.",
+      "Quantify the seller's real value of speed. If they need to be out in 10 days for a job relocation, the iBuyer discount may genuinely be worth it, say so. If they just 'don't want the hassle,' that hassle is worth $20K+ and they should know it.",
+      "Flag the re-trade risk: iBuyer offers are subject to a post-acceptance inspection and the price can be lowered. The initial number is a ceiling, not a floor."
+    ],
+    brokerageTalkingPoints: [
+      "Position the brokerage's full-service model as 'we get you the iBuyer's speed when you need it AND the open market's price when you have time', many brokerages can present an iBuyer offer alongside a listing.",
+      "Track local iBuyer activity by ZIP so agents can speak to actual recent net-proceeds gaps in their market, not national averages.",
+      "Standardize a branded net-sheet comparison tool so every agent presents the iBuyer-vs-list math the same credible way.",
+      "Train agents that iBuyers are strongest in homogeneous, mid-priced subdivisions and weakest on unique or higher-end homes, coach them to know which listings are most at risk.",
+      "Frame the brokerage value proposition around protected proceeds: the average open-market premium over an iBuyer offer, after all fees, typically exceeds the full commission several times over."
+    ],
+    clientScript: `"I'm really glad you brought me that Opendoor offer, let's look at it together, because the speed they're offering is genuinely valuable and I want you to make this decision with the full picture.\n\n[FOR SELLERS: Here's the one thing I need you to know: the number on that offer is the gross, not what hits your bank account. Let's say they offered you $384K. Pull up the offer, see this line, the service fee? That's usually 5-8%, so on this offer that's about $23K. Then there's a repair deduction they'll assess after their inspection, typically another $5K-$10K. So you're really netting somewhere around $351K to $356K.]\n\n[FOR SELLERS: Now here's what the open market looks like. I believe we can list and sell this home at $400K. Take out a full 6% commission, that's about $24K, and even after concessions you're netting around $376K to $378K. That's roughly $22K to $27K more in your pocket. The tradeoff is time: their way you could be closed in two weeks, my way it's more like 30 to 45 days.]\n\nSo the honest question is just this: is saving those three or four weeks worth about $25,000 to you? If you have a job starting across the country in ten days, maybe it absolutely is, and if so, I'll help you take their offer and feel good about it. But if this is mostly about avoiding hassle, that hassle is worth $25K, and managing it is exactly my job. Which one is your real situation?"`
+  },
+  {
+    id: "wait-for-rates",
+    title: "\"We'll Just Wait Until Rates Drop\"",
+    icon: "⏳",
+    category: "Market",
+    heat: "High",
+    synopsis: `Your buyer is qualified, motivated, and found a home they like, but they want to pause until mortgage rates come down. It feels prudent. It usually isn't. The flaw in the logic is that they're focused on the rate (which they can change later by refinancing) instead of the price (which they're locked into forever once someone else buys the house). When rates drop, the buyers who were sitting on the sidelines all flood back at once, demand spikes, multiple offers return, and prices jump, so they end up paying more for the house and competing harder, even at the lower rate. The principle is 'date the rate, marry the house': you can refinance a rate, but you can't renegotiate a price after you've lost the home. Your job is to run the real monthly-cost math and show them what waiting actually costs.`,
+    realEstateImpact: [
+      { area: "Purchase Price", direction: "up", detail: "On a $400K home appreciating at a modest 4% annually, waiting 12 months means the same house costs ~$416K, $16K more in price (and a bigger down payment to hit the same percentage)." },
+      { area: "Buyer Competition", direction: "up", detail: "Every 1% drop in rates pulls a wave of sidelined buyers back in simultaneously; inventory that's negotiable today returns to multiple-offer, over-asking conditions, erasing the buyer's leverage." },
+      { area: "Monthly Payment", direction: "mixed", detail: "A lower rate on a higher price often nets to a similar or larger payment, and meanwhile the buyer paid 12 months of rent ($18K-$24K) building zero equity instead of paying down principal." },
+      { area: "Equity Position", direction: "down", detail: "Waiting forfeits a year of both principal paydown and appreciation; a buyer who buys now and refinances later captures the appreciation themselves instead of paying it to the next seller." }
+    ],
+    teamTalkingPoints: [
+      "Reframe rate vs. price: 'You can refinance a rate next year for a few thousand dollars. You can never go back and buy this house at today's price once it's gone.' That's the whole argument in two sentences.",
+      "Run the appreciation math out loud. A 4% bump on a $400K home is $16K, frame that as the 'cost of waiting' the buyer pays to the next seller, on top of a year of rent that builds them nothing.",
+      "Explain the demand-snapback: rates dropping doesn't mean a calmer market, it means the opposite. The window of negotiating power is NOW, while other buyers are still scared.",
+      "Pre-empt the refinance objection by embracing it, buying now and refinancing when rates fall is the best of both worlds: today's price, tomorrow's rate. Many lenders offer a reduced-cost refi within a set window.",
+      "Make the payment comparison concrete: a slightly higher payment now that includes principal paydown beats a year of rent at $1,500-$2,000/month that returns zero, even before appreciation."
+    ],
+    brokerageTalkingPoints: [
+      "Equip agents with a live 'cost of waiting' calculator (price appreciation + lost principal + rent paid) tied to current local appreciation rates so the math is specific, not hypothetical.",
+      "Partner with preferred lenders on a documented 'buy now, refi later' program (e.g., lender-credit refinance within 24-36 months) so agents can offer a concrete answer to the rate objection.",
+      "Coach agents to distinguish a genuinely unqualified buyer (who SHOULD wait) from a qualified one rationalizing fear, the strategy differs and integrity matters.",
+      "Provide historical data showing that prices rose, not fell, during past rate-drop cycles, the snapback is well-documented and persuasive when shown, not just asserted.",
+      "Standardize a buyer education one-pager on 'date the rate, marry the house' so the message is consistent and the brokerage owns the framing in its market."
+    ],
+    clientScript: `"I completely understand wanting to wait for rates to come down, on the surface it feels like the smart, patient move. Let me show you why it usually backfires, and then you decide.\n\n[FOR BUYERS: The key thing is that you're focusing on the rate, but the rate is the one part you can change later. If rates drop next year, you refinance, that costs a few thousand dollars and a couple of weeks. But the price? Once another buyer closes on this house, it's gone. You can never go back and buy it at today's number. That's the whole idea behind 'date the rate, marry the house.']\n\n[FOR BUYERS: Now the math. This home is around $400K. At a modest 4% appreciation, in twelve months the same house costs about $416K, that's $16K more, and a bigger down payment to match it. On top of that you'll have paid roughly $20K in rent that builds you zero equity. So waiting a year to maybe save on the rate could cost you $35K+ in price and lost equity combined.]\n\n[FOR BUYERS: And here's the part most people miss: when rates finally drop, every buyer who was waiting jumps back in at the same moment. The negotiating room you have today disappears, you're back to multiple offers and paying over asking. So you'd be buying a more expensive house, in a tougher market, just to get the lower rate you could've gotten anyway by refinancing.]\n\nThe move that actually wins is to buy at today's price while you have leverage, then refinance when rates fall, today's price, tomorrow's rate. Does that change how you're weighing the wait?"`
+  },
+  {
+    id: "assumable-mortgage",
+    title: "The Assumable Mortgage Opportunity",
+    icon: "🔑",
+    category: "Buyer",
+    heat: "Medium",
+    synopsis: `Most buyers have no idea this exists: if a seller has an existing FHA or VA loan, many originated at sub-3% rates in 2020-2021, a qualified buyer can often assume that loan, taking over the seller's exact rate and remaining balance instead of getting a brand-new loan at today's rate. The payment difference is enormous: assuming a 2.75% loan instead of taking a 7% loan can cut the monthly payment by hundreds, sometimes over a thousand dollars. The catch is real and worth explaining clearly: the buyer must qualify with the existing servicer, the process is slower (60-90 days), and, the big one, they have to cover the gap between the loan balance and the purchase price, usually in cash or a second loan. Your job is to help buyers spot these listings and run the math on whether the payment savings justify the equity-gap hurdle.`,
+    realEstateImpact: [
+      { area: "Monthly Payment", direction: "down", detail: "Assuming a $300K balance at 2.75% costs ~$1,225/month in principal and interest; a new $300K loan at 7% costs ~$1,996, a savings of roughly $770/month, or over $9,000 a year and ~$185K over the life of the loan." },
+      { area: "Upfront Cash Needed", direction: "up", detail: "On a $400K home with a $300K assumable balance, the buyer must cover the $100K equity gap, far more than a standard down payment, via cash or a second mortgage, which is the main barrier." },
+      { area: "Time to Close", direction: "up", detail: "Loan assumptions run through the existing servicer and typically take 60-90 days versus 30-45 for a standard purchase, buyers and sellers both need patience and a well-written contract." },
+      { area: "Buyer Buying Power", direction: "up", detail: "A dramatically lower payment lets the buyer qualify for a higher-priced or better-located home than they could afford at current rates, expanding their effective budget." }
+    ],
+    teamTalkingPoints: [
+      "Only FHA, VA, and USDA loans are assumable; conventional loans almost never are. Teach buyers to ask the listing agent the loan type and rate early, it's a screening question, not an afterthought.",
+      "Lead with the payment, not the rate: '$770 a month less, every month, is over $9,000 a year you keep' lands harder than quoting an interest rate. Make the savings tangible.",
+      "Set expectations on the equity gap upfront, this is the deal-killer if unaddressed. The buyer covers the difference between the loan balance and the price in cash or a second loan; qualify them for that early.",
+      "For VA assumptions, flag the entitlement issue: unless the buyer is also a veteran substituting their entitlement, the seller's VA entitlement stays tied up, a real concern sellers need disclosed.",
+      "Budget for the timeline. Servicer assumptions take 60-90 days; write the contract with that runway and keep the seller informed so the longer close doesn't blow up the deal."
+    ],
+    brokerageTalkingPoints: [
+      "Build an internal flag in the MLS workflow for likely-assumable listings (FHA/VA financing originated 2020-2021) so agents can proactively surface these opportunities to buyers.",
+      "Partner with lenders and title companies experienced in assumptions, the process is unfamiliar to many, and a knowledgeable partner is the difference between a smooth close and a dead deal.",
+      "Train listing agents to market an assumable low-rate loan as a headline feature, it's a genuine competitive advantage that can justify a higher price and draw more buyers.",
+      "Develop a second-mortgage / equity-gap financing playbook so agents have ready answers for buyers who love the payment but lack the full gap in cash.",
+      "Position assumption expertise as a brokerage differentiator in a high-rate market, few agents understand it, so the ones who do win the affordability-stretched buyer."
+    ],
+    clientScript: `"I want to put an opportunity on your radar that most buyers never hear about, because in a high-rate market it can change everything: assuming the seller's existing mortgage.\n\n[FOR BUYERS: Here's the idea. A lot of sellers locked in FHA or VA loans back in 2020 and 2021 at rates under 3%. If a home has one of those loans, you may be able to assume it, meaning you take over the seller's exact rate and balance instead of getting a brand-new loan at today's 7%. The payment difference is huge: on a $300K balance, that's roughly $1,225 a month at 2.75% versus about $1,996 at 7%. That's $770 a month, over $9,000 a year, staying in your pocket.]\n\n[FOR BUYERS: Now the honest catch, because there always is one. First, you still have to qualify with the seller's loan servicer, and that process is slower, figure 60 to 90 days. Second, and this is the big one: you have to cover the gap between the loan balance and the purchase price. If the loan is $300K and the home is $400K, you need to bring that $100K, in cash or with a second loan. So this works best when you have solid equity or savings to put down.]\n\nSo here's how we play it: I'll watch for listings with assumable FHA or VA financing and ask that loan question early on anything you like, and when we find one, we'll run the exact numbers, payment savings against the cash you'd need for the gap, and see if it's a winner for you. Sound worth keeping an eye out for?"`
   }
-
 ];
 
 const TABS = [
