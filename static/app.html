@@ -2342,26 +2342,7 @@ function Primed() {
       setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
       
       // Play TTS
-      if (voiceEnabled) {
-        setIsPlaying(true);
-        try {
-          const ttsRes = await fetch(API_URL + "/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify(buildTtsBody(reply))
-          });
-          if (ttsRes.ok) {
-            const audioBlob = await ttsRes.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-            audioRef.current = audio;
-            audio.onended = () => setIsPlaying(false);
-            audio.play();
-          } else {
-            setIsPlaying(false);
-          }
-        } catch { setIsPlaying(false); }
-      }
+      if (voiceEnabled) await speakReply(reply);
     } catch (err) {
       console.error("Voice practice error:", err);
       setPracticeMessages(prev => [...prev, { role: "client", content: "Sorry, can you say that again?" }]);
@@ -2747,23 +2728,7 @@ function Primed() {
       setPracticeMessages([{ role: "client", content: reply }]);
       
       // Play TTS if voice is enabled
-      if (voiceEnabled) {
-        setIsPlaying(true);
-        try {
-          const ttsRes = await fetch(API_URL + "/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify(buildTtsBody(reply))
-          });
-          if (ttsRes.ok) {
-            const ab = await ttsRes.blob();
-            const au = new Audio(URL.createObjectURL(ab));
-            audioRef.current = au;
-            au.onended = () => setIsPlaying(false);
-            au.play();
-          } else { setIsPlaying(false); }
-        } catch { setIsPlaying(false); }
-      }
+      if (voiceEnabled) await speakReply(reply);
     } catch (err) {
       console.error("AI first message error:", err);
       setPracticeMessages([{ role: "client", content: "Hi, I was hoping to talk to you about my home. I've been thinking about selling but I'm not sure where to start." }]);
@@ -2781,6 +2746,38 @@ function Primed() {
     if (persona && persona.voiceId) body.voice_id = persona.voiceId;
     if (persona && persona.voiceSettings) Object.assign(body, persona.voiceSettings);
     return body;
+  };
+
+  // Fetch + play the persona's TTS. Surfaces failures (silent text-only used
+  // to hide a /tts error: bad key, no credits, blocked autoplay, etc.).
+  const speakReply = async (reply) => {
+    if (!reply) return;
+    setIsPlaying(true);
+    try {
+      const ttsRes = await fetch(API_URL + "/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify(buildTtsBody(reply))
+      });
+      if (!ttsRes.ok) {
+        const detail = await ttsRes.text().catch(() => "");
+        console.error("TTS failed:", ttsRes.status, detail);
+        if (!window.__ttsWarned) { window.__ttsWarned = true; alert("Voice playback failed (HTTP " + ttsRes.status + "). " + detail); }
+        setIsPlaying(false);
+        return;
+      }
+      const au = new Audio(URL.createObjectURL(await ttsRes.blob()));
+      audioRef.current = au;
+      au.onended = () => setIsPlaying(false);
+      au.play().catch((err) => {
+        console.error("Audio play blocked:", err);
+        if (!window.__ttsWarned) { window.__ttsWarned = true; alert("Your browser blocked audio autoplay. Tap the mic and speak once — replies after that should play."); }
+        setIsPlaying(false);
+      });
+    } catch (e) {
+      console.error("TTS error:", e);
+      setIsPlaying(false);
+    }
   };
 
   const practicePayload = () => {
@@ -2817,23 +2814,7 @@ function Primed() {
       const reply = data.reply || "";
       setPracticeMessages(prev => [...prev, { role: "client", content: reply }]);
       // Play TTS if voice is enabled (text input path)
-      if (voiceEnabled) {
-        setIsPlaying(true);
-        try {
-          const ttsRes = await fetch(API_URL + "/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-            body: JSON.stringify(buildTtsBody(reply))
-          });
-          if (ttsRes.ok) {
-            const ab = await ttsRes.blob();
-            const au = new Audio(URL.createObjectURL(ab));
-            audioRef.current = au;
-            au.onended = () => setIsPlaying(false);
-            au.play();
-          } else { setIsPlaying(false); }
-        } catch { setIsPlaying(false); }
-      }
+      if (voiceEnabled) await speakReply(reply);
     } catch (err) {
       console.error("Practice simulation error:", err);
       setPracticeMessages(prev => [...prev, { role: "client", content: "I'm sorry, can you repeat that? I got distracted for a moment." }]);
