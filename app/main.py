@@ -68,6 +68,11 @@ async def root():
     return FileResponse(os.path.join("static", "landing.html"))
 
 
+@app.get("/demo")
+async def demo():
+    return RedirectResponse(url="/#demo")
+
+
 @app.get("/privacy")
 async def privacy():
     return FileResponse(os.path.join("static", "privacy.html"))
