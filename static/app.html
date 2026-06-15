@@ -3062,12 +3062,12 @@ function Primed() {
     searchInput: {
       width: "100%", padding: "10px 14px", background: "#fff",
       border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8,
-      color: "#2a231d", fontSize: 13, fontFamily: "inherit",
+      color: "#2a231d", fontSize: 14.5, fontFamily: "inherit",
       outline: "none", boxSizing: "border-box", transition: "border-color 0.2s"
     },
     filterRow: { display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" },
     filterBtn: (active) => ({
-      padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 500,
+      padding: "5px 13px", borderRadius: 20, fontSize: 12.5, fontWeight: 500,
       border: "1px solid", borderColor: active ? "#0F172A" : "rgba(0,0,0,0.1)",
       background: active ? "#0F172A" : "transparent",
       color: active ? "#F5F0E8" : "rgba(0,0,0,0.45)",
@@ -3083,7 +3083,7 @@ function Primed() {
       transition: "background 160ms ease, box-shadow 160ms ease"
     }),
     cardTitle: (active) => ({
-      fontSize: 13.5, fontWeight: active ? 700 : 500, color: "#2a231d",
+      fontSize: 15.5, fontWeight: active ? 700 : 500, color: "#2a231d",
       display: "flex", alignItems: "center", gap: 9,
       lineHeight: 1.4
     }),
@@ -3618,7 +3618,7 @@ function Primed() {
               Your trial has ended.
             </h2>
             <p style={{ fontSize: 16, color: "rgba(0,0,0,0.5)", marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>
-              Subscribe to continue accessing all 24 scenarios, practice mode, voice coaching, and your personal value scripts.
+              Subscribe to continue accessing all 50+ scenarios, practice mode, voice coaching, and your personal value scripts.
             </p>
             <div style={{
               background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 16,
@@ -3627,7 +3627,7 @@ function Primed() {
               <div style={{ fontSize: 13, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Primed Pro</div>
               <div style={{ fontSize: 40, fontWeight: 700, color: "#2a231d", marginBottom: 4 }}>$29<span style={{ fontSize: 16, fontWeight: 400, color: "rgba(0,0,0,0.55)" }}>/month</span></div>
               <div style={{ fontSize: 13, color: "rgba(0,0,0,0.55)", marginBottom: 24 }}>Cancel anytime</div>
-              {["30 conversation scenarios", "AI voice practice mode", "3 script formats per scenario", "Objection handling library", "Personal value script builder", "Session history & coaching scores"].map((f, i) => (
+              {["50+ conversation scenarios", "AI voice practice mode", "3 script formats per scenario", "Objection handling library", "Personal value script builder", "Session history & coaching scores"].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, textAlign: "left" }}>
                   <span style={{ color: "#e05a33", fontWeight: 700 }}>✓</span>
                   <span style={{ fontSize: 13, color: "rgba(0,0,0,0.6)" }}>{f}</span>
@@ -3907,7 +3907,7 @@ function Primed() {
                       style={{
                         display: "flex", alignItems: "center", gap: 8,
                         padding: "14px 8px 7px",
-                        fontSize: 14.5, fontWeight: 700,
+                        fontSize: 16.5, fontWeight: 700,
                         color: "#2a231d",
                         fontFamily: "'Figtree', sans-serif",
                         letterSpacing: "-0.005em",
@@ -3924,7 +3924,7 @@ function Primed() {
                       }}>▾</span>
                       <span>{label}</span>
                       <span style={{
-                        fontSize: 11.5, fontWeight: 600, color: "rgba(0,0,0,0.4)",
+                        fontSize: 12.5, fontWeight: 600, color: "rgba(0,0,0,0.4)",
                         fontFamily: "'IBM Plex Mono', monospace"
                       }}>{count}</span>
                     </div>
@@ -3933,9 +3933,12 @@ function Primed() {
 
                 const subHeader = (label, _count, isFirst) => (
                   <div style={{
-                    padding: isFirst ? "2px 8px 5px 18px" : "10px 8px 5px 18px",
-                    fontSize: 11, fontWeight: 700,
-                    color: "rgba(0,0,0,0.5)",
+                    padding: isFirst ? "2px 8px 6px 18px" : "10px 8px 6px 18px",
+                    margin: "0 10px 4px 18px",
+                    borderBottom: "1px solid rgba(0,0,0,0.12)",
+                    paddingLeft: 0,
+                    fontSize: 14, fontWeight: 700,
+                    color: "rgba(0,0,0,0.55)",
                     fontFamily: "'Figtree', sans-serif",
                     letterSpacing: "0.09em", textTransform: "uppercase"
                   }}>
