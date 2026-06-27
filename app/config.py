@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7
     anthropic_api_key: str = ""
+    # Model is overridable via the ANTHROPIC_MODEL env var on Render — when Anthropic
+    # retires a snapshot, swap it there (takes effect on restart, NO code deploy).
+    # Keep this fallback default pointed at a CURRENT model id.
     anthropic_model: str = "claude-sonnet-4-6"
     elevenlabs_api_key: str = ""
     elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"
