@@ -93,6 +93,11 @@ const { useState, useEffect, useRef, useCallback } = React;
 
 const API_URL = "/v1";
 
+// Practice exchange caps — keep reps realistic and always land on a coaching summary.
+// SOFT: nudge the agent to wrap up. HARD: client closes the call and we auto-score.
+const SOFT_TURN_CAP = 6;
+const HARD_TURN_CAP = 8;
+
 // Auth helpers
 function getToken() { return localStorage.getItem("primed_token") || ""; }
 function setToken(t) { localStorage.setItem("primed_token", t); }
@@ -2346,12 +2351,13 @@ function Primed() {
     setPracticeLoading(true);
     try {
       const rawTranscript = [...practiceMessages, { role: "agent", content: text }].map(m => ({ role: m.role, content: m.content }));
+      const wrapUp = rawTranscript.filter(m => m.role === "agent").length >= HARD_TURN_CAP;
 
       // Get AI response (prompt locked server-side)
       const response = await fetch(API_URL + "/practice/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-        body: JSON.stringify({ ...practicePayload(), transcript: rawTranscript })
+        body: JSON.stringify({ ...practicePayload(), wrap_up: wrapUp, transcript: rawTranscript })
       });
       const data = await response.json();
       const reply = data.reply || "";
@@ -2862,11 +2868,12 @@ function Primed() {
 
     try {
       const rawTranscript = newMessages.map(m => ({ role: m.role, content: m.content }));
+      const wrapUp = newMessages.filter(m => m.role === "agent").length >= HARD_TURN_CAP;
 
       const response = await fetch(API_URL + "/practice/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
-        body: JSON.stringify({ ...practicePayload(), transcript: rawTranscript })
+        body: JSON.stringify({ ...practicePayload(), wrap_up: wrapUp, transcript: rawTranscript })
       });
       const data = await response.json();
       const reply = data.reply || "";
@@ -2958,6 +2965,16 @@ function Primed() {
   useEffect(() => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   }, [practiceMessages, practiceLoading]);
+
+  // Hard exchange cap: once the client's wrap-up reply has landed, auto-advance to coaching.
+  useEffect(() => {
+    if (practiceState !== "active" || practiceLoading) return;
+    const agentTurns = practiceMessages.filter(m => m.role === "agent").length;
+    const last = practiceMessages[practiceMessages.length - 1];
+    if (agentTurns >= HARD_TURN_CAP && last && last.role === "client") {
+      endPracticeSession();
+    }
+  }, [practiceMessages, practiceLoading, practiceState, endPracticeSession]);
 
   const categories = ["All", ...new Set(SCENARIOS.map(s => s.category))];
 
@@ -4497,6 +4514,29 @@ function Primed() {
                 padding: "16px 24px", borderTop: "1px solid rgba(0,0,0,0.08)",
                 background: "#fff", flexShrink: 0
               }}>
+                {/* Wrap-up nudge (soft exchange cap) */}
+                {(() => {
+                  const agentTurns = practiceMessages.filter(m => m.role === "agent").length;
+                  if (agentTurns < SOFT_TURN_CAP || agentTurns >= HARD_TURN_CAP) return null;
+                  return (
+                    <div style={{
+                      marginBottom: 10, padding: "10px 14px",
+                      background: "rgba(212,160,62,0.10)", border: "1px solid rgba(212,160,62,0.3)",
+                      borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12
+                    }}>
+                      <div style={{ fontSize: 12.5, color: "#9a7424", lineHeight: 1.5 }}>
+                        Good rep — start bringing this call to a close. You'll get your coaching in a couple more exchanges.
+                      </div>
+                      <button onClick={endPracticeSession} style={{
+                        flexShrink: 0, padding: "6px 14px", borderRadius: 8, border: "none",
+                        background: "#d4a03e", color: "#fff", fontSize: 11, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: "pointer"
+                      }}>
+                        Wrap up & coach
+                      </button>
+                    </div>
+                  );
+                })()}
                 {/* Coach Hint Card */}
                 {coachHint && (
                   <div style={{

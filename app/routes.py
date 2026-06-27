@@ -157,6 +157,7 @@ class PracticeReplyIn(BaseModel):
     scenario_title: str = ""
     scenario_desc: str = ""
     context: Optional[str] = None
+    wrap_up: bool = False  # client brings the call to a natural close (hard exchange cap)
     transcript: list  # [{role:"agent"|"client", content:str}, ...]
 
 @router.post("/practice/reply")
@@ -167,7 +168,7 @@ async def practice_reply(data: PracticeReplyIn, user: User = Depends(get_current
         persona_backstory=data.persona.backstory, persona_voice=data.persona.voice,
         persona_tells=data.persona.tells, difficulty=data.difficulty,
         scenario_title=data.scenario_title, scenario_desc=data.scenario_desc,
-        extra_context=data.context or "")
+        extra_context=data.context or "", wrap_up=data.wrap_up)
     messages = [{"role": "user" if t.get("role") == "agent" else "assistant", "content": t.get("content", "")}
                 for t in data.transcript]
     reply = await _anthropic(system, messages, max_tokens=1000)

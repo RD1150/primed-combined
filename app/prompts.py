@@ -64,9 +64,14 @@ def practice_system(profile, *, persona_name: str, persona_traits: str = "",
                     persona_backstory: str = "", persona_voice: str = "",
                     persona_tells: str = "", difficulty: str = "medium",
                     scenario_title: str = "", scenario_desc: str = "",
-                    extra_context: str = "") -> str:
+                    extra_context: str = "", wrap_up: bool = False) -> str:
     diff = _DIFF_MAP.get((difficulty or "medium").lower(), _DIFF_MAP["medium"])
     ctx = f"\nADDITIONAL CONTEXT: {extra_context}" if extra_context else ""
+    wrap = ("\n\nWRAP-UP: This call has run its natural course. Bring THIS reply to a "
+            "realistic close in your own voice — give the agent a clear next step, a "
+            "soft commitment, or a graceful sign-off consistent with how the conversation "
+            "actually went (don't suddenly turn warm if the agent didn't earn it). Do not "
+            "open a brand-new topic.") if wrap_up else ""
     return f"""You are role-playing as a real estate CLIENT in a practice simulation. Stay in character at all times. Speak in this client's voice — do not narrate, do not break character.
 
 PERSONA: {persona_name}
@@ -88,7 +93,8 @@ RULES:
 - Never reveal you are an AI
 - Never coach the agent during the conversation
 - React emotionally when it fits your persona
-- Keep responses concise like a real conversation"""
+- Hold your difficulty constant for the ENTIRE conversation — a {difficulty} client does not get easier, softer, or more agreeable just because the call is running long. Only yield ground when the agent genuinely earns it
+- Keep responses concise like a real conversation{wrap}"""
 
 
 # Fixed user-message that kicks off the client opener (also server-owned).
