@@ -104,7 +104,7 @@ PRACTICE_OPENER_USER_MSG = (
 
 def scoring_system(profile, *, scenario_title: str, persona_name: str,
                    persona_traits: str, difficulty: str) -> str:
-    return f"""You are an elite real estate conversation coach evaluating an agent's practice session. Be specific, constructive, and encouraging — this agent is building confidence, so never leave a score without an actionable path to improve it.
+    return f"""You are an elite real estate conversation coach evaluating an agent's practice session. Your coaching TONE is specific, constructive, and encouraging; your SCORES are honest and calibrated. Never leave a score without an actionable path to improve it — but never inflate a score to be kind, either. The encouragement belongs in the feedback, not in a number the agent can't trust.
 
 {profile_context(profile)}
 
@@ -112,7 +112,7 @@ SCENARIO: {scenario_title}
 PERSONA: {persona_name} ({persona_traits})
 DIFFICULTY: {difficulty}
 
-Score each dimension 0-100 honestly but fairly. Then ALWAYS give:
+Score each dimension 0-100, calibrated against what a TOP PRODUCER would do in this exact conversation — not against effort. Use the full range: a typical untrained performance lands in the 50s-60s (that is accurate, not harsh); 85+ is reserved for genuinely skilled handling that anchors, reframes, and advances the deal; below 50 is for evasive, defensive, or deal-damaging turns. Do not cluster everything in the 70s-80s. Then ALWAYS give:
 - at least two concrete strengths,
 - at least two specific, fixable improvements phrased constructively (e.g. "Add a concrete number to your pricing answer" — not "be more confident"),
 - one model line: exactly what a strong agent could have said at a key moment, in this agent's voice,
@@ -273,19 +273,27 @@ CHALLENGE_OBJECTIONS = [
     {"id": "buyer-lowball", "category": "Negotiation", "objection": "I want to come in $40,000 under asking — the place has been sitting, so they're probably desperate.", "context": "Buyer pushing an aggressive lowball you have to manage."},
     {"id": "no-hurry", "category": "Timing", "objection": "We're not in any hurry, so let's just see what happens.", "context": "Buyer with no urgency, slow-walking the search."},
     {"id": "family-agent", "category": "Loyalty", "objection": "My cousin just got their license — I kind of feel like I should give them the business.", "context": "Relationship-based objection to hiring you."},
+    {"id": "buyer-agreement", "category": "Buyer Rep", "objection": "Why do I have to sign a buyer agreement before you'll even show me a house? That feels like you're locking me in.", "context": "Post-NAR-settlement buyer balking at signing a written buyer-broker agreement before touring."},
+    {"id": "buyer-pay-fee", "category": "Buyer Rep", "objection": "Wait — so now I might have to pay your commission out of my own pocket? Why would I do that?", "context": "Buyer reacting to the post-settlement reality that the seller may not cover the buyer-agent fee."},
 ]
 
 
 def challenge_system(profile) -> str:
-    return f"""You are the head coach of an elite real estate sales gym, scoring how an agent handled a tough client objection. Your job is to be HONEST but ENCOURAGING — this agent is building confidence, and the result is shareable, so it must be fair, transparent, and never demoralizing. Reward real skill; coach the gaps without shaming.
+    return f"""You are the head coach of an elite real estate sales gym, scoring how an agent handled a tough client objection. Your SCORING must be honest and calibrated; your TONE stays encouraging and never shaming. These are different jobs: coach warmly, but never inflate the number to be nice. An agent who gets a 78 for a weak, generic answer learns nothing and stops trusting the gym — an honest 58 with a clear path forward is the gift.
 
 {profile_context(profile)}
 
+Calibrate against what a TOP PRODUCER would actually say to a real client across the table — not against effort. Use the full range honestly; most untrained answers land in the 50s–60s, and that is correct, not harsh:
+- 88-100 (Elite): nails the real lever of the objection — acknowledges, reframes with a concrete anchor (a number, comp, or proof point), and moves to a clear next step. Rare. Earn it.
+- 70-87 (Closer): solid and on-strategy, but missing ONE of: a specific anchor, a clean reframe, or a close. Don't award this for merely sounding pleasant.
+- 50-69 (Contender): on the right instinct but generic, vague, over-explained, or leaves the core concern unaddressed. This is the DEFAULT band for a typical answer.
+- Below 50 (Rookie): empty, evasive, defensive, argumentative, or makes the situation worse.
+
 Scoring rules:
-- Be transparent: the "why" must explain in plain language exactly what earned or cost points.
-- Be fair: a genuinely good response scores 80+. Reserve sub-50 for responses that are empty, evasive, or make things worse.
+- Do NOT round up to spare feelings. If the answer is average, score it in the 50s and say why — the encouragement lives in the coaching, not in an inflated number.
+- Be transparent: the "why" must explain in plain language exactly what earned or cost points, and what a higher band would have required.
 - Always coach: even a top score gets one sharper improvement and a model line.
-- The "modelAnswer" must sound like THIS agent could say it (their market, their tone).
+- The "modelAnswer" must sound like THIS agent could say it (their market, their tone), and should clearly be a level above what they wrote.
 
 Return ONLY valid JSON (no markdown, no backticks), exactly these keys:
 {{

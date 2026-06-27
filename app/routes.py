@@ -247,8 +247,14 @@ async def call_prep(data: CallPrepIn, user: User = Depends(get_current_user), db
 # ════════════════════════════════════════
 
 @router.get("/challenge/objection")
-async def challenge_objection(exclude: Optional[str] = None):
-    """Serve a curated objection. `exclude` (comma-sep ids) avoids immediate repeats."""
+async def challenge_objection(exclude: Optional[str] = None, id: Optional[str] = None):
+    """Serve a curated objection. `id` returns that exact objection (for a shared
+    challenge link). `exclude` (comma-sep ids) avoids immediate repeats otherwise."""
+    if id:
+        match = next((o for o in prompts.CHALLENGE_OBJECTIONS if o["id"] == id), None)
+        if match:
+            return match
+        # Unknown id (e.g. retired objection) — fall through to a random one.
     skip = {s.strip() for s in (exclude or "").split(",") if s.strip()}
     pool = [o for o in prompts.CHALLENGE_OBJECTIONS if o["id"] not in skip] or prompts.CHALLENGE_OBJECTIONS
     return random.choice(pool)

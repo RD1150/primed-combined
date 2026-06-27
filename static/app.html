@@ -107,9 +107,9 @@ const SCENARIOS = [
     icon: "⚔️",
     category: "Geopolitical",
     heat: "High",
-    phase: "now",
+    phase: "forecasted",
     realm: "external",
-    synopsis: `This is happening now. A US military engagement with Iran is rippling through global energy markets, sending oil prices higher and triggering broad economic uncertainty. Historically, Middle East conflicts have caused immediate spikes in commodity prices, shaken consumer confidence, and driven flight-to-safety behavior in financial markets. The Federal Reserve would face pressure to hold or cut rates to stabilize the economy, while defense spending would increase federal deficits. Supply chain disruptions—especially in shipping through the Strait of Hormuz—could stall construction materials and raise costs across industries.`,
+    synopsis: `If a US–Iran military conflict were to escalate, it would ripple through global energy markets, sending oil prices higher and triggering broad economic uncertainty. Historically, Middle East conflicts have caused immediate spikes in commodity prices, shaken consumer confidence, and driven flight-to-safety behavior in financial markets. The Federal Reserve would face pressure to hold or cut rates to stabilize the economy, while defense spending would increase federal deficits. Supply chain disruptions—especially in shipping through the Strait of Hormuz—could stall construction materials and raise costs across industries.`,
     realEstateImpact: [
       {
         area: "Mortgage Rates",
@@ -160,13 +160,13 @@ const SCENARIOS = [
   },
   {
     id: "compass-redfin",
-    title: "If Compass & Redfin Merge",
+    title: "If Two National Brokerages Merge",
     icon: "🔄",
     category: "Industry",
     heat: "Critical",
     phase: "forecasted",
     realm: "internal",
-    synopsis: `This could impact real estate if it occurs. A Compass-Redfin merger would create a vertically integrated real estate powerhouse combining Compass's luxury brand and agent network with Redfin's consumer technology platform and discount brokerage model. This would represent the most significant consolidation in residential real estate history, potentially controlling 8–10% of US home sales. The combined entity would have end-to-end capabilities: lead generation, agent tools, mortgage origination, title services, and closing—all under one roof. Independent brokerages and traditional models would face existential pressure to adapt.`,
+    synopsis: `This could reshape the industry if it happens. A merger between two national brokerages—pairing a strong agent network and brand with a consumer-technology and lower-cost model—would create a vertically integrated powerhouse, potentially controlling a high-single-digit share of US home sales. The combined entity would have end-to-end capabilities: lead generation, agent tools, mortgage origination, title services, and closing—all under one roof. With consolidation already accelerating (Rocket's acquisition of Redfin being a recent example), independent brokerages and traditional models would face real pressure to differentiate or partner up.`,
     realEstateImpact: [
       {
         area: "Commission Pressure",
@@ -349,7 +349,7 @@ const SCENARIOS = [
     synopsis: `This could impact real estate if it occurs. Sustained climate migration—triggered by repeated catastrophic wildfire seasons, hurricane intensification, or insurance market collapses in coastal/wildfire zones—would reshape regional housing demand within 2–5 years. Buyers in Florida, Arizona, parts of California, and Gulf Coast Texas would face structural value headwinds; "climate haven" markets in the Great Lakes (Buffalo, Cleveland, Duluth, Madison), Pacific Northwest (Spokane, Boise), and Northern Appalachia would see demand surges they aren't built to handle. Property values diverge sharply by climate-risk profile, and agents in affected markets need a fluency they've never needed before.`,
     realEstateImpact: [
       { area: "High-Risk Markets", direction: "down", detail: "Sustained value pressure in Miami, Tampa, Phoenix, parts of LA County. Insurance availability drives sales; agents must pre-qualify insurability before listing or showing." },
-      { area: "Climate Haven Markets", direction: "up", detail: "Buffalo, Cleveland, Madison, Spokane, Asheville, Burlington see 15–40% appreciation surges. Agents in these markets face supply crises they're unprepared for." },
+      { area: "Climate Haven Markets", direction: "up", detail: "Buffalo, Cleveland, Madison, Spokane, Duluth, Burlington see 15–40% appreciation surges. Agents in these markets face supply crises they're unprepared for." },
       { area: "Insurance Disclosure", direction: "up", detail: "Climate risk and insurability become central to every listing. Agents who don't pre-pull insurance quotes lose deals at the eleventh hour." },
       { area: "New Construction", direction: "up", detail: "Builders shift expansion to climate-haven metros. Land prices in those markets double over 3–5 years. Pre-construction and lot-acquisition becomes a major opportunity." },
       { area: "Demographics", direction: "mixed", detail: "Younger families and remote workers lead the migration. Older homeowners, anchored by family or healthcare, stay—and become forced sellers later as values decline." },
@@ -772,7 +772,7 @@ const SCENARIOS = [
     icon: "📋",
     category: "Conversation",
     heat: "High",
-    synopsis: `The listing appointment is where deals begin—or die. You have 60–90 minutes to establish yourself as the expert, build trust, and secure the listing. Most agents lose listing appointments not because of their pricing strategy or marketing plan, but because they fail to listen, they talk too much about themselves, and they don't address the seller's actual concerns. The CLEAR Method approach prioritizes connection and empathy before presenting data and strategy. The agent who wins the listing is the one who makes the seller feel heard first and impressed second.`,
+    synopsis: `The listing appointment is where deals begin—or die. You have 60–90 minutes to establish yourself as the expert, build trust, and secure the listing. Most agents lose listing appointments not because of their pricing strategy or marketing plan, but because they fail to listen, they talk too much about themselves, and they don't address the seller's actual concerns. A connection-first approach prioritizes empathy before presenting data and strategy. The agent who wins the listing is the one who makes the seller feel heard first and impressed second.`,
     realEstateImpact: [
       { area: "Listing Conversion", direction: "up", detail: "A structured, empathy-first approach converts 15–25% more listing appointments than a feature-dump presentation." },
       { area: "Pricing Alignment", direction: "up", detail: "Sellers who feel heard during the listing appointment are 3x more likely to accept your pricing recommendation." },
@@ -2079,6 +2079,22 @@ function parseRoute(hash) {
   return { mode, scenario };
 }
 
+// ── Challenge share-link loop ──
+// A shared link looks like:  /app?ch=<objectionId>&by=<name>&sc=<score>
+// Opening it drops the recipient straight into Challenge Mode facing the SAME
+// objection, with the sender's score to beat. Read once from the URL on load.
+function getIncomingChallenge() {
+  if (typeof window === "undefined") return null;
+  const p = new URLSearchParams(window.location.search);
+  const id = p.get("ch");
+  if (!id) return null;
+  return {
+    id,
+    by: (p.get("by") || "A colleague").slice(0, 40),
+    score: Math.max(0, Math.min(100, parseInt(p.get("sc") || "0", 10) || 0)),
+  };
+}
+
 function Primed() {
   // Auth state
   const initialResetToken = (() => {
@@ -2355,6 +2371,7 @@ function Primed() {
   // Practice mode state
   const [appMode, setAppMode] = useState(() => {
     if (typeof window === "undefined") return "home";
+    if (getIncomingChallenge()) return "challenge";
     const r = parseRoute(window.location.hash);
     return r ? r.mode : "home";
   });
@@ -2506,11 +2523,18 @@ function Primed() {
   const [chScoring, setChScoring] = useState(false);
   const [chSeen, setChSeen] = useState([]);
   const [chShareCopied, setChShareCopied] = useState(false);
+  // The challenge the recipient arrived on via a share link (sender + score to beat).
+  const [chIncoming, setChIncoming] = useState(null);
 
-  const loadChallengeObjection = useCallback(async () => {
+  const loadChallengeObjection = useCallback(async (specificId) => {
     setChLoadingObj(true); setChScore(null); setChResponse("");
+    // Moving on to a fresh random objection clears any "beat this" framing.
+    if (!specificId) setChIncoming(null);
     try {
-      const res = await fetch(API_URL + "/challenge/objection?exclude=" + encodeURIComponent(chSeen.join(",")), {
+      const qs = specificId
+        ? "?id=" + encodeURIComponent(specificId)
+        : "?exclude=" + encodeURIComponent(chSeen.join(","));
+      const res = await fetch(API_URL + "/challenge/objection" + qs, {
         headers: { "Authorization": "Bearer " + getToken() }
       });
       if (!res.ok) throw new Error("objection fetch failed");
@@ -2522,6 +2546,40 @@ function Primed() {
     }
     setChLoadingObj(false);
   }, [chSeen]);
+
+  // Build the shareable challenge link for the current objection + score.
+  const buildChallengeLink = useCallback(() => {
+    const id = chObjection ? chObjection.id : "";
+    const name = (user && (user.name || (user.email || "").split("@")[0])) || "An agent";
+    const sc = chScore && !chScore.error ? chScore.score : 0;
+    const base = window.location.origin + window.location.pathname; // /app
+    const params = new URLSearchParams({ ch: id, by: name, sc: String(sc) });
+    return base + "?" + params.toString();
+  }, [chObjection, chScore, user]);
+
+  const shareChallenge = useCallback(async () => {
+    const link = buildChallengeLink();
+    const sc = chScore && !chScore.error ? chScore.score : 0;
+    const text = "I scored " + sc + "/100 on this client objection in Primed. Think you can beat me?";
+    try {
+      if (navigator.share) { await navigator.share({ title: "Beat my Primed score", text, url: link }); return; }
+    } catch (err) { if (err && err.name === "AbortError") return; }
+    try {
+      await navigator.clipboard.writeText(text + " " + link);
+      setChShareCopied(true); setTimeout(() => setChShareCopied(false), 2200);
+    } catch (err) { console.error("share copy failed", err); }
+  }, [buildChallengeLink, chScore]);
+
+  // Arrived via a share link → drop straight into the sender's objection.
+  useEffect(() => {
+    if (authScreen) return; // wait until logged in; the ?ch= param survives login
+    const incoming = getIncomingChallenge();
+    if (!incoming) return;
+    if (chObjection || chLoadingObj) return; // already loaded / loading
+    setAppMode("challenge");
+    setChIncoming(incoming);
+    loadChallengeObjection(incoming.id);
+  }, [authScreen]);
 
   const scoreChallenge = useCallback(async () => {
     if (!chObjection || !chResponse.trim()) return;
@@ -3384,17 +3442,17 @@ function Primed() {
     "Negotiation": [
       { objection: "I don't want to negotiate — just reject it.", response: "I understand the frustration. But consider this: this buyer is pre-approved and motivated. Rejecting outright means starting over — more showings, more days on market, more uncertainty. Let me counter strategically and see where they land." },
       { objection: "We can't afford to come up any higher.", response: "Let's look at this from a different angle. What if we adjust the terms instead of the price? A faster closing, covering some of the seller's costs, or adjusting contingencies can make your offer more attractive without increasing your out-of-pocket." },
-      { objection: "Why should I pay your commission when I found the house myself?", response: "Finding the home is actually just the beginning. My value is in negotiating the best price, navigating inspection issues, coordinating financing, and protecting you legally through closing. On average, represented buyers pay 3-5% less than unrepresented ones — that savings alone exceeds my fee." }
+      { objection: "Why should I pay your commission when I found the house myself?", response: "Finding the home is just the beginning. The work that protects your money comes after: negotiating price and terms, managing inspection issues, coordinating financing, and keeping you legally protected through closing. Post-settlement, my fee and exactly how it's paid are spelled out in our agreement up front — so let's walk through what you're getting and how it's covered, no surprises." }
     ],
     "Market": [
       { objection: "I'll just wait until the market corrects.", response: "I understand that instinct. But here's what history shows: people who try to time the market almost always miss. Meanwhile, you're paying rent or carrying costs, and if rates drop, competition surges and prices go up. Let's look at the numbers for your specific situation." },
       { objection: "The news says the market is slowing down.", response: "Headlines sell fear, but your local market tells a different story. Let me show you what's actually happening in our area — days on market, inventory levels, sale prices. National trends don't buy your house; local buyers do." },
-      { objection: "Interest rates are too high right now.", response: "I hear you. But remember — you marry the house, you date the rate. When rates drop, you refinance. But you can't go back and buy at today's prices once demand surges. The cost of waiting often exceeds the rate savings." }
+      { objection: "Interest rates are too high right now.", response: "I hear you — rates matter. But they're not permanent: if they drop, you refinance. What you can't get back is today's price once lower rates pull more buyers off the sidelines and competition heats up. For a lot of buyers the cost of waiting outruns the rate savings — let's run your actual numbers and see which way it points for you." }
     ],
     "Prospecting": [
       { objection: "I already have an agent.", response: "That's great — having representation is important. I'm not here to step on anyone's toes. If you ever want a second opinion or your situation changes, I'd love to be a resource. Can I send you my market updates in the meantime?" },
       { objection: "I'm not interested in selling right now.", response: "Totally understand — there's no pressure. Would it be helpful to know what your home is worth in today's market? Even if you're not selling, it's valuable information for financial planning. I can send you a quick analysis." },
-      { objection: "We had a bad experience with our last agent.", response: "I'm sorry to hear that. Can I ask what happened? I want to make sure that if we ever work together, those issues don't repeat. My approach is [address their specific pain point] — and I'm happy to earn your trust over time." }
+      { objection: "We had a bad experience with our last agent.", response: "I'm sorry to hear that. Can I ask what happened? I want to make sure that if we ever work together, those issues don't repeat. My whole approach is built on clear communication and no surprises — and I'm happy to earn your trust over time." }
     ],
     "Life Transition": [
       { objection: "We're not emotionally ready to sell yet.", response: "That's completely valid — this is a big decision and there's no right timeline except yours. What I can do is get everything prepared so that when you are ready, we can move quickly and smoothly. No pressure, just preparation." },
@@ -3402,12 +3460,12 @@ function Primed() {
       { objection: "We don't want to deal with the hassle of selling.", response: "I completely understand — it can feel overwhelming. That's exactly what I'm here for. I handle everything: staging, showings, negotiations, paperwork. Most of my clients tell me it was much easier than they expected because I took the burden off them." }
     ],
     "Buyer": [
-      { objection: "We want to keep looking before we decide.", response: "Absolutely — you should feel confident in your choice. My only concern is that in this market, homes at this price point are averaging [X] days before going under contract. Let me set up alerts so if something better comes along, you'll know immediately. But I'd hate for you to lose this one while searching for perfect." },
+      { objection: "We want to keep looking before we decide.", response: "Absolutely — you should feel confident in your choice. My only concern is how fast well-priced homes in this range are moving right now. Let me set up alerts so the moment something better comes along, you'll know immediately — but I'd hate for you to lose this one while searching for perfect." },
       { objection: "We need to sell our current home first.", response: "That's a common situation and there are several ways to handle it. We could make your offer contingent on the sale of your home, explore bridge financing, or I could list your home now to get that process started. Let me walk you through the options." },
       { objection: "We're worried about overpaying.", response: "That's a smart concern. Let me show you the comps — what similar homes have actually sold for, not just listed for. If the data supports the price, you're not overpaying — you're paying market value. And I'll negotiate hard to make sure you're getting the best deal possible." }
     ],
     "Objection": [
-      { objection: "We want to wait until after the election.", response: "I understand the uncertainty. But here's what the data shows: in the last 6 election cycles, housing prices continued to rise regardless of who won. The market responds to fundamentals — jobs, inventory, rates — not elections. Let me show you the historical data." },
+      { objection: "We want to wait until after the election.", response: "That uncertainty is real, and a lot of people feel it. But housing moves on fundamentals — jobs, inventory, and rates — far more than on who wins an election. Waiting for political certainty usually just means buying later at a higher price. Let me show you what our local numbers are actually doing right now." },
       { objection: "We want to wait for spring.", response: "Spring does bring more inventory — but it also brings 40% more buyers. Right now, you have less competition and more negotiating power. The 'spring is better' belief is one of the most expensive myths in real estate." },
       { objection: "What if we buy and the value drops?", response: "In the short term, anything is possible. But if you're planning to be in this home for 5+ years, history strongly favors you. Real estate has appreciated in 90% of 5-year periods over the last 50 years. The real risk is waiting and paying more later." }
     ]
@@ -4792,12 +4850,22 @@ function Primed() {
               <p style={{ fontSize: 15, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, maxWidth: "60ch" }}>A real client objection, one shot to answer it. Get scored on confidence, empathy, persuasion, and clarity — with exactly how to make it stronger.</p>
             </div>
 
+            {chIncoming && (
+              <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderRadius: 14, background: "linear-gradient(135deg, #e8674a 0%, #d44a25 100%)", marginBottom: 22, boxShadow: "0 6px 20px rgba(212,74,37,0.25)" }}>
+                <div style={{ fontSize: 26, lineHeight: 1 }}>⚔️</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 3, fontWeight: 600 }}>You've been challenged</div>
+                  <div style={{ fontSize: 15, color: "#fff", fontWeight: 700 }}>{chIncoming.by} scored {chIncoming.score}/100 on this objection. Beat it.</div>
+                </div>
+              </div>
+            )}
+
             {!chObjection && !chLoadingObj && (
               <div style={{ textAlign: "center", padding: "50px 30px", borderRadius: 16, background: "#fff", border: "1px dashed rgba(0,0,0,0.12)" }}>
                 <div style={{ fontSize: 40, marginBottom: 16, color: "#e05a33", lineHeight: 1 }}>✦</div>
                 <div style={{ fontSize: 17, fontWeight: 700, color: "#21190f", marginBottom: 8 }}>Ready for a curveball?</div>
                 <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", lineHeight: 1.6, maxWidth: 380, margin: "0 auto 22px" }}>We'll throw you a tough, real-world objection. Answer it like the client is sitting right in front of you.</div>
-                <button className="pcta" onClick={loadChallengeObjection} style={{ padding: "15px 38px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Bring It On →</button>
+                <button className="pcta" onClick={() => loadChallengeObjection()} style={{ padding: "15px 38px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Bring It On →</button>
               </div>
             )}
 
@@ -4815,7 +4883,7 @@ function Primed() {
                 <textarea value={chResponse} onChange={e => setChResponse(e.target.value)} placeholder="Type exactly what you'd say back..." style={{ width: "100%", minHeight: 130, padding: "16px 18px", background: "#fff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 12, color: "#2a231d", fontSize: 15, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
                 <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
                   <button className="pcta" onClick={scoreChallenge} disabled={!chResponse.trim() || chScoring} style={{ padding: "15px 34px", borderRadius: 14, border: "none", background: (!chResponse.trim() || chScoring) ? "rgba(224,90,51,0.22)" : "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: (!chResponse.trim() || chScoring) ? "rgba(224,90,51,0.6)" : "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: (!chResponse.trim() || chScoring) ? "not-allowed" : "pointer" }}>{chScoring ? "Scoring..." : "Score Me"}</button>
-                  <button onClick={loadChallengeObjection} disabled={chScoring} style={{ padding: "13px 24px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>↻ Different objection</button>
+                  <button onClick={() => loadChallengeObjection()} disabled={chScoring} style={{ padding: "13px 24px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>↻ Different objection</button>
                 </div>
               </div>
             )}
@@ -4849,8 +4917,20 @@ function Primed() {
                       </div>
                     ))}
                   </div>
+                  {chIncoming && (
+                    <div style={{ marginTop: 18, padding: "10px 16px", borderRadius: 10, textAlign: "center", background: chScore.score > chIncoming.score ? "rgba(16,185,129,0.16)" : "rgba(255,255,255,0.06)", border: "1px solid " + (chScore.score > chIncoming.score ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.14)") }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", fontFamily: "'Figtree', sans-serif" }}>
+                        {chScore.score > chIncoming.score
+                          ? "🏆 You beat " + chIncoming.by + " — " + chScore.score + " vs " + chIncoming.score + "!"
+                          : chScore.score === chIncoming.score
+                            ? "🤝 Dead tie with " + chIncoming.by + " at " + chScore.score + ". Run it back."
+                            : chIncoming.by + " still leads — " + chIncoming.score + " vs " + chScore.score + ". Try again."}
+                      </span>
+                    </div>
+                  )}
                   <div style={{ marginTop: 18, textAlign: "center" }}>
-                    <button onClick={() => { navigator.clipboard.writeText(chScore.shareLine + " — Primed (primed.today)"); setChShareCopied(true); setTimeout(() => setChShareCopied(false), 2000); }} style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.06)", color: chShareCopied ? "#10b981" : "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer" }}>{chShareCopied ? "✓ Copied" : "📋 Share result"}</button>
+                    <button onClick={shareChallenge} style={{ padding: "11px 26px", borderRadius: 10, border: "none", background: "#fff", color: "#d44a25", fontSize: 12, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.18)" }}>{chShareCopied ? "✓ Link copied — go paste it" : "⚔️ Challenge a colleague →"}</button>
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", marginTop: 8, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em" }}>They get this exact objection. Loser buys coffee.</div>
                   </div>
                 </div>
 
@@ -4881,7 +4961,7 @@ function Primed() {
                 )}
 
                 <div style={{ display: "flex", gap: 12 }}>
-                  <button className="pcta" onClick={loadChallengeObjection} style={{ padding: "14px 32px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Next Objection →</button>
+                  <button className="pcta" onClick={() => loadChallengeObjection()} style={{ padding: "14px 32px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Next Objection →</button>
                   <button onClick={() => { setChObjection(null); setChScore(null); setChResponse(""); }} style={{ padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "transparent", color: "rgba(0,0,0,0.5)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Done</button>
                 </div>
               </div>
