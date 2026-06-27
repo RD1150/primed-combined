@@ -193,6 +193,11 @@ async def practice_score(data: PracticeScoreIn, user: User = Depends(get_current
 class ScenarioIn(BaseModel):
     topic: str
 
+@router.get("/scenario/presets")
+async def scenario_presets():
+    """Server-owned starter scenarios so the custom path isn't a blank box."""
+    return {"presets": prompts.SCENARIO_PRESETS}
+
 @router.post("/scenario")
 async def scenario_intel(data: ScenarioIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     profile = await _load_profile(user, db)

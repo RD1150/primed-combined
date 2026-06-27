@@ -170,6 +170,25 @@ def scenario_user_msg(topic: str) -> str:
     return f'Scenario to analyze: "{topic}"'
 
 
+# Presets-first (P1): starter scenarios so the agent isn't staring at a blank
+# box. `label` is the short chip text; `prompt` is the topic the analyst receives.
+# Server-owned so the suggested topics can stay current without a frontend deploy.
+SCENARIO_PRESETS = [
+    {"id": "rates", "label": "Mortgage rates moved",
+     "prompt": "Mortgage rates just shifted meaningfully. How does this change the conversation with buyers and sellers in my market right now?"},
+    {"id": "employer", "label": "Major employer news",
+     "prompt": "A major employer is expanding, relocating, or laying off in my area. What does this mean for local housing demand and how do I talk about it with clients?"},
+    {"id": "inventory", "label": "Inventory shift",
+     "prompt": "Inventory in my market is shifting (more homes sitting longer / fewer listings). How do I position this with both buyers and sellers?"},
+    {"id": "insurance", "label": "Insurance / climate costs",
+     "prompt": "Rising home insurance premiums and climate risk are affecting affordability and closings. How do I advise clients and protect deals?"},
+    {"id": "lock-in", "label": "Rate lock-in effect",
+     "prompt": "Homeowners with low locked-in mortgage rates are reluctant to sell. How do I motivate move-up and downsizing sellers despite the lock-in effect?"},
+    {"id": "ai-ibuyer", "label": "iBuyer / AI disruption",
+     "prompt": "iBuyers and AI-driven home tools are changing how consumers shop for homes. How do I show my value versus an algorithm and win the listing?"},
+]
+
+
 # ────────────────────────────────────────────────────────────────────────────
 # TALK TRACKS & SCRIPTS — personal value script (JSON contract)
 # ────────────────────────────────────────────────────────────────────────────
