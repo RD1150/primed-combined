@@ -179,6 +179,7 @@ class PracticeScoreIn(BaseModel):
     persona_name: str
     persona_traits: str = ""
     difficulty: str = "medium"
+    self_reflection: str = ""  # agent's own read on how the conversation went
     transcript: list  # [{role, content}, ...]
 
 @router.post("/practice/score")
@@ -188,7 +189,36 @@ async def practice_score(data: PracticeScoreIn, user: User = Depends(get_current
                                     persona_name=data.persona_name, persona_traits=data.persona_traits,
                                     difficulty=data.difficulty)
     convo = "\n\n".join(f"{'AGENT' if t.get('role') == 'agent' else 'CLIENT'}: {t.get('content','')}" for t in data.transcript)
-    return await _anthropic_json(system, [{"role": "user", "content": f"TRANSCRIPT:\n{convo}"}], max_tokens=1200)
+    user_content = f"TRANSCRIPT:\n{convo}"
+    if data.self_reflection.strip():
+        user_content += (f"\n\nTHE AGENT'S OWN REFLECTION (how they felt it went): "
+                         f"\"{data.self_reflection.strip()}\"")
+    return await _anthropic_json(system, [{"role": "user", "content": user_content}], max_tokens=1200)
+
+
+class PracticeDebriefIn(BaseModel):
+    scenario_title: str = ""
+    persona_name: str = ""
+    difficulty: str = "medium"
+    transcript: list = []          # the practice conversation [{role, content}]
+    feedback: Optional[dict] = None  # the coaching JSON already shown
+    self_reflection: str = ""
+    messages: list = []            # debrief so far [{role: "agent"|"coach", content}]
+
+@router.post("/practice/debrief")
+async def practice_debrief(data: PracticeDebriefIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Conversational follow-up after the scored feedback — the agent can add
+    context the coach lacked or ask questions; the coach responds (no re-scoring)."""
+    profile = await _load_profile(user, db)
+    convo = "\n".join(f"{'AGENT' if t.get('role') == 'agent' else 'CLIENT'}: {t.get('content','')}" for t in data.transcript)
+    system = prompts.coach_debrief_system(
+        profile, scenario_title=data.scenario_title, persona_name=data.persona_name,
+        difficulty=data.difficulty, transcript=convo, feedback=data.feedback,
+        self_reflection=data.self_reflection)
+    messages = [{"role": "user" if m.get("role") == "agent" else "assistant", "content": m.get("content", "")}
+                for m in data.messages]
+    reply = await _anthropic(system, messages, max_tokens=700)
+    return {"reply": reply}
 
 class ScenarioIn(BaseModel):
     topic: str

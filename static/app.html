@@ -2393,6 +2393,10 @@ function Primed() {
   const [practiceLoading, setPracticeLoading] = useState(false);
   const [practiceFeedback, setPracticeFeedback] = useState(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [practiceReflection, setPracticeReflection] = useState(""); // agent's own read before scoring
+  const [debriefMessages, setDebriefMessages] = useState([]);       // post-coaching follow-up [{role:"agent"|"coach"}]
+  const [debriefInput, setDebriefInput] = useState("");
+  const [debriefLoading, setDebriefLoading] = useState(false);
   const [coachHint, setCoachHint] = useState(null);
   const [coachLoading, setCoachLoading] = useState(false);
   const [savedPhrases, setSavedPhrases] = useState([]);
@@ -2888,10 +2892,18 @@ function Primed() {
     setPracticeLoading(false);
   }, [practiceInput, practiceMessages, practiceLoading, voiceEnabled]);
 
-  const endPracticeSession = useCallback(async () => {
+  // End the session → first capture the agent's own read, then score.
+  const endPracticeSession = useCallback(() => {
+    if (practiceMessages.length < 2) return;
+    setPracticeReflection("");
+    setPracticeState("reflect");
+  }, [practiceMessages.length]);
+
+  const runScoring = useCallback(async (reflection = "") => {
     if (practiceMessages.length < 2) return;
     setFeedbackLoading(true);
     setPracticeState("feedback");
+    setDebriefMessages([]);
     const priorBest = (gameStats && gameStats.best) || 0;
     setPrevBest(priorBest);
     setCelebrate(false);
@@ -2908,6 +2920,7 @@ function Primed() {
           persona_name: persona.name,
           persona_traits: persona.traits || "",
           difficulty: practiceDifficulty,
+          self_reflection: reflection || "",
           transcript: practiceMessages.map(m => ({ role: m.role, content: m.content }))
         })
       });
@@ -2962,6 +2975,40 @@ function Primed() {
     setFeedbackLoading(false);
     loadGameStats();
   }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty, loadGameStats, gameStats]);
+
+  // Post-coaching debrief: agent adds context / asks; the coach replies (no re-score).
+  const sendDebrief = useCallback(async () => {
+    if (!debriefInput.trim() || debriefLoading) return;
+    const userMsg = { role: "agent", content: debriefInput.trim() };
+    const next = [...debriefMessages, userMsg];
+    setDebriefMessages(next);
+    setDebriefInput("");
+    setDebriefLoading(true);
+    try {
+      const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
+      const persona = PERSONAS.find(p => p.id === practicePersona);
+      const res = await fetch(API_URL + "/practice/debrief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          scenario_title: scenario ? scenario.title : "",
+          persona_name: persona ? persona.name : "",
+          difficulty: practiceDifficulty,
+          transcript: practiceMessages.map(m => ({ role: m.role, content: m.content })),
+          feedback: practiceFeedback,
+          self_reflection: practiceReflection,
+          messages: next.map(m => ({ role: m.role, content: m.content }))
+        })
+      });
+      if (!res.ok) throw new Error("debrief failed");
+      const data = await res.json();
+      setDebriefMessages(prev => [...prev, { role: "coach", content: data.reply || "" }]);
+    } catch (err) {
+      console.error("Debrief error:", err);
+      setDebriefMessages(prev => [...prev, { role: "coach", content: "I couldn't respond just now — try again in a moment." }]);
+    }
+    setDebriefLoading(false);
+  }, [debriefInput, debriefLoading, debriefMessages, practiceMessages, practiceScenario, practicePersona, practiceDifficulty, practiceFeedback, practiceReflection]);
 
   useEffect(() => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -4656,6 +4703,40 @@ function Primed() {
           )}
 
           {/* FEEDBACK: Coaching results */}
+          {practiceState === "reflect" && (
+            <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
+              <div style={{ maxWidth: 560, margin: "0 auto" }}>
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Before your coaching</div>
+                <h2 style={{ fontSize: 28, fontWeight: 700, color: "#21190f", marginBottom: 10, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>How do you think that went?</h2>
+                <p style={{ fontSize: 14.5, color: "rgba(0,0,0,0.55)", lineHeight: 1.55, marginBottom: 20 }}>
+                  Take ten seconds — what felt strong, what felt shaky? Your coach will weigh in on your read, not just the transcript. Optional, but it makes the feedback sharper.
+                </p>
+                <textarea
+                  value={practiceReflection}
+                  onChange={e => setPracticeReflection(e.target.value)}
+                  placeholder="e.g., I think I built rapport early but I rushed the price objection and never really anchored a number."
+                  style={{ width: "100%", minHeight: 130, padding: "16px 18px", background: "#fff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 12, color: "#2a231d", fontSize: 15, fontFamily: "inherit", lineHeight: 1.6, outline: "none", resize: "vertical", boxSizing: "border-box", marginBottom: 18 }}
+                />
+                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                  <button className="pcta" onClick={() => runScoring(practiceReflection)} style={{
+                    padding: "14px 32px", borderRadius: 14, border: "none",
+                    background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700,
+                    fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer"
+                  }}>
+                    Get my coaching →
+                  </button>
+                  <button onClick={() => runScoring("")} style={{
+                    padding: "13px 18px", borderRadius: 14, border: "none",
+                    background: "transparent", color: "rgba(0,0,0,0.45)",
+                    fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
+                  }}>
+                    Skip
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {practiceState === "feedback" && (
             <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
               <div style={{ maxWidth: 640, margin: "0 auto" }}>
@@ -4769,6 +4850,51 @@ function Primed() {
                         })}
                       </div>
                     )}
+
+                    {/* Talk it through — debrief with the coach (add context, disagree, ask) */}
+                    <div style={{ marginBottom: 32, padding: "18px 20px", borderRadius: 14, background: "rgba(15,23,42,0.03)", border: "1px solid rgba(15,23,42,0.1)" }}>
+                      <div style={{ fontSize: 10, color: "#0F172A", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>💬 Talk it through with your coach</div>
+                      <div style={{ fontSize: 12.5, color: "rgba(0,0,0,0.5)", marginBottom: 14, lineHeight: 1.5 }}>
+                        Add context the coach missed, push back on a note that doesn't fit, or ask how to handle a moment differently.
+                      </div>
+                      {debriefMessages.map((m, i) => (
+                        <div key={i} style={{ display: "flex", justifyContent: m.role === "agent" ? "flex-end" : "flex-start", marginBottom: 10 }}>
+                          <div style={{
+                            maxWidth: "82%", padding: "10px 14px", borderRadius: 12,
+                            background: m.role === "agent" ? "rgba(224,90,51,0.1)" : "#fff",
+                            border: `1px solid ${m.role === "agent" ? "rgba(224,90,51,0.22)" : "rgba(0,0,0,0.08)"}`,
+                          }}>
+                            <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", color: m.role === "agent" ? "#e05a33" : "rgba(15,23,42,0.55)", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, marginBottom: 4 }}>
+                              {m.role === "agent" ? "You" : "Coach"}
+                            </div>
+                            <div style={{ fontSize: 14, lineHeight: 1.6, color: "#2a231d", whiteSpace: "pre-wrap" }}>{m.content}</div>
+                          </div>
+                        </div>
+                      ))}
+                      {debriefLoading && (
+                        <div style={{ fontSize: 13, color: "rgba(0,0,0,0.45)", padding: "4px 2px", marginBottom: 8 }}>Coach is thinking…</div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                        <input
+                          type="text"
+                          value={debriefInput}
+                          onChange={e => setDebriefInput(e.target.value)}
+                          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendDebrief(); } }}
+                          placeholder="Tell your coach what they should know…"
+                          disabled={debriefLoading}
+                          style={{ flex: 1, padding: "12px 16px", background: "#fff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+                        />
+                        <button onClick={sendDebrief} disabled={debriefLoading || !debriefInput.trim()} style={{
+                          padding: "12px 20px", borderRadius: 10, border: "none",
+                          background: (debriefLoading || !debriefInput.trim()) ? "rgba(15,23,42,0.15)" : "#0F172A",
+                          color: (debriefLoading || !debriefInput.trim()) ? "rgba(15,23,42,0.5)" : "#F5F0E8",
+                          fontSize: 13, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace",
+                          cursor: (debriefLoading || !debriefInput.trim()) ? "not-allowed" : "pointer"
+                        }}>
+                          Send
+                        </button>
+                      </div>
+                    </div>
 
                     <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                       <button className="pcta" onClick={() => { setCelebrate(false); setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); sendAIFirstMessage(practiceScenario, practicePersona); }} style={{
