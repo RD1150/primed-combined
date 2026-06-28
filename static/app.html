@@ -2447,6 +2447,7 @@ function Primed() {
   const [savedPhrases, setSavedPhrases] = useState([]);
   const [savedPhrasesLoading, setSavedPhrasesLoading] = useState(false);
   const [savedThisSession, setSavedThisSession] = useState(new Set()); // indices of agent turns saved in current review
+  const [modelLineSaved, setModelLineSaved] = useState(false);         // coach's model line saved this review
 
   const savePhraseFromTranscript = useCallback(async (turnIndex) => {
     if (savedThisSession.has(turnIndex)) return;
@@ -2474,6 +2475,31 @@ function Primed() {
       alert("Couldn't save that one — try again in a moment.");
     }
   }, [practiceMessages, practicePersona, practiceScenario, selectedQuickStart, savedThisSession]);
+
+  // Save the coach's model line ("Try saying it like this") to the Library.
+  const saveModelLine = useCallback(async () => {
+    if (modelLineSaved || !practiceFeedback || !practiceFeedback.suggestedPhrasing) return;
+    const personaName = PERSONAS.find(p => p.id === practicePersona)?.name || null;
+    const scenarioTitle = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario)?.title
+      || (selectedQuickStart && selectedQuickStart.label) || null;
+    try {
+      const res = await fetch(API_URL + "/saved-phrases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          phrase: practiceFeedback.suggestedPhrasing,
+          client_context: null,
+          scenario_title: scenarioTitle,
+          persona_name: personaName
+        })
+      });
+      if (!res.ok) throw new Error("save failed");
+      setModelLineSaved(true);
+    } catch (err) {
+      console.error("Save model line error:", err);
+      alert("Couldn't save that one — try again in a moment.");
+    }
+  }, [modelLineSaved, practiceFeedback, practicePersona, practiceScenario, selectedQuickStart]);
 
   const loadSavedPhrases = useCallback(async () => {
     setSavedPhrasesLoading(true);
@@ -2862,6 +2888,7 @@ function Primed() {
     setPracticeFeedback(null);
     setSavedThisSession(new Set());
     setDebriefMessages([]);
+    setModelLineSaved(false);
     if (isDealScenario(practiceScenario) && dealStage) {
       setDealBrief(null); setDealBriefError(""); setDealBriefLoading(true);
       setPracticeState("brief");
@@ -2996,6 +3023,7 @@ function Primed() {
     setFeedbackLoading(true);
     setPracticeState("feedback");
     setDebriefMessages([]);
+    setModelLineSaved(false);
     const priorBest = (gameStats && gameStats.best) || 0;
     setPrevBest(priorBest);
     setCelebrate(false);
@@ -5037,10 +5065,27 @@ function Primed() {
                     )}
 
                     {/* Model line — what a strong answer sounds like */}
+                    {practiceFeedback.suggestedPhrasing && (
                     <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.14)", marginBottom: 16 }}>
-                      <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>💬 Try saying it like this</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                        <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>💬 Try saying it like this</div>
+                        <button
+                          onClick={saveModelLine}
+                          disabled={modelLineSaved}
+                          style={{
+                            flexShrink: 0, padding: "3px 11px", borderRadius: 5, fontSize: 9,
+                            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700,
+                            border: "1px solid " + (modelLineSaved ? "#c0492a" : "rgba(224,90,51,0.4)"),
+                            background: modelLineSaved ? "#e05a33" : "transparent",
+                            color: modelLineSaved ? "#fff" : "#c0492a",
+                            cursor: modelLineSaved ? "default" : "pointer", transition: "all 0.15s"
+                          }}>
+                          {modelLineSaved ? "✓ Saved" : "+ Save to Library"}
+                        </button>
+                      </div>
                       <div style={{ fontSize: 15, color: "rgba(0,0,0,0.78)", lineHeight: 1.65, fontStyle: "italic" }}>"{practiceFeedback.suggestedPhrasing}"</div>
                     </div>
+                    )}
 
                     <div style={{ padding: "14px 20px", borderRadius: 14, background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.12)", marginBottom: 30 }}>
                       <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>Next practice focus</div>
@@ -5136,7 +5181,7 @@ function Primed() {
                     </div>
 
                     <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                      <button className="pcta" onClick={() => { setCelebrate(false); setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); sendAIFirstMessage(practiceScenario, practicePersona); }} style={{
+                      <button className="pcta" onClick={() => { setCelebrate(false); setPracticeState("active"); setPracticeMessages([]); setPracticeFeedback(null); setSavedThisSession(new Set()); setModelLineSaved(false); sendAIFirstMessage(practiceScenario, practicePersona); }} style={{
                         padding: "14px 32px", borderRadius: 14, border: "none",
                         background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700,
                         fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer"
@@ -5157,7 +5202,7 @@ function Primed() {
                       }}>
                         {shareCopied ? "✓ Copied" : "↗ Share"}
                       </button>
-                      <button onClick={() => { setCelebrate(false); setAppMode("home"); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); setDealBrief(null); }} style={{
+                      <button onClick={() => { setCelebrate(false); setAppMode("home"); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); setModelLineSaved(false); setDealBrief(null); }} style={{
                         padding: "13px 18px", borderRadius: 14, border: "none",
                         background: "transparent", color: "rgba(0,0,0,0.45)",
                         fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
