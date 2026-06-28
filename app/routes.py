@@ -366,6 +366,9 @@ async def coach_hint(data: CoachHintRequest, user: User = Depends(get_current_us
         "Be direct and concrete — name the move (anchor, validate, reframe, isolate, mirror, ask a closing question, etc.). "
         "1–2 sentences max. Don't repeat advice the agent already followed. Don't be generic. Don't preach. "
         "Format: start with the move in CAPS, then the specific phrasing. "
+        "CRITICAL: the 'Try:' line must be a complete, ready-to-say sentence the agent could speak VERBATIM. "
+        "NEVER use fill-in-the-blank placeholders or brackets like [item], [timeframe], [number], [name]. "
+        "If you lack a specific detail, either phrase the line so it isn't needed, or use a realistic concrete example drawn from the conversation. "
         "Example: 'ANCHOR FIRST. Try: \"Most homes in this market are selling within 2% of list — let's set a number that lets us play offense.\"'"
     )
     user_msg = f"{context_line}\n\nConversation so far:\n{convo}\n\nWhat's the single best move the agent should make next?".strip()

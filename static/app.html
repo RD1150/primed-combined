@@ -4824,6 +4824,16 @@ function Primed() {
                             fontSize: 13, lineHeight: 1, opacity: 0.55
                           }}>🔊</button>
                         )}
+                        {msg.role === "agent" && (
+                          <button onClick={() => savePhraseFromTranscript(i)} disabled={savedThisSession.has(i)} title="Save this line to your Library" style={{
+                            marginLeft: "auto", padding: "1px 8px", borderRadius: 4, fontSize: 8.5,
+                            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 700,
+                            border: "1px solid " + (savedThisSession.has(i) ? "#047857" : "rgba(224,90,51,0.4)"),
+                            background: savedThisSession.has(i) ? "#047857" : "transparent",
+                            color: savedThisSession.has(i) ? "#fff" : "#c0492a",
+                            cursor: savedThisSession.has(i) ? "default" : "pointer", lineHeight: 1.4, transition: "all 0.15s"
+                          }}>{savedThisSession.has(i) ? "✓ Saved" : "+ Save"}</button>
+                        )}
                       </div>
                       <div style={{ fontSize: 14.5, lineHeight: 1.65, color: "#2a231d", whiteSpace: "pre-wrap" }}>{msg.content}</div>
                     </div>
