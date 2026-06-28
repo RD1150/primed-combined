@@ -50,6 +50,96 @@ def _market_line(profile) -> str:
 
 
 # ────────────────────────────────────────────────────────────────────────────
+# CONTRACT-RULES INFO BASE — shared ground truth for any deal-stage role-play.
+# This is PRACTICE REALISM, not legal advice. It keeps the simulated client and
+# the coach from inventing impossible transaction states (e.g. raising the
+# inspection days before closing). Keyed by deal STAGE and US STATE.
+# ────────────────────────────────────────────────────────────────────────────
+
+# Stage ids the frontend sends. Order = lifecycle order.
+DEAL_STAGES = {
+    "pre_contract": "Pre-contract — prospecting or an offer is on the table; nothing binding signed yet.",
+    "under_contract_active": "Under contract — inspection/appraisal/financing contingencies still ACTIVE (early-to-mid escrow).",
+    "contingencies_released": "Under contract — contingencies REMOVED/waived; heading to closing.",
+}
+
+_TRANSACTION_TIMELINE = """RESIDENTIAL TRANSACTION TIMELINE (ground truth for this rep — practice realism, not legal advice):
+1. Offer → negotiation → mutual acceptance = "under contract" (binding).
+2. Earnest money deposited shortly after acceptance.
+3. Inspection period (EARLY): buyer inspects, then requests repairs/credits or accepts; buyer may cancel within the contingency window with earnest money protected.
+4. Appraisal ordered by the lender; value must support the price or it gets renegotiated.
+5. Financing / loan approval: underwriting → clear-to-close.
+6. Contingency removal/release: once a contingency is satisfied or its deadline passes it is removed/waived; AFTER removal the buyer's earnest money is generally at risk if they walk.
+7. Final walkthrough (a few days before closing).
+8. Closing disclosure / clear-to-close, then closing: sign, fund, record; possession per contract.
+
+INVARIANTS (never violate):
+- Inspection and the inspection-response window happen EARLY, right after going under contract — never near closing.
+- By the final week before closing the inspection, appraisal, and loan contingencies have NORMALLY already been removed; do not reopen them or raise the inspection as if it hasn't happened.
+- You cannot be "under contract" while still negotiating the original offer price — that is pre-contract.
+- Earnest money is protected while contingencies are active and at risk once they are released."""
+
+# Per-state quirks. Matched loosely on 2-letter code OR name substring.
+_STATE_RULES = {
+    "CA": "CALIFORNIA: contingency-REMOVAL model (CAR RPA). Contingencies stay active until the buyer signs a Contingency Removal form; default timeframes are 17 days for inspection and appraisal, 21 days for loan. Nothing auto-removes by a passive deadline — the buyer must actively remove.",
+    "TX": "TEXAS: Option Period. The buyer pays an option fee for an unrestricted right to terminate for a negotiated number of days (often 5–10). After the option period ends, termination rights narrow sharply; inspection happens during the option period.",
+    "WI": "WISCONSIN: WB-11 Offer to Purchase. Inspection is a contingency with a date-certain deadline by which the buyer must deliver a written notice of defects; contingencies are satisfied or waived by the specific dates stated in the offer.",
+    "FL": "FLORIDA: commonly the FAR/BAR 'AS IS' contract with an inspection period in which the buyer may cancel for any reason; financing and appraisal are handled via addenda with their own deadlines.",
+    "NY": "NEW YORK: attorney-review/attorney-state. After an accepted offer, both sides' attorneys review and finalize the contract before it is fully binding; this happens up front, before inspection.",
+    "IL": "ILLINOIS: attorney-review state. After signing there is an attorney-review and inspection period (often ~5 business days) during which terms can be modified or the deal canceled, before the contract is firm.",
+}
+
+_STATE_NAMES = {
+    "california": "CA", "texas": "TX", "wisconsin": "WI", "florida": "FL",
+    "new york": "NY", "illinois": "IL",
+}
+
+
+def _resolve_state(state: str) -> Optional[str]:
+    if not state:
+        return None
+    s = state.strip().lower()
+    if s.upper() in _STATE_RULES:
+        return s.upper()
+    for name, code in _STATE_NAMES.items():
+        if name in s:
+            return code
+    # Try a trailing 2-letter token, e.g. "Madison, WI"
+    tail = s.replace(",", " ").split()
+    for tok in tail:
+        if tok.upper() in _STATE_RULES:
+            return tok.upper()
+    return None
+
+
+def contract_rules_context(state: str = "", stage: str = "") -> str:
+    """Shared contract-rules block for deal-stage prompts. Empty stage → omit
+    (non-deal scenario). Unknown state → generic, with a 'varies by state' note."""
+    if not stage:
+        return ""
+    parts = [_TRANSACTION_TIMELINE]
+    code = _resolve_state(state)
+    if code:
+        parts.append(f"STATE RULES — {state.strip()} ({code}): {_STATE_RULES[code]}")
+    else:
+        loc = f" ({state.strip()})" if state else ""
+        parts.append(
+            f"STATE RULES{loc}: contract mechanics and contingency deadlines vary by state and by the "
+            "specific contract form. Treat the stage and the dates in the Deal Brief as authoritative for this rep."
+        )
+    stage_line = DEAL_STAGES.get(stage, "")
+    if stage == "pre_contract":
+        parts.append("CURRENT STAGE — PRE-CONTRACT: no binding contract yet. No inspection/appraisal/closing has happened. Never reference contract deadlines or contingencies as if a deal is signed.")
+    elif stage == "under_contract_active":
+        parts.append("CURRENT STAGE — UNDER CONTRACT, CONTINGENCIES ACTIVE: the offer is accepted and binding, but inspection/appraisal/financing contingencies are still open. The buyer can still cancel within those windows with earnest money protected. Live issues are inspection findings, repair negotiation, appraisal gaps, or loan approval — NOT final walkthrough or closing logistics.")
+    elif stage == "contingencies_released":
+        parts.append("CURRENT STAGE — UNDER CONTRACT, CONTINGENCIES RELEASED: inspection, appraisal, and loan contingencies are already removed/waived and the deal is heading to closing (final walkthrough, closing disclosure, signing, funding). Earnest money is at risk if the buyer backs out. NEVER reopen the inspection or any released contingency; live issues are cold feet, closing logistics, walkthrough items, or clear-to-close.")
+    elif stage_line:
+        parts.append(f"CURRENT STAGE: {stage_line}")
+    return "\n\n".join(parts)
+
+
+# ────────────────────────────────────────────────────────────────────────────
 # PRACTICE SIMULATIONS — client role-play (opener + ongoing replies)
 # ────────────────────────────────────────────────────────────────────────────
 
@@ -60,13 +150,41 @@ _DIFF_MAP = {
 }
 
 
+def _deal_brief_block(deal_brief) -> str:
+    """Render the generated Deal Brief as ground-truth context for any deal-stage
+    prompt. Accepts a dict (preferred) or a pre-formatted string."""
+    if not deal_brief:
+        return ""
+    if isinstance(deal_brief, str):
+        body = deal_brief.strip()
+    else:
+        import json as _json
+        try:
+            body = _json.dumps(deal_brief, ensure_ascii=False, indent=2)
+        except Exception:
+            body = str(deal_brief)
+    if not body:
+        return ""
+    return ("DEAL BRIEF — the agreed facts of THIS specific deal. Treat every value as "
+            "ground truth; never contradict it and never invent facts that conflict with it:\n" + body)
+
+
+def _deal_context(state: str = "", stage: str = "", deal_brief=None) -> str:
+    """Combined contract-rules + deal-brief block, blank for non-deal scenarios."""
+    blocks = [contract_rules_context(state, stage), _deal_brief_block(deal_brief)]
+    blocks = [b for b in blocks if b]
+    return ("\n\n" + "\n\n".join(blocks)) if blocks else ""
+
+
 def practice_system(profile, *, persona_name: str, persona_traits: str = "",
                     persona_backstory: str = "", persona_voice: str = "",
                     persona_tells: str = "", difficulty: str = "medium",
                     scenario_title: str = "", scenario_desc: str = "",
-                    extra_context: str = "", wrap_up: bool = False) -> str:
+                    extra_context: str = "", wrap_up: bool = False,
+                    state: str = "", stage: str = "", deal_brief=None) -> str:
     diff = _DIFF_MAP.get((difficulty or "medium").lower(), _DIFF_MAP["medium"])
     ctx = f"\nADDITIONAL CONTEXT: {extra_context}" if extra_context else ""
+    deal = _deal_context(state, stage, deal_brief)
     wrap = ("\n\nWRAP-UP: This call has run its natural course. Bring THIS reply to a "
             "realistic close in your own voice — give the agent a clear next step, a "
             "soft commitment, or a graceful sign-off consistent with how the conversation "
@@ -82,7 +200,7 @@ YOUR TELLS: {persona_tells}
 DIFFICULTY: {difficulty} — {diff}
 
 SCENARIO: {scenario_title} — {scenario_desc}
-{_market_line(profile)}{ctx}
+{_market_line(profile)}{ctx}{deal}
 
 RULES:
 - Stay 100% in character — your speech patterns ("HOW YOU SPEAK") must come through in every response
@@ -98,6 +216,39 @@ RULES:
 - Keep responses concise like a real conversation{wrap}"""
 
 
+def deal_brief_system(profile, *, state: str = "", stage: str = "",
+                      scenario_title: str = "", scenario_desc: str = "") -> str:
+    """Generate a coherent, market- and state-aware Deal Brief for a deal-stage
+    practice rep. The brief becomes ground truth for the client and the coach."""
+    rules = contract_rules_context(state, stage)
+    loc = f" in {state.strip()}" if state else ""
+    return f"""You build a realistic real-estate DEAL BRIEF for a coaching role-play. It must be internally consistent and obey the contract rules below for the stage and state given — this is what stops the simulation from inventing impossible deals.
+
+{profile_context(profile, include_voice=False)}
+
+{rules}
+
+TASK: Produce the brief for a "{scenario_title}" practice ({scenario_desc}){loc}. Use realistic prices for the agent's market. Make every date, price, and contingency status CONSISTENT with the current stage:
+- pre-contract → no contract price yet, no contingencies removed, no closing date (an offer may be pending).
+- contingencies active → realistic open deadlines (inspection/appraisal/loan), closing still weeks out.
+- contingencies released → inspection, appraisal, and loan show "Removed/Released", closing is days away, final walkthrough pending.
+The liveIssue must match the scenario and the stage (e.g. don't make the live issue an inspection repair when contingencies are released).
+
+Return ONLY valid JSON (no markdown, no backticks), exactly these keys:
+{{
+  "headline": "one line, e.g. '3BR/2BA in <area> — under contract, ~9 days to close'",
+  "stageLabel": "plain-English stage label",
+  "property": "type / beds-baths / area, e.g. '3BR/2BA single-family, <neighborhood>'",
+  "listPrice": "$ amount",
+  "contractPrice": "$ amount or '' if pre-contract",
+  "keyDates": [{{"label": "Contract date", "value": "..."}}, {{"label": "Closing", "value": "..."}}],
+  "financing": "loan type, down %, and approval status appropriate to the stage",
+  "contingencies": [{{"name": "Inspection", "status": "Active | Removed | N/A"}}, {{"name": "Appraisal", "status": "..."}}, {{"name": "Financing", "status": "..."}}],
+  "liveIssue": "the specific situation the agent is walking into for THIS conversation",
+  "agentKnows": ["3-5 short facts the agent already knows walking in"]
+}}"""
+
+
 # Fixed user-message that kicks off the client opener (also server-owned).
 PRACTICE_OPENER_USER_MSG = (
     "Start the conversation. You are the client reaching out to the agent. "
@@ -110,14 +261,16 @@ PRACTICE_OPENER_USER_MSG = (
 # ────────────────────────────────────────────────────────────────────────────
 
 def scoring_system(profile, *, scenario_title: str, persona_name: str,
-                   persona_traits: str, difficulty: str) -> str:
+                   persona_traits: str, difficulty: str,
+                   state: str = "", stage: str = "", deal_brief=None) -> str:
+    deal = _deal_context(state, stage, deal_brief)
     return f"""You are an elite real estate conversation coach evaluating an agent's practice session. Your coaching TONE is specific, constructive, and encouraging; your SCORES are honest and calibrated. Never leave a score without an actionable path to improve it — but never inflate a score to be kind, either. The encouragement belongs in the feedback, not in a number the agent can't trust.
 
 {profile_context(profile)}
 
 SCENARIO: {scenario_title}
 PERSONA: {persona_name} ({persona_traits})
-DIFFICULTY: {difficulty}
+DIFFICULTY: {difficulty}{deal}
 
 Score each dimension 0-100, calibrated against what a TOP PRODUCER would do in this exact conversation — not against effort. Use the full range: a typical untrained performance lands in the 50s-60s (that is accurate, not harsh); 85+ is reserved for genuinely skilled handling that anchors, reframes, and advances the deal; below 50 is for evasive, defensive, or deal-damaging turns. Do not cluster everything in the 70s-80s. Then ALWAYS give:
 - at least two concrete strengths,
@@ -147,7 +300,8 @@ Return ONLY valid JSON (no markdown, no backticks), exactly these keys:
 
 def coach_debrief_system(profile, *, scenario_title: str = "", persona_name: str = "",
                          difficulty: str = "medium", transcript: str = "",
-                         feedback=None, self_reflection: str = "") -> str:
+                         feedback=None, self_reflection: str = "",
+                         state: str = "", stage: str = "", deal_brief=None) -> str:
     """Same coach, continuing the conversation AFTER the scored feedback. The agent
     can add context the coach lacked, disagree, or ask how to improve."""
     import json as _json
@@ -158,13 +312,14 @@ def coach_debrief_system(profile, *, scenario_title: str = "", persona_name: str
         except Exception:
             fb = str(feedback)
     refl = f'\n\nThe agent\'s self-reflection before scoring was: "{self_reflection.strip()}"' if self_reflection.strip() else ""
+    deal = _deal_context(state, stage, deal_brief)
     return f"""You are the same elite real estate coach, now talking with the agent AFTER you gave them their scored feedback on a practice rep. This is a conversation, not a re-grade — do not return JSON or new scores. Be warm, specific, and concise (2-4 sentences unless they ask for more).
 
 {profile_context(profile)}
 
 SCENARIO: {scenario_title}
 CLIENT PERSONA: {persona_name}
-DIFFICULTY: {difficulty}
+DIFFICULTY: {difficulty}{deal}
 
 THE PRACTICE TRANSCRIPT:
 {transcript}

@@ -138,6 +138,9 @@ class PracticeOpenerIn(BaseModel):
     scenario_title: str = ""
     scenario_desc: str = ""
     context: Optional[str] = None
+    state: str = ""                  # jurisdiction for contract rules
+    stage: str = ""                  # deal lifecycle stage (see prompts.DEAL_STAGES)
+    deal_brief: Optional[dict] = None  # generated Deal Brief, ground truth for the deal
 
 @router.post("/practice/opener")
 async def practice_opener(data: PracticeOpenerIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -147,7 +150,8 @@ async def practice_opener(data: PracticeOpenerIn, user: User = Depends(get_curre
         persona_backstory=data.persona.backstory, persona_voice=data.persona.voice,
         persona_tells=data.persona.tells, difficulty=data.difficulty,
         scenario_title=data.scenario_title, scenario_desc=data.scenario_desc,
-        extra_context=data.context or "")
+        extra_context=data.context or "",
+        state=data.state, stage=data.stage, deal_brief=data.deal_brief)
     reply = await _anthropic(system, [{"role": "user", "content": prompts.PRACTICE_OPENER_USER_MSG}], max_tokens=500)
     return {"reply": reply}
 
@@ -158,6 +162,9 @@ class PracticeReplyIn(BaseModel):
     scenario_desc: str = ""
     context: Optional[str] = None
     wrap_up: bool = False  # client brings the call to a natural close (hard exchange cap)
+    state: str = ""
+    stage: str = ""
+    deal_brief: Optional[dict] = None
     transcript: list  # [{role:"agent"|"client", content:str}, ...]
 
 @router.post("/practice/reply")
@@ -168,11 +175,29 @@ async def practice_reply(data: PracticeReplyIn, user: User = Depends(get_current
         persona_backstory=data.persona.backstory, persona_voice=data.persona.voice,
         persona_tells=data.persona.tells, difficulty=data.difficulty,
         scenario_title=data.scenario_title, scenario_desc=data.scenario_desc,
-        extra_context=data.context or "", wrap_up=data.wrap_up)
+        extra_context=data.context or "", wrap_up=data.wrap_up,
+        state=data.state, stage=data.stage, deal_brief=data.deal_brief)
     messages = [{"role": "user" if t.get("role") == "agent" else "assistant", "content": t.get("content", "")}
                 for t in data.transcript]
     reply = await _anthropic(system, messages, max_tokens=1000)
     return {"reply": reply}
+
+class DealBriefIn(BaseModel):
+    scenario_title: str = ""
+    scenario_desc: str = ""
+    state: str = ""
+    stage: str = ""
+
+@router.post("/practice/deal-brief")
+async def practice_deal_brief(data: DealBriefIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Generate a coherent, market+state+stage-aware Deal Brief for a deal-stage rep."""
+    if not data.stage:
+        raise HTTPException(status_code=400, detail="stage is required")
+    profile = await _load_profile(user, db)
+    system = prompts.deal_brief_system(profile, state=data.state, stage=data.stage,
+                                       scenario_title=data.scenario_title, scenario_desc=data.scenario_desc)
+    brief = await _anthropic_json(system, [{"role": "user", "content": "Generate the deal brief now."}], max_tokens=900)
+    return {"brief": brief}
 
 class PracticeScoreIn(BaseModel):
     scenario_title: str
@@ -180,6 +205,9 @@ class PracticeScoreIn(BaseModel):
     persona_traits: str = ""
     difficulty: str = "medium"
     self_reflection: str = ""  # agent's own read on how the conversation went
+    state: str = ""
+    stage: str = ""
+    deal_brief: Optional[dict] = None
     transcript: list  # [{role, content}, ...]
 
 @router.post("/practice/score")
@@ -187,7 +215,8 @@ async def practice_score(data: PracticeScoreIn, user: User = Depends(get_current
     profile = await _load_profile(user, db)
     system = prompts.scoring_system(profile, scenario_title=data.scenario_title,
                                     persona_name=data.persona_name, persona_traits=data.persona_traits,
-                                    difficulty=data.difficulty)
+                                    difficulty=data.difficulty,
+                                    state=data.state, stage=data.stage, deal_brief=data.deal_brief)
     convo = "\n\n".join(f"{'AGENT' if t.get('role') == 'agent' else 'CLIENT'}: {t.get('content','')}" for t in data.transcript)
     user_content = f"TRANSCRIPT:\n{convo}"
     if data.self_reflection.strip():
@@ -203,6 +232,9 @@ class PracticeDebriefIn(BaseModel):
     transcript: list = []          # the practice conversation [{role, content}]
     feedback: Optional[dict] = None  # the coaching JSON already shown
     self_reflection: str = ""
+    state: str = ""
+    stage: str = ""
+    deal_brief: Optional[dict] = None
     messages: list = []            # debrief so far [{role: "agent"|"coach", content}]
 
 @router.post("/practice/debrief")
@@ -214,7 +246,8 @@ async def practice_debrief(data: PracticeDebriefIn, user: User = Depends(get_cur
     system = prompts.coach_debrief_system(
         profile, scenario_title=data.scenario_title, persona_name=data.persona_name,
         difficulty=data.difficulty, transcript=convo, feedback=data.feedback,
-        self_reflection=data.self_reflection)
+        self_reflection=data.self_reflection,
+        state=data.state, stage=data.stage, deal_brief=data.deal_brief)
     messages = [{"role": "user" if m.get("role") == "agent" else "assistant", "content": m.get("content", "")}
                 for m in data.messages]
     reply = await _anthropic(system, messages, max_tokens=700)

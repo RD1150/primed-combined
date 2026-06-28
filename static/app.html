@@ -98,6 +98,46 @@ const API_URL = "/v1";
 const SOFT_TURN_CAP = 6;
 const HARD_TURN_CAP = 8;
 
+// Deal stages (must match prompts.DEAL_STAGES ids). Drive the contract-rules
+// info base so the client + coach never invent an impossible deal state.
+const DEAL_STAGE_OPTIONS = [
+  { id: "pre_contract", label: "Pre-contract", hint: "Prospecting or an offer on the table — nothing binding signed yet." },
+  { id: "under_contract_active", label: "Under contract — contingencies active", hint: "Inspection / appraisal / financing still open; buyer can still walk." },
+  { id: "contingencies_released", label: "Contingencies released — heading to close", hint: "Inspection/appraisal/loan removed; earnest money at risk; nearing closing." },
+];
+// Which scenarios involve a live transaction, and their default stage.
+const SCENARIO_DEFAULT_STAGE = {
+  "p-offer": "pre_contract",
+  "p-lowoffer": "pre_contract",
+  "p-inspection": "under_contract_active",
+  "p-hesitation": "contingencies_released",
+};
+const isDealScenario = (id) => !!SCENARIO_DEFAULT_STAGE[id];
+
+const US_STATES = [
+  ["", "General / not sure"], ["AL","Alabama"], ["AK","Alaska"], ["AZ","Arizona"], ["AR","Arkansas"],
+  ["CA","California"], ["CO","Colorado"], ["CT","Connecticut"], ["DE","Delaware"], ["FL","Florida"],
+  ["GA","Georgia"], ["HI","Hawaii"], ["ID","Idaho"], ["IL","Illinois"], ["IN","Indiana"], ["IA","Iowa"],
+  ["KS","Kansas"], ["KY","Kentucky"], ["LA","Louisiana"], ["ME","Maine"], ["MD","Maryland"], ["MA","Massachusetts"],
+  ["MI","Michigan"], ["MN","Minnesota"], ["MS","Mississippi"], ["MO","Missouri"], ["MT","Montana"], ["NE","Nebraska"],
+  ["NV","Nevada"], ["NH","New Hampshire"], ["NJ","New Jersey"], ["NM","New Mexico"], ["NY","New York"],
+  ["NC","North Carolina"], ["ND","North Dakota"], ["OH","Ohio"], ["OK","Oklahoma"], ["OR","Oregon"], ["PA","Pennsylvania"],
+  ["RI","Rhode Island"], ["SC","South Carolina"], ["SD","South Dakota"], ["TN","Tennessee"], ["TX","Texas"],
+  ["UT","Utah"], ["VT","Vermont"], ["VA","Virginia"], ["WA","Washington"], ["WV","West Virginia"], ["WI","Wisconsin"], ["WY","Wyoming"],
+];
+// Best-effort match of a free-text market ("Madison, WI") to a state code.
+const resolveStateClient = (market) => {
+  if (!market) return "";
+  const m = market.toLowerCase();
+  for (const [code, name] of US_STATES) {
+    if (!code) continue;
+    if (m.includes(name.toLowerCase())) return code;
+  }
+  const toks = market.replace(/,/g, " ").split(/\s+/);
+  for (const t of toks) { if (US_STATES.some(([c]) => c === t.toUpperCase())) return t.toUpperCase(); }
+  return "";
+};
+
 // Auth helpers
 function getToken() { return localStorage.getItem("primed_token") || ""; }
 function setToken(t) { localStorage.setItem("primed_token", t); }
@@ -2393,6 +2433,11 @@ function Primed() {
   const [practiceLoading, setPracticeLoading] = useState(false);
   const [practiceFeedback, setPracticeFeedback] = useState(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [dealStage, setDealStage] = useState("");   // deal lifecycle stage for deal scenarios
+  const [dealState, setDealState] = useState("");   // jurisdiction for contract rules
+  const [dealBrief, setDealBrief] = useState(null); // generated Deal Brief (ground truth)
+  const [dealBriefLoading, setDealBriefLoading] = useState(false);
+  const [dealBriefError, setDealBriefError] = useState("");
   const [practiceReflection, setPracticeReflection] = useState(""); // agent's own read before scoring
   const [debriefMessages, setDebriefMessages] = useState([]);       // post-coaching follow-up [{role:"agent"|"coach"}]
   const [debriefInput, setDebriefInput] = useState("");
@@ -2766,6 +2811,7 @@ function Primed() {
     setPracticePersona(qs.persona);
     setPracticeDifficulty("medium");
     setPracticeContext("");
+    setDealBrief(null); // quick-start skips the deal-brief step; stage rules still apply via the effect
     setPracticeState("active");
     setPracticeMessages([]);
     setPracticeFeedback(null);
@@ -2786,10 +2832,13 @@ function Primed() {
           persona: persona
             ? { name: persona.name, traits: persona.traits || "", backstory: persona.backstory || "", voice: persona.voice || "", tells: persona.tells || "" }
             : { name: "Client" },
-          difficulty: "medium",
+          difficulty: practiceDifficulty,
           scenario_title: scenario ? scenario.title : "",
           scenario_desc: scenario ? scenario.desc : "",
-          context: ""
+          context: practiceContext || "",
+          state: dealState,
+          stage: dealStage,
+          deal_brief: dealBrief
         })
       });
       const data = await response.json();
@@ -2803,7 +2852,47 @@ function Primed() {
       setPracticeMessages([{ role: "client", content: "Hi, I was hoping to talk to you about my home. I've been thinking about selling but I'm not sure where to start." }]);
     }
     setPracticeLoading(false);
-  }, [voiceEnabled]);
+  }, [voiceEnabled, practiceDifficulty, practiceContext, dealState, dealStage, dealBrief]);
+
+  // Start a session. Deal scenarios first generate a Deal Brief (shown before
+  // the conversation); other scenarios jump straight into the chat.
+  const startPractice = useCallback(async () => {
+    setSelectedQuickStart(null);
+    setPracticeMessages([]);
+    setPracticeFeedback(null);
+    setSavedThisSession(new Set());
+    setDebriefMessages([]);
+    if (isDealScenario(practiceScenario) && dealStage) {
+      setDealBrief(null); setDealBriefError(""); setDealBriefLoading(true);
+      setPracticeState("brief");
+      try {
+        const scenario = PRACTICE_SCENARIOS.find(s => s.id === practiceScenario);
+        const res = await fetch(API_URL + "/practice/deal-brief", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+          body: JSON.stringify({ scenario_title: scenario ? scenario.title : "", scenario_desc: scenario ? scenario.desc : "", state: dealState, stage: dealStage })
+        });
+        if (!res.ok) throw new Error("brief failed");
+        const data = await res.json();
+        setDealBrief(data.brief || null);
+      } catch (err) {
+        console.error("Deal brief error:", err);
+        setDealBriefError("Couldn't build the deal brief automatically — you can still start the conversation.");
+      }
+      setDealBriefLoading(false);
+    } else {
+      setDealBrief(null);
+      setPracticeState("active");
+      setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 400);
+    }
+  }, [practiceScenario, practicePersona, dealStage, dealState, sendAIFirstMessage]);
+
+  // From the Deal Brief screen → begin the actual conversation.
+  const beginDealConversation = useCallback(() => {
+    setPracticeMessages([]);
+    setPracticeState("active");
+    setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 300);
+  }, [practiceScenario, practicePersona, sendAIFirstMessage]);
 
   // Structured payload for the server-side /practice/* endpoints. The prompt is
   // built and locked server-side (app/prompts.py); the client sends only data.
@@ -2859,7 +2948,10 @@ function Primed() {
       difficulty: practiceDifficulty,
       scenario_title: scenario ? scenario.title : "",
       scenario_desc: scenario ? scenario.desc : "",
-      context: practiceContext || null
+      context: practiceContext || null,
+      state: dealState,
+      stage: dealStage,
+      deal_brief: dealBrief
     };
   };
 
@@ -2921,6 +3013,9 @@ function Primed() {
           persona_traits: persona.traits || "",
           difficulty: practiceDifficulty,
           self_reflection: reflection || "",
+          state: dealState,
+          stage: dealStage,
+          deal_brief: dealBrief,
           transcript: practiceMessages.map(m => ({ role: m.role, content: m.content }))
         })
       });
@@ -2974,7 +3069,7 @@ function Primed() {
     }
     setFeedbackLoading(false);
     loadGameStats();
-  }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty, loadGameStats, gameStats]);
+  }, [practiceMessages, practiceScenario, practicePersona, practiceDifficulty, loadGameStats, gameStats, dealState, dealStage, dealBrief]);
 
   // Post-coaching debrief: agent adds context / asks; the coach replies (no re-score).
   const sendDebrief = useCallback(async () => {
@@ -2997,6 +3092,9 @@ function Primed() {
           transcript: practiceMessages.map(m => ({ role: m.role, content: m.content })),
           feedback: practiceFeedback,
           self_reflection: practiceReflection,
+          state: dealState,
+          stage: dealStage,
+          deal_brief: dealBrief,
           messages: next.map(m => ({ role: m.role, content: m.content }))
         })
       });
@@ -3008,7 +3106,7 @@ function Primed() {
       setDebriefMessages(prev => [...prev, { role: "coach", content: "I couldn't respond just now — try again in a moment." }]);
     }
     setDebriefLoading(false);
-  }, [debriefInput, debriefLoading, debriefMessages, practiceMessages, practiceScenario, practicePersona, practiceDifficulty, practiceFeedback, practiceReflection]);
+  }, [debriefInput, debriefLoading, debriefMessages, practiceMessages, practiceScenario, practicePersona, practiceDifficulty, practiceFeedback, practiceReflection, dealState, dealStage, dealBrief]);
 
   useEffect(() => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -3023,6 +3121,19 @@ function Primed() {
       endPracticeSession();
     }
   }, [practiceMessages, practiceLoading, practiceState, endPracticeSession]);
+
+  // Default the deal stage from the chosen scenario (deal scenarios only).
+  useEffect(() => {
+    setDealStage(isDealScenario(practiceScenario) ? SCENARIO_DEFAULT_STAGE[practiceScenario] : "");
+  }, [practiceScenario]);
+
+  // Default the jurisdiction from the agent's profile market, once available.
+  useEffect(() => {
+    if (!dealState && profile && profile.market) {
+      const code = resolveStateClient(profile.market);
+      if (code) setDealState(code);
+    }
+  }, [profile]);
 
   const categories = ["All", ...new Set(SCENARIOS.map(s => s.category))];
 
@@ -3148,6 +3259,10 @@ function Primed() {
   }, []);
 
   // ── STYLES (Light Theme) ──
+  const S2 = {
+    dlLabel: { fontSize: 9.5, color: "rgba(0,0,0,0.42)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 },
+    dlVal: { fontSize: 13.5, color: "#2a231d", lineHeight: 1.45, marginTop: 2 },
+  };
   const S = {
     app: {
       fontFamily: "'Figtree', 'Helvetica Neue', sans-serif",
@@ -4462,6 +4577,37 @@ function Primed() {
                       ))}
                     </div>
 
+                    {isDealScenario(practiceScenario) && (
+                      <>
+                        <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Where is the deal?</div>
+                        <div style={{ display: "grid", gap: 8, marginBottom: 14 }}>
+                          {DEAL_STAGE_OPTIONS.map(s => {
+                            const on = dealStage === s.id;
+                            return (
+                              <button key={s.id} onClick={() => setDealStage(s.id)} style={{
+                                textAlign: "left", padding: "12px 16px", borderRadius: 12, cursor: "pointer",
+                                background: "#fff", border: `1px solid ${on ? "#e05a33" : "rgba(0,0,0,0.1)"}`,
+                                boxShadow: on ? "0 0 0 3px rgba(224,90,51,0.1)" : "none"
+                              }}>
+                                <div style={{ fontSize: 13.5, fontWeight: on ? 700 : 600, color: "#2a231d" }}>{s.label}</div>
+                                <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.5)", marginTop: 2, lineHeight: 1.45 }}>{s.hint}</div>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>State / jurisdiction</div>
+                        <select
+                          value={dealState}
+                          onChange={e => setDealState(e.target.value)}
+                          style={{ width: "100%", maxWidth: 320, padding: "11px 14px", marginBottom: 24, background: "#fff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, color: "#2a231d", fontSize: 14, fontFamily: "inherit", outline: "none", cursor: "pointer", boxSizing: "border-box" }}>
+                          {US_STATES.map(([code, name]) => (
+                            <option key={code || "none"} value={code}>{name}</option>
+                          ))}
+                        </select>
+                      </>
+                    )}
+
                     <div style={{ fontSize: 10, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Context (Optional)</div>
                     <textarea
                       value={practiceContext}
@@ -4475,7 +4621,7 @@ function Primed() {
                       }}
                     />
 
-                    <button className="pcta" onClick={() => { setPracticeState("active"); setPracticeMessages([]); setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 500); }} style={{
+                    <button className="pcta" onClick={startPractice} style={{
                       marginTop: 28, padding: "16px 36px", borderRadius: 14, border: "none",
                       background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)",
                       color: "#fff", fontSize: 15, fontWeight: 700,
@@ -4483,8 +4629,101 @@ function Primed() {
                       textTransform: "uppercase",
                       cursor: "pointer", display: "block"
                     }}>
-                      Start Practice
+                      {isDealScenario(practiceScenario) ? "Build Deal & Start →" : "Start Practice"}
                     </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* DEAL BRIEF: shared deal state before an in-contract conversation */}
+          {practiceState === "brief" && (
+            <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }} className="anim-slide">
+              <div style={{ maxWidth: 600, margin: "0 auto" }}>
+                <div style={{ fontSize: 10, color: "rgba(0,0,0,0.45)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 12 }}>Your deal brief</div>
+                <h2 style={{ fontSize: 27, fontWeight: 700, color: "#21190f", marginBottom: 6, letterSpacing: "-0.01em", fontFamily: "'Instrument Serif', Georgia, serif" }}>Know the deal before you walk in</h2>
+                <p style={{ fontSize: 13.5, color: "rgba(0,0,0,0.5)", lineHeight: 1.55, marginBottom: 22 }}>
+                  These are the agreed facts of the deal — the client and your coach are held to them. {dealState ? US_STATES.find(([c]) => c === dealState)?.[1] + " rules apply." : ""}
+                </p>
+
+                {dealBriefLoading ? (
+                  <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                    <div style={{ fontSize: 36, marginBottom: 16, color: "#e05a33", animation: "pulse 1.4s ease-in-out infinite" }}>✦</div>
+                    <div style={{ fontSize: 15, color: "rgba(0,0,0,0.6)" }}>Building a realistic deal…</div>
+                  </div>
+                ) : (
+                  <>
+                    {dealBriefError && (
+                      <div style={{ padding: "12px 16px", borderRadius: 10, background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", color: "#9a7424", fontSize: 13, lineHeight: 1.5, marginBottom: 18 }}>{dealBriefError}</div>
+                    )}
+                    {dealBrief && (
+                      <div style={{ padding: "20px 22px", borderRadius: 16, background: "#fff", border: "1px solid rgba(0,0,0,0.1)", marginBottom: 22 }}>
+                        {dealBrief.headline && <div style={{ fontSize: 16, fontWeight: 700, color: "#2a231d", marginBottom: 4 }}>{dealBrief.headline}</div>}
+                        {dealBrief.stageLabel && <div style={{ fontSize: 10.5, color: "#e05a33", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>{dealBrief.stageLabel}</div>}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 18px", marginBottom: 14 }}>
+                          {dealBrief.property && <div><div style={S2.dlLabel}>Property</div><div style={S2.dlVal}>{dealBrief.property}</div></div>}
+                          {dealBrief.listPrice && <div><div style={S2.dlLabel}>List price</div><div style={S2.dlVal}>{dealBrief.listPrice}</div></div>}
+                          {dealBrief.contractPrice && <div><div style={S2.dlLabel}>Contract price</div><div style={S2.dlVal}>{dealBrief.contractPrice}</div></div>}
+                          {dealBrief.financing && <div><div style={S2.dlLabel}>Financing</div><div style={S2.dlVal}>{dealBrief.financing}</div></div>}
+                          {(dealBrief.keyDates || []).map((d, i) => (
+                            <div key={i}><div style={S2.dlLabel}>{d.label}</div><div style={S2.dlVal}>{d.value}</div></div>
+                          ))}
+                        </div>
+                        {(dealBrief.contingencies || []).length > 0 && (
+                          <div style={{ marginBottom: 14 }}>
+                            <div style={S2.dlLabel}>Contingencies</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 5 }}>
+                              {dealBrief.contingencies.map((c, i) => {
+                                const removed = /remov|releas|waiv|n\/a/i.test(c.status || "");
+                                return (
+                                  <span key={i} style={{ fontSize: 11.5, padding: "3px 10px", borderRadius: 14, fontWeight: 600,
+                                    background: removed ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.12)",
+                                    color: removed ? "#047857" : "#b8860b", border: `1px solid ${removed ? "rgba(16,185,129,0.3)" : "rgba(245,158,11,0.3)"}` }}>
+                                    {c.name}: {c.status}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        {dealBrief.liveIssue && (
+                          <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(224,90,51,0.05)", border: "1px solid rgba(224,90,51,0.14)", marginBottom: (dealBrief.agentKnows || []).length ? 14 : 0 }}>
+                            <div style={{ ...S2.dlLabel, color: "#e05a33" }}>What you're walking into</div>
+                            <div style={{ fontSize: 14, color: "rgba(0,0,0,0.78)", lineHeight: 1.55, marginTop: 4 }}>{dealBrief.liveIssue}</div>
+                          </div>
+                        )}
+                        {(dealBrief.agentKnows || []).length > 0 && (
+                          <div>
+                            <div style={S2.dlLabel}>You already know</div>
+                            {dealBrief.agentKnows.map((k, i) => (
+                              <div key={i} style={{ fontSize: 13, color: "rgba(0,0,0,0.65)", lineHeight: 1.55, paddingLeft: 14, borderLeft: "2px solid rgba(0,0,0,0.1)", marginTop: 5 }}>{k}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                      <button className="pcta" onClick={beginDealConversation} style={{
+                        padding: "14px 30px", borderRadius: 14, border: "none",
+                        background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700,
+                        fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer"
+                      }}>
+                        Begin conversation →
+                      </button>
+                      <button onClick={startPractice} disabled={dealBriefLoading} style={{
+                        padding: "13px 18px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.12)",
+                        background: "#fff", color: "rgba(0,0,0,0.6)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'IBM Plex Mono', monospace"
+                      }}>
+                        ↻ Regenerate
+                      </button>
+                      <button onClick={() => setPracticeState("setup")} style={{
+                        padding: "13px 14px", borderRadius: 14, border: "none",
+                        background: "transparent", color: "rgba(0,0,0,0.45)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
+                      }}>
+                        Back
+                      </button>
+                    </div>
                   </>
                 )}
               </div>
@@ -4918,7 +5157,7 @@ function Primed() {
                       }}>
                         {shareCopied ? "✓ Copied" : "↗ Share"}
                       </button>
-                      <button onClick={() => { setCelebrate(false); setAppMode("home"); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); }} style={{
+                      <button onClick={() => { setCelebrate(false); setAppMode("home"); setPracticeState("setup"); setPracticeMessages([]); setPracticeFeedback(null); setPracticeScenario(null); setPracticePersona(null); setSavedThisSession(new Set()); setDealBrief(null); }} style={{
                         padding: "13px 18px", borderRadius: 14, border: "none",
                         background: "transparent", color: "rgba(0,0,0,0.45)",
                         fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit"
