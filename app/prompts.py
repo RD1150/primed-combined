@@ -274,8 +274,8 @@ DIFFICULTY: {difficulty}{deal}
 
 Score each dimension 0-100, calibrated against what a TOP PRODUCER would do in this exact conversation — not against effort. Use the full range: a typical untrained performance lands in the 50s-60s (that is accurate, not harsh); 85+ is reserved for genuinely skilled handling that anchors, reframes, and advances the deal; below 50 is for evasive, defensive, or deal-damaging turns. Do not cluster everything in the 70s-80s. Then ALWAYS give:
 - at least two concrete strengths,
-- at least two specific, fixable improvements phrased constructively (e.g. "Add a concrete number to your pricing answer" — not "be more confident"),
-- one model line: exactly what a strong agent could have said at a key moment, in this agent's voice,
+- specific, fixable improvements phrased constructively (e.g. "Add a concrete number to your pricing answer" — not "be more confident"). Aim for two, but NEVER invent a flaw the transcript doesn't show, and never critique a turn for missing something it actually contains: if the agent genuinely handled it at a top-producer level, give fewer (even one optional refinement framed as polish) rather than manufacturing a weakness — and score it accordingly instead of capping it to leave room for a critique,
+- one model line: a strong line for a key moment, in this agent's voice; if a turn was already excellent, the model line may affirm and lightly refine what they said rather than top it,
 - one focus for next time.
 
 Judge the AGENT'S transferable skill — discovery, framing, empathy, handling objections, advancing the deal — NOT the realism of the simulated client. If the client (the role-play) introduced an impossible or self-contradictory detail (e.g. raising the inspection while days from closing, or reopening a released contingency), do not penalize the agent for it and do not build a strength, improvement, or model line around that glitch. Coach only on what the agent can actually control and would transfer to a real conversation.
@@ -504,7 +504,7 @@ def challenge_system(profile) -> str:
 {profile_context(profile)}
 
 Calibrate against what a TOP PRODUCER would actually say to a real client across the table — not against effort. Use the full range honestly; most untrained answers land in the 50s–60s, and that is correct, not harsh:
-- 88-100 (Elite): nails the real lever of the objection — acknowledges, reframes with a concrete anchor (a number, comp, or proof point), and moves to a clear next step. Rare. Earn it.
+- 88-100 (Elite): nails the real lever of the objection — acknowledges, reframes with a concrete anchor (a number, comp, or proof point), and moves to a clear next step. Rare. Earn it — but when an answer genuinely does all of this, score it here. Do not hold a fully-formed answer in the 80s just to leave yourself room for a critique.
 - 70-87 (Closer): solid and on-strategy, but missing ONE of: a specific anchor, a clean reframe, or a close. Don't award this for merely sounding pleasant.
 - 50-69 (Contender): on the right instinct but generic, vague, over-explained, or leaves the core concern unaddressed. This is the DEFAULT band for a typical answer.
 - Below 50 (Rookie): empty, evasive, defensive, argumentative, or makes the situation worse.
@@ -512,8 +512,8 @@ Calibrate against what a TOP PRODUCER would actually say to a real client across
 Scoring rules:
 - Do NOT round up to spare feelings. If the answer is average, score it in the 50s and say why — the encouragement lives in the coaching, not in an inflated number.
 - Be transparent: the "why" must explain in plain language exactly what earned or cost points, and what a higher band would have required.
-- Always coach: even a top score gets one sharper improvement and a model line.
-- The "modelAnswer" must sound like THIS agent could say it (their market, their tone), and should clearly be a level above what they wrote.
+- Always coach, but NEVER invent a flaw to justify a lower score, and never critique the answer for missing something it actually contains. For an already-elite answer, the single "improve" item is an OPTIONAL refinement or a situational variation (e.g. "in a luxury market you might also name the comp") — framed explicitly as polish, not a deficiency — and the score stays in the band the answer truly earned.
+- The "modelAnswer" must sound like THIS agent could say it (their market, their tone). It should be a level above a weak or average answer — but if what they wrote is already elite, do NOT manufacture a contrast: affirm their approach and offer at most a subtle refinement or an alternate phrasing of the same strong move.
 
 Return ONLY valid JSON (no markdown, no backticks), exactly these keys:
 {{
