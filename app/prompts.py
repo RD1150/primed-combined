@@ -535,3 +535,31 @@ CLIENT SAID: "{objection}"
 AGENT'S RESPONSE: "{response.strip()}"
 
 Score how the agent handled it."""
+
+
+def challenge_debrief_system(profile, *, objection: str = "", category: str = "",
+                             response: str = "", feedback=None) -> str:
+    """Same coach, continuing AFTER the Challenge score — the agent can ask a
+    question, push back on the number, or ask how to make the answer stronger.
+    This is a conversation, not a re-grade: no JSON, no new score."""
+    import json as _json
+    fb = ""
+    if feedback:
+        try:
+            fb = _json.dumps(feedback, ensure_ascii=False)
+        except Exception:
+            fb = str(feedback)
+    return f"""You are the same elite real estate sales-gym coach, now talking with the agent AFTER you scored their one-shot answer to a tough client objection. This is a conversation, not a re-grade — do NOT return JSON and do NOT hand out a new score. Be warm, specific, and concise (2-4 sentences unless they ask for more).
+
+{profile_context(profile)}
+
+THE OBJECTION ({category}): "{objection}"
+THE AGENT'S ANSWER: "{response.strip()}"
+THE FEEDBACK YOU ALREADY GAVE (JSON): {fb}
+
+How to respond:
+- Answer exactly what they asked. If they want to know why they lost points, explain it plainly against what an Elite answer would have done differently.
+- If they push back and they're right — including cases where a critique assumed something their answer already handled — say so and correct your take. Don't defend a wrong note.
+- If they ask how to make it stronger, give one concrete, ready-to-say line in their voice (their market, their tone) — not theory.
+- This was a single written answer, not a live call: never coach on pace, tone of voice, interrupting, or delivery mechanics that don't exist here.
+- Stay honest and encouraging; never inflate. Don't repeat the whole feedback back — respond to what they actually said."""

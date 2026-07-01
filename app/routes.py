@@ -343,6 +343,27 @@ async def challenge_score(data: ChallengeScoreIn, user: User = Depends(get_curre
     return await _anthropic_json(system, [{"role": "user", "content": user_msg}], max_tokens=1100)
 
 
+class ChallengeCoachIn(BaseModel):
+    objection: str = ""
+    category: str = ""
+    response: str = ""
+    feedback: Optional[dict] = None
+    messages: list = []            # follow-up so far [{role: "agent"|"coach", content}]
+
+@router.post("/challenge/coach")
+async def challenge_coach(data: ChallengeCoachIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Conversational follow-up after the Challenge score — the agent can ask
+    questions or push back on the number; the coach responds (no re-scoring)."""
+    profile = await _load_profile(user, db)
+    system = prompts.challenge_debrief_system(
+        profile, objection=data.objection, category=data.category,
+        response=data.response, feedback=data.feedback)
+    messages = [{"role": "user" if m.get("role") == "agent" else "assistant", "content": m.get("content", "")}
+                for m in data.messages]
+    reply = await _anthropic(system, messages, max_tokens=700)
+    return {"reply": reply}
+
+
 class CoachHintRequest(BaseModel):
     transcript: list  # [{role: "agent"|"client", content: str}, ...]
     scenario_title: Optional[str] = None

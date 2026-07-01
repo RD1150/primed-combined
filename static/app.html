@@ -2392,7 +2392,7 @@ function Primed() {
     setPracticeLoading(true);
     try {
       const rawTranscript = [...practiceMessages, { role: "agent", content: text }].map(m => ({ role: m.role, content: m.content }));
-      const wrapUp = rawTranscript.filter(m => m.role === "agent").length >= HARD_TURN_CAP;
+      const wrapUp = rawTranscript.filter(m => m.role === "agent").length >= HARD_TURN_CAP && !capPromptDismissed;
 
       // Get AI response (prompt locked server-side)
       const response = await fetch(API_URL + "/practice/reply", {
@@ -2411,7 +2411,7 @@ function Primed() {
       setPracticeMessages(prev => [...prev, { role: "client", content: "Sorry, can you say that again?" }]);
     }
     setPracticeLoading(false);
-  }, [practiceMessages, voiceEnabled]); // quick | conversation | highConviction
+  }, [practiceMessages, voiceEnabled, capPromptDismissed]); // quick | conversation | highConviction
   const contentRef = useRef(null);
   const chatEndRef = useRef(null);
 
@@ -2442,6 +2442,9 @@ function Primed() {
   const [debriefMessages, setDebriefMessages] = useState([]);       // post-coaching follow-up [{role:"agent"|"coach"}]
   const [debriefInput, setDebriefInput] = useState("");
   const [debriefLoading, setDebriefLoading] = useState(false);
+  // At the hard exchange cap we offer a choice instead of auto-ending; once the
+  // agent chooses "Keep going" we stop prompting and stop forcing the client to close.
+  const [capPromptDismissed, setCapPromptDismissed] = useState(false);
   const [coachHint, setCoachHint] = useState(null);
   const [coachLoading, setCoachLoading] = useState(false);
   const [savedPhrases, setSavedPhrases] = useState([]);
@@ -2607,9 +2610,14 @@ function Primed() {
   const [chShareCopied, setChShareCopied] = useState(false);
   // The challenge the recipient arrived on via a share link (sender + score to beat).
   const [chIncoming, setChIncoming] = useState(null);
+  // Post-score follow-up with the coach: ask questions, push back on the number.
+  const [chCoachMsgs, setChCoachMsgs] = useState([]); // [{role:"agent"|"coach", content}]
+  const [chCoachInput, setChCoachInput] = useState("");
+  const [chCoachLoading, setChCoachLoading] = useState(false);
 
   const loadChallengeObjection = useCallback(async (specificId) => {
     setChLoadingObj(true); setChScore(null); setChResponse("");
+    setChCoachMsgs([]); setChCoachInput("");
     // Moving on to a fresh random objection clears any "beat this" framing.
     if (!specificId) setChIncoming(null);
     try {
@@ -2680,6 +2688,36 @@ function Primed() {
     }
     setChScoring(false);
   }, [chObjection, chResponse]);
+
+  // Ask the coach a follow-up after the score (no re-grading — just a conversation).
+  const askChallengeCoach = useCallback(async () => {
+    if (!chCoachInput.trim() || chCoachLoading || !chScore || chScore.error) return;
+    const q = chCoachInput.trim();
+    const next = [...chCoachMsgs, { role: "agent", content: q }];
+    setChCoachMsgs(next);
+    setChCoachInput("");
+    setChCoachLoading(true);
+    try {
+      const res = await fetch(API_URL + "/challenge/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+        body: JSON.stringify({
+          objection: chObjection ? chObjection.objection : "",
+          category: chObjection ? chObjection.category : "",
+          response: chResponse,
+          feedback: chScore,
+          messages: next
+        })
+      });
+      if (!res.ok) throw new Error("coach failed");
+      const data = await res.json();
+      setChCoachMsgs(prev => [...prev, { role: "coach", content: data.reply || "" }]);
+    } catch (err) {
+      console.error("Challenge coach error:", err);
+      setChCoachMsgs(prev => [...prev, { role: "coach", content: "Sorry — I couldn't respond just now. Try asking again in a moment." }]);
+    }
+    setChCoachLoading(false);
+  }, [chCoachInput, chCoachLoading, chCoachMsgs, chScore, chObjection, chResponse]);
 
   // Value Script Builder state
   const [vsStep, setVsStep] = useState(1);
@@ -2841,6 +2879,7 @@ function Primed() {
     setPracticeState("active");
     setPracticeMessages([]);
     setPracticeFeedback(null);
+    setCapPromptDismissed(false);
     // AI speaks first
     setTimeout(() => sendAIFirstMessage(qs.scenario, qs.persona), 500);
   }, []);
@@ -2889,6 +2928,7 @@ function Primed() {
     setSavedThisSession(new Set());
     setDebriefMessages([]);
     setModelLineSaved(false);
+    setCapPromptDismissed(false);
     if (isDealScenario(practiceScenario) && dealStage) {
       setDealBrief(null); setDealBriefError(""); setDealBriefLoading(true);
       setPracticeState("brief");
@@ -2918,6 +2958,7 @@ function Primed() {
   const beginDealConversation = useCallback(() => {
     setPracticeMessages([]);
     setPracticeState("active");
+    setCapPromptDismissed(false);
     setTimeout(() => sendAIFirstMessage(practiceScenario, practicePersona), 300);
   }, [practiceScenario, practicePersona, sendAIFirstMessage]);
 
@@ -2992,7 +3033,7 @@ function Primed() {
 
     try {
       const rawTranscript = newMessages.map(m => ({ role: m.role, content: m.content }));
-      const wrapUp = newMessages.filter(m => m.role === "agent").length >= HARD_TURN_CAP;
+      const wrapUp = newMessages.filter(m => m.role === "agent").length >= HARD_TURN_CAP && !capPromptDismissed;
 
       const response = await fetch(API_URL + "/practice/reply", {
         method: "POST",
@@ -3009,7 +3050,7 @@ function Primed() {
       setPracticeMessages(prev => [...prev, { role: "client", content: "I'm sorry, can you repeat that? I got distracted for a moment." }]);
     }
     setPracticeLoading(false);
-  }, [practiceInput, practiceMessages, practiceLoading, voiceEnabled]);
+  }, [practiceInput, practiceMessages, practiceLoading, voiceEnabled, capPromptDismissed]);
 
   // End the session → first capture the agent's own read, then score.
   const endPracticeSession = useCallback(() => {
@@ -3140,15 +3181,9 @@ function Primed() {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   }, [practiceMessages, practiceLoading]);
 
-  // Hard exchange cap: once the client's wrap-up reply has landed, auto-advance to coaching.
-  useEffect(() => {
-    if (practiceState !== "active" || practiceLoading) return;
-    const agentTurns = practiceMessages.filter(m => m.role === "agent").length;
-    const last = practiceMessages[practiceMessages.length - 1];
-    if (agentTurns >= HARD_TURN_CAP && last && last.role === "client") {
-      endPracticeSession();
-    }
-  }, [practiceMessages, practiceLoading, practiceState, endPracticeSession]);
+  // Hard exchange cap: we NEVER auto-advance to coaching (that yanked agents out
+  // mid-thought). Instead the input area shows a "Ready for coaching?" choice —
+  // the agent decides when they're done. See the cap prompt in the active view.
 
   // Default the deal stage from the chosen scenario (deal scenarios only).
   useEffect(() => {
@@ -4855,28 +4890,61 @@ function Primed() {
                 padding: "16px 24px", borderTop: "1px solid rgba(0,0,0,0.08)",
                 background: "#fff", flexShrink: 0
               }}>
-                {/* Wrap-up nudge (soft exchange cap) */}
+                {/* Exchange-cap prompts — never force the agent out; they choose. */}
                 {(() => {
                   const agentTurns = practiceMessages.filter(m => m.role === "agent").length;
-                  if (agentTurns < SOFT_TURN_CAP || agentTurns >= HARD_TURN_CAP) return null;
-                  return (
-                    <div style={{
-                      marginBottom: 10, padding: "10px 14px",
-                      background: "rgba(212,160,62,0.10)", border: "1px solid rgba(212,160,62,0.3)",
-                      borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12
-                    }}>
-                      <div style={{ fontSize: 12.5, color: "#9a7424", lineHeight: 1.5 }}>
-                        Good rep — start bringing this call to a close. You'll get your coaching in a couple more exchanges.
-                      </div>
-                      <button onClick={endPracticeSession} style={{
-                        flexShrink: 0, padding: "6px 14px", borderRadius: 8, border: "none",
-                        background: "#d4a03e", color: "#fff", fontSize: 11, fontWeight: 700,
-                        fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: "pointer"
+                  // Hard cap reached: offer an explicit choice.
+                  if (agentTurns >= HARD_TURN_CAP && !capPromptDismissed) {
+                    return (
+                      <div style={{
+                        marginBottom: 10, padding: "12px 14px",
+                        background: "rgba(212,160,62,0.12)", border: "1px solid rgba(212,160,62,0.35)",
+                        borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap"
                       }}>
-                        Wrap up & coach
-                      </button>
-                    </div>
-                  );
+                        <div style={{ fontSize: 12.5, color: "#9a7424", lineHeight: 1.5 }}>
+                          That's a full rep. Ready for your coaching, or is there more you want to say?
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                          <button onClick={() => setCapPromptDismissed(true)} style={{
+                            padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.15)",
+                            background: "transparent", color: "rgba(0,0,0,0.6)", fontSize: 11, fontWeight: 700,
+                            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: "pointer"
+                          }}>
+                            Keep going
+                          </button>
+                          <button onClick={endPracticeSession} style={{
+                            padding: "6px 14px", borderRadius: 8, border: "none",
+                            background: "#d4a03e", color: "#fff", fontSize: 11, fontWeight: 700,
+                            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: "pointer"
+                          }}>
+                            End & get coaching
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+                  // Soft cap: gentle nudge; the conversation keeps going as long as they like.
+                  if (agentTurns >= SOFT_TURN_CAP) {
+                    return (
+                      <div style={{
+                        marginBottom: 10, padding: "10px 14px",
+                        background: "rgba(212,160,62,0.10)", border: "1px solid rgba(212,160,62,0.3)",
+                        borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12
+                      }}>
+                        <div style={{ fontSize: 12.5, color: "#9a7424", lineHeight: 1.5 }}>
+                          Good rep — you can start bringing this to a close, or keep going as long as you like.
+                        </div>
+                        <button onClick={endPracticeSession} style={{
+                          flexShrink: 0, padding: "6px 14px", borderRadius: 8, border: "none",
+                          background: "#d4a03e", color: "#fff", fontSize: 11, fontWeight: 700,
+                          fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.03em", cursor: "pointer"
+                        }}>
+                          Wrap up & coach
+                        </button>
+                      </div>
+                    );
+                  }
+                  return null;
                 })()}
                 {/* Coach Hint Card */}
                 {coachHint && (
@@ -5436,6 +5504,49 @@ function Primed() {
                     <div style={{ fontSize: 15, lineHeight: 1.7, color: "#2a231d" }}>{chScore.modelAnswer}</div>
                   </div>
                 )}
+
+                {/* Ask the coach — follow-up conversation after the score */}
+                <div style={{ padding: "20px 24px", borderRadius: 14, background: "#0F172A", marginBottom: 22 }}>
+                  <div style={{ fontSize: 10, color: "rgba(245,240,232,0.55)", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6, fontWeight: 600 }}>Ask the coach</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.55, color: "rgba(245,240,232,0.75)", marginBottom: chCoachMsgs.length ? 16 : 12 }}>
+                    Not sure why you lost points, or want a different angle? Ask a follow-up — this won't change your score.
+                  </div>
+                  {chCoachMsgs.map((m, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: m.role === "agent" ? "flex-end" : "flex-start", marginBottom: 10 }}>
+                      <div style={{
+                        maxWidth: "82%", padding: "10px 14px", borderRadius: 12, fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap",
+                        background: m.role === "agent" ? "rgba(224,90,51,0.9)" : "rgba(255,255,255,0.08)",
+                        color: m.role === "agent" ? "#fff" : "#F5F0E8",
+                        border: m.role === "agent" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                        borderBottomRightRadius: m.role === "agent" ? 4 : 12,
+                        borderBottomLeftRadius: m.role === "coach" ? 4 : 12
+                      }}>{m.content}</div>
+                    </div>
+                  ))}
+                  {chCoachLoading && (
+                    <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 10 }}>
+                      <div style={{ padding: "10px 14px", borderRadius: 12, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", fontSize: 13, color: "rgba(245,240,232,0.6)" }}>Coach is thinking…</div>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                    <input
+                      type="text"
+                      value={chCoachInput}
+                      onChange={e => setChCoachInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askChallengeCoach(); } }}
+                      placeholder="Ask the coach a question…"
+                      disabled={chCoachLoading}
+                      style={{ flex: 1, padding: "12px 16px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, color: "#F5F0E8", fontSize: 14, fontFamily: "inherit", outline: "none" }}
+                    />
+                    <button onClick={askChallengeCoach} disabled={chCoachLoading || !chCoachInput.trim()} style={{
+                      padding: "12px 22px", borderRadius: 10, border: "none",
+                      background: chCoachLoading || !chCoachInput.trim() ? "rgba(224,90,51,0.3)" : "#e05a33",
+                      color: chCoachLoading || !chCoachInput.trim() ? "rgba(255,255,255,0.5)" : "#fff",
+                      fontSize: 13, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace",
+                      cursor: chCoachLoading || !chCoachInput.trim() ? "not-allowed" : "pointer"
+                    }}>Ask</button>
+                  </div>
+                </div>
 
                 <div style={{ display: "flex", gap: 12 }}>
                   <button className="pcta" onClick={() => loadChallengeObjection()} style={{ padding: "14px 32px", borderRadius: 14, border: "none", background: "linear-gradient(180deg, #e8674a 0%, #d44a25 100%)", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.04em", textTransform: "uppercase", cursor: "pointer" }}>Next Objection →</button>
