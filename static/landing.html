@@ -380,7 +380,7 @@
       padding: 14px 32px; background: var(--accent); color: #fff;
       border-radius: 10px; font-size: 14px; font-weight: 700;
       font-family: var(--mono); letter-spacing: 0.03em;
-      transition: all 0.2s; white-space: nowrap;
+      transition: all 0.2s; white-space: nowrap; display: inline-block;
     }
     .cta-btn:hover { background: #c94e2b; }
     .cta-success {
@@ -451,7 +451,7 @@
       <span class="nav-name">primed</span>
       <span class="nav-tld">.today</span>
     </div>
-    <a href="#early-access" class="nav-cta">GET EARLY ACCESS</a>
+    <a href="/app" class="nav-cta">START FREE TRIAL</a>
   </nav>
 
   <!-- ═══ HERO ═══ -->
@@ -470,8 +470,8 @@
         script. Then lets you practice the conversation before it happens.
       </p>
       <div class="hero-actions fade-up-d3">
-        <a href="#demo" class="btn-primary">Try the Demo ↓</a>
-        <a href="#early-access" class="btn-secondary">Get Early Access</a>
+        <a href="/app" class="btn-primary">Start Your Free Trial →</a>
+        <a href="#demo" class="btn-secondary">Try the Demo ↓</a>
       </div>
       <div class="hero-proof fade-up-d3">
         <div>
@@ -639,7 +639,7 @@
           <div class="scenarios-bar-title">50+ scenarios, with new ones added as the market shifts</div>
           <div class="scenarios-bar-list">Listing appointments • Price reductions • Buyer hesitation • Divorce sales • NAR buyer-rep pushback • Rate spikes & drops • Referral asks • Dual agency • and dozens more</div>
         </div>
-        <a href="#early-access" class="btn-primary" style="font-size: 12px; padding: 10px 22px;">Get Access</a>
+        <a href="/app" class="btn-primary" style="font-size: 12px; padding: 10px 22px;">Start Free Trial</a>
       </div>
     </div>
   </section>
@@ -720,17 +720,12 @@
         Never freeze <i class="accent">again.</i>
       </h2>
       <p class="cta-desc">
-        Get early access to Primed. Be the first to know when we launch — and the first agent in your market who always knows what to say.
+        Start your 7-day free trial — no credit card required. Be the first agent in your market who always knows what to say.
       </p>
       <div class="cta-form" id="ctaForm">
-        <input type="email" placeholder="your@email.com" class="cta-input" id="ctaEmail">
-        <button class="cta-btn" id="ctaBtn" onclick="handleSignup()">Get Primed</button>
+        <a href="/app" class="cta-btn" id="ctaBtn">Start Your Free Trial →</a>
       </div>
-      <div class="cta-success" id="ctaSuccess">
-        <div class="cta-success-title">You're on the list.</div>
-        <div class="cta-success-text">We'll reach out when Primed is ready. You'll never freeze again.</div>
-      </div>
-      <p class="cta-note">No spam. Just one email when we launch.</p>
+      <p class="cta-note">7-day free trial · No credit card required · Cancel anytime.</p>
     </div>
   </section>
 
@@ -912,31 +907,6 @@
       activeTab = tab;
       renderDemo();
     }
-
-    // ── EMAIL SIGNUP ──
-    function handleSignup() {
-      const email = document.getElementById("ctaEmail").value.trim();
-      if (email && email.includes("@") && email.includes(".")) {
-        fetch("https://api.convertkit.com/v3/forms/9169545/subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ api_key: "enaZb8MG05uHwGht5I-kyg", email: email })
-        }).then(() => {
-          document.getElementById("ctaForm").style.display = "none";
-          document.getElementById("ctaSuccess").classList.add("show");
-        }).catch(() => {
-          document.getElementById("ctaForm").style.display = "none";
-          document.getElementById("ctaSuccess").classList.add("show");
-        });
-      }
-    }
-
-    // Enter key on email input
-    document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("ctaEmail").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") handleSignup();
-      });
-    });
 
     // ── SCROLL REVEAL ──
     const observer = new IntersectionObserver((entries) => {
